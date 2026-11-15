@@ -6,6 +6,9 @@
 - **Peekom(빼꼼 인덱스)** 의 기능을 모두 무료로 사용할 수 있도록 다시 만든 앱입니다.
 - Electron 대신 **Tauri 2 + WebView2** 로 만들어 설치 파일이 가볍고 메모리 사용이 적습니다.
 - 데이터는 PC 안에만 저장됩니다. 계정, 서버, 클라우드가 없습니다.
+- **자동 업데이트**: GitHub Releases 를 확인해 새 버전을 자동으로 설치합니다.
+
+저장소: https://github.com/Logic-k/GuseokMemo
 
 ---
 
@@ -120,8 +123,16 @@
 ## 4. 실행 방법
 
 ### 설치 파일
-`src-tauri/target/release/bundle/nsis/GuseokMemo_0.1.0_x64-setup.exe`  (약 1.2 MB) 를 실행합니다.
+[GitHub Releases](https://github.com/Logic-k/GuseokMemo/releases/latest) 에서 `GuseokMemo_*_x64-setup.exe` 를 내려받아 실행합니다.
 현재 사용자 계정에만 설치되며 관리자 권한이 필요 없습니다.
+로컬 빌드라면 `src-tauri/target/release/bundle/nsis/` 안에 있습니다.
+
+### 자동 업데이트
+앱을 실행하면 약 5초 뒤 GitHub Releases 의 `latest.json` 을 확인합니다.
+새 버전이 있으면 자동으로 내려받아 설치하고 앱이 재시작됩니다.
+설정 → **앱 → 업데이트 → 지금 확인** 으로 수동 확인도 가능합니다.
+업데이트 패키지는 minisign 키로 서명되며, 개인 키는 저장소에 포함되지 않습니다
+(`~/.tauri/guseok-memo.key`, CI 에는 `TAURI_SIGNING_PRIVATE_KEY` 시크릿).
 
 ### 설치된 앱
 ```
@@ -169,8 +180,9 @@ npx tauri build        # NSIS 설치 파일 + exe
 
 ## 6. 개인정보
 
-- 네트워크 요청을 하지 않습니다. (업데이트 확인, 분석, 광고 없음)
 - 메모와 설정은 위 로컬 파일에만 저장됩니다.
+- 유일한 네트워크 요청은 **업데이트 확인**(GitHub Releases `latest.json` 조회)입니다.
+  업데이트가 있을 때만 설치 파일을 내려받습니다. 분석, 광고, 텔레메트리는 없습니다.
 - 이미지는 원본이 아니라 JPEG 로 축소해 저장합니다.
 
 ---

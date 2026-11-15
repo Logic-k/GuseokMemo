@@ -125,3 +125,41 @@
 - 멀티 모니터에서 "자동" 해결이 실제 커서 모니터를 따라가는지 실기 확인(로직상 커서 기준 재해석).
 - 왼쪽 표시 모드의 카드 그림자·모서리 미러링은 CSS 변경이며 시각 확인만 남음.
 - 설정 창 상호작용 중 외부 업데이트 지연 렌더는 구현 확인, 실제 드래그 중 체감 확인은 수동.
+
+---
+
+## BUG-07 — 사용자 보고 "설정 버튼 → 흰 화면 정지" 재점검 (2026-11-16)
+
+- 증상: 수정 후에도 설정이 안 된다고 재보고.
+- 조사: 설치본 `C:\Users\김민오\AppData\Local\GuseokMemo\guseok-memo.exe` 가
+  **Nov 14 빌드(수정 전)** 임을 확인. 새 릴리스 exe 로는 CDP 검증 완료 상태였음.
+- 결론: 코드 결함 아님 — 구버전 설치본 실행이 원인. 새 설치 파일/자동 업데이트로 해소 예정.
+
+## FEAT — GitHub 배포 + 자동 업데이트 (v0.2.0, 2026-11-16)
+
+- 리포: https://github.com/Logic-k/GuseokMemo (public, main 푸시 완료)
+- 업데이트 스택 (devil-of-devin 패턴 차용):
+  - Rust: `tauri-plugin-updater` + `tauri-plugin-process`, capabilities 에
+    `updater:default` / `process:default` / `process:allow-restart`
+  - `tauri.conf.json`: `bundle.createUpdaterArtifacts: true`,
+    `plugins.updater` — pubkey + endpoint
+    `https://github.com/Logic-k/GuseokMemo/releases/latest/download/latest.json`,
+    Windows installMode passive
+  - 프런트: `src/updates.js` — `checkForUpdate()` / `installUpdate()`(downloadAndInstall→relaunch)
+  - 자동 실행: `handles.js` 부팅 5초 뒤 확인 → 새 버전 있으면 설치 후 재시작
+    (`import.meta.env.DEV` 에서는 생략)
+  - 수동: 설정 → 앱 → 업데이트 → 지금 확인
+- 서명 키: `~/.tauri/guseok-memo.key` (로컬 전용, 저장소 미포함).
+  pubkey 만 config 에. CI 시크릿 `TAURI_SIGNING_PRIVATE_KEY` 설정 완료.
+- 릴리스: v0.2.0 에 `GuseokMemo_0.2.0_x64-setup.exe` + `.sig` + `latest.json` 업로드.
+  `latest.json` 엔드포인트 실서빙 확인.
+- CI: `.github/workflows/release.yml` — `v*` 태그 푸시 시 tauri-action 이
+  빌드·서명·Release·latest.json 자동 생성 (`includeUpdaterJson: true`).
+- 검증:
+  - `npx tauri build` → setup.exe(1.86 MiB) + `.sig` 생성, 빈 비밀번호 키로 서명
+  - 릴리스 exe `--selftest` → **18/18 PASS**, autostart QA PASS, store-restore PASS
+  - 업데이트 체크가 릴리스 존재 전엔 `Could not fetch a valid release JSON` 실패 로그,
+    릴리스 후엔 실패 로그 없음(= fetch·파싱·버전 비교 성공, 최신이라 설치 생략)
+  - 설치·재시작 경로는 tauri-plugin-updater 표준 플로우 — 실 업데이트는 차기 버전에서 확인 가능
+- 남은 수동 확인: 구버전 설치본 → v0.2.0 자동 업데이트 실기 동작(구버전엔 updater 없음 —
+  이번 한 번은 새 설치 파일로 교체 필요. 이후 버전부터 자동).
