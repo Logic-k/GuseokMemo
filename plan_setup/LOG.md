@@ -1,0 +1,127 @@
+# 구석메모 작업 로그
+
+## 2026-11-15 — 전체 버그 조사 · 수정 · 검증
+
+검증 환경: `npm run dev`(vite :5183) 실행 후 `src-tauri/target/debug/guseok-memo.exe --selftest [--qa-autostart]`.
+디버그 exe는 devUrl(http://localhost:5183)을 로드하므로 vite 서버가 먼저 떠 있어야 한다.
+결과는 `%TEMP%\guseok-qa.log`에 기록됨. 최종 결과: **SUMMARY 18/18 PASS** (기존 15 + 회귀 3).
+
+### BUG-01 체크리스트 체크 상태가 저장되지 않음
+- 재현: 체크박스를 켠 뒤 저장·재시작 → 텍스트엔 취소선이 남는데 상자는 비어 있음.
+- 원인: `change` 핸들러가 `.done` 클래스만 바꾸고 `checked` **어트리뷰트**를 갱신하지 않음.
+  `innerHTML`은 프로퍼티가 아니라 어트리뷰트를 직렬화하므로 체크가 저장에서 유실됨.
+- 수정: `panel.js` — 토글 시 `setAttribute("checked","")`/`removeAttribute("checked")` 동기화.
+- 회귀 검사: selftest `checkbox-persist` (innerHTML에 `checked` 직렬화 확인) — PASS.
+
+### BUG-02 체크리스트 안에서 Enter/Backspace가 동작하지 않음
+- 재현: 체크 항목에 커서를 두고 Enter → 새 항목이 생기지 않고 `ck-text` 안에 개행만 생김.
+- 원인: 핸들러가 `e.target.closest(".ck")`를 쓰는데 contenteditable 에서 keydown의
+  `e.target`은 항상 편집 호스트(`#editor`)라서 해당 분기가 절대 실행되지 않았음.
+- 수정: `panel.js` — 선택 영역 기반 `ckFromSelection()` 도입해 Enter/Backspace 분기 교체.
+  추가로 비어 있지 않은 항목 맨 앞 Backspace는 항목을 일반 단락으로 해제(unwrap)하도록 처리.
+- 회귀 검사: selftest `ck-enter-new-row`, `ck-backspace-unwrap` — PASS.
+
+### BUG-03 "왼쪽 표시" 설정이 패널 재시작 시 무시됨
+- 원인: `boot()`가 `initStore` 이전에 `panelEl.dataset.side`를 읽어 항상 기본값("right") 적용.
+- 수정: `panel.js` — initStore 이후로 이동. 외부 변경 핸들러는 기존대로 유지.
+- 추가: 왼쪽 모드에서 카드 border-radius·box-shadow가 반전되지 않던 CSS도 미러링.
+
+### BUG-04 "자동" 모니터가 첫 호출 모니터에 고정됨
+- 원인: `layout.js`의 `autoCache`가 첫 `work_area("auto")` 결과를 영구 캐시 →
+  커서를 다른 모니터로 옮겨도 스트립/메모가 항상 첫 모니터에 열림.
+- 수정: 캐시 제거, 매 호출 시 커서 위치 기준으로 재해석.
+  `handles.js` `open()`도 오래된 `lay` 재사용 대신 매번 `getLayout` 호출로 변경.
+
+### BUG-05 "단축키 조작" 모드가 아무 동작도 하지 않음
+- 원인: `state.common.mode` 값을 읽는 곳이 없어 스트립이 항상 표시됐고,
+  `place_handles`의 `visible=false`도 실제로는 hide를 호출하지 않았음.
+- 수정: `place()`에서 `mode !== "shortcut"`이면 `visible:false` 전달,
+  Rust `place_handles`에 `else { win.hide() }` 추가.
+- 검증: store를 `mode:"shortcut"`로 패치 후 실행 → `place_handles visible=false` 로그 확인,
+  이후 원본 store 복원 완료.
+
+### BUG-06 인덱스 1개일 때 Ctrl+Shift+↑/↓가 메모를 닫아버림
+- 원인: `step()`이 같은 인덱스로 `open()`을 호출 → `open()`의 토글 로직이 닫기로 해석.
+- 수정: `handles.js` — `next.id !== activeId`일 때만 `open()`.
+
+### BUG-07 빼꼼 모드가 커서 위를 무시하고 패널을 닫음 / 내보내기 대화상자 중 닫힘
+- 원인 1: 창이 움직이지 않는 커서 아래에 나타나면 `mouseenter`가 발생하지 않아
+  `pointerInside`가 false로 남아 peek 지연 후 닫힘.
+- 원인 2: 내보내기(`save`) 대화상자 동안 `busy`가 설정되지 않아 blur→자동 닫힘.
+- 수정: `panel.js` — 열릴 때와 close 시도 루프에서 `documentElement.matches(":hover")` 재확인,
+  export 대화상자 구간 `busy` 설정, focus 복귀 시 포인터가 밖이면 닫기 재예약.
+
+### BUG-08 비율·표시 위치·모니터 변경 시 열려있는 패널 위치 미갱신
+- 수정: `panel.js` — `geomKey(ratio|side|monitor)` 추적해 열린 상태에서 변경 시
+  `panelRect` 재계산 후 크기·위치 재적용.
+
+### BUG-09 `--qa-autostart`가 기존 자동실행 등록을 지움
+- 원인: 테스트 끝에 무조건 `set_autostart(false)` → 사용자의 Run 키가 삭제됨.
+- 수정: `main.rs` — 기존 값을 먼저 읽고 테스트 후 원래 값(없으면 삭제)으로 복원.
+
+### BUG-10 복원(백업 불러오기)이 마이그레이션을 거치지 않음
+- 원인: `Object.assign(state, parsed)` 그대로 병합 → 필드 누락·형식 오류 백업이 그대로 주입.
+- 수정: `store.js` `migrate`를 export하고 `settings.js` 복원에서 `migrate(parsed)` 적용.
+  `migrate` 자체도 비객체 인덱스 항목·null raw를 방어하도록 보강.
+
+### BUG-11 설정 창이 외부 저장 이벤트로 사용 중 컨트롤을 재생성
+- 원인: 패널 타이핑 → 260ms마다 store 이벤트 → 설정 `render()` → 슬라이더/입력이 드래그·입력 중 파괴.
+- 수정: `settings.js` — 포커스된 폼 컨트롤이 있으면 렌더를 큐잉하고 상호작용 종료 후 반영.
+
+### BUG-12 에디터 플레이스홀더가 표시되지 않음
+- 원인: `.editor:empty` 선택자 — 에디터엔 항상 `<p><br></p>`가 있어 절대 매칭 안 됨.
+- 수정: `is-empty` 클래스 토글(`updateEmptyState`) + CSS `.editor.is-empty::before`.
+
+### BUG-13 투명 PNG 첨부 시 배경이 검게 저장됨
+- 원인: JPEG는 알파가 없는데 캔버스 투명 영역을 그대로 인코딩 → 검정.
+- 수정: `compressImage` — 그리기 전 흰색 채우기, `bitmap.close()`로 메모리 해제.
+
+### BUG-14 설정 창을 닫을 때 디바운스된 마지막 변경이 유실될 수 있음
+- 수정: `store.js` — `pagehide` 시 대기 중인 저장을 즉시 `save_store` 호출로 플러시.
+
+### BUG-15 손잡이 스트립이 타이핑할 때마다 재배치·재렌더됨
+- 원인: 패널 자동저장 → store 이벤트 → `refresh()`가 무조건 `place_handles` IPC + DOM 재생성.
+- 수정: `handles.js` — `layoutSig`(side/monitor/anchor/mode/count)와
+  `renderSig`(핸들 데이터+활성+높이) 시그니처가 바뀔 때만 실제 작업 수행.
+
+### BUG-16 이미지 크기 슬라이더가 틱마다 전체 그리드를 재생성
+- 수정: `panel.js` — `input` 이벤트에서 선택 블록의 `width`만 직접 갱신.
+
+### BUG-17 셀프테스트가 기존 메모 데이터 의존적
+- 증상: 메모에 이미 이미지가 있으면 `image-add`/`image-delete`가 실패(개수 기대값 어긋남).
+- 수정: `selftest.js` — 이미지 검사 전 `idx.images = []`로 초기화(스냅샷 복원은 기존대로).
+
+### BUG-18 설정 창이 하얗게 멈춤 (사용자 신고)
+- 재현: 설정 버튼 클릭 → 창은 뜨지만 내용이 없는 흰 화면 + 앱 응답 없음.
+- CDP 관찰: `invoke("open_settings")`가 resolve되지 않고, 설정 OS 창은 생성되지만
+  webview가 `about:blank`에서 멈춤(페이지 타겟이 `about:blank`로만 존재, 네비게이션 없음).
+- 원인: `open_settings` 커맨드 안에서 `WebviewWindowBuilder::build()`를 런타임에 호출.
+  Tauri 2/Windows에서 커맨드 핸들러(비 메인 스레드) 안의 웹뷰 생성은 WebView2 생성 대기가
+  자신이 막고 있는 이벤트 루프를 필요로 해 데드락. setup에서 만드는 handles/panel 창은
+  메인 스레드에서 생성돼 정상이었던 것과 대조적.
+- 수정: 설정 창을 setup에서 `visible(false)`로 미리 생성해 두고,
+  `open_settings`는 show/unminimize/focus만 수행(신규 웹뷰 생성 없음).
+  `CloseRequested`를 가로채 hide로 바꿔 창이 파괴되지 않고 재사용(닫기 버튼·OS X 모두).
+  `?tab=` 지정은 `guseok://open-tab` 이벤트로 대체.
+- 회귀/검증: CDP로 설정 버튼 클릭 → `settings.html` 타겟 + readyState complete +
+  body 13개 항목 렌더 확인, 닫기 후 재오픈 시 타겟 유지·상태 보존 확인(release exe).
+  셀프테스트 18/18 통과(설정 창이 부팅부터 존재해도 회귀 없음).
+- 참고 스크립트: `plan_setup/cdp-*.cjs`(WebView2 원격 디버깅 검사용).
+
+### 함께 고친 잡다한 결함
+- `panel.js`: Ctrl+숫자 핸들러의 중복 dynamic import 제거(상단 import 사용),
+  `changeFont` 시 글꼴 팝오버 수치 동기화, 외부 이벤트로 제목 입력 중 덮어쓰기 방지,
+  `btnCheck`가 빈 단락을 비우고 체크 항목을 삽입하도록 정리.
+- `settings.js`: 글자색 직접 지정 시에도 테마 선택 해제(`theme=-1`), 글꼴 미리보기 즉시 반영,
+  버전 표기를 `getVersion()`으로 실제 버전과 동기화.
+- `main.rs`: `place_handles`에 `visible=false → win.hide()` 추가(BUG-05).
+
+### 검토했으나 미적용
+- `handles` 창 `focusable(false)`: 포커스 탈취 방지 효과는 있으나 OS 드래그 동작을 이 환경에서
+  끝까지 검증할 수 없어 보수적으로 제외. 현재 지연 로직으로 깜빡임은 이미 흡수됨.
+- `common.hideTaskbar`, `common.toggleBy`, `uid()`: 미사용 키/함수 — 저장 데이터 호환 위해 유지.
+
+### 미검증 (수동 확인 권장)
+- 멀티 모니터에서 "자동" 해결이 실제 커서 모니터를 따라가는지 실기 확인(로직상 커서 기준 재해석).
+- 왼쪽 표시 모드의 카드 그림자·모서리 미러링은 CSS 변경이며 시각 확인만 남음.
+- 설정 창 상호작용 중 외부 업데이트 지연 렌더는 구현 확인, 실제 드래그 중 체감 확인은 수동.

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>구석메모 설정</title>
+    <link rel="stylesheet" href="/src/settings.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="head">
+        <div class="brand-row">
+          <span class="brand">구석메모</span>
+          <span class="badge" id="badge">설정</span>
+        </div>
+        <div class="sub">
+          <span>© 2026. 구석메모</span>
+          <span>·</span>
+          <a href="#" id="folderLink">데이터 폴더 열기</a>
+          <span>·</span>
+          <span id="versionLabel">v0.1.0</span>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
+      <div class="body" id="body"></div>
+
+      <div class="foot">
+        <div class="status" id="status">준비됨</div>
+        <button class="btn" id="closeBtn">닫기</button>
+      </div>
+    </div>
+    <script type="module" src="/src/settings.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>구석메모</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="handles" class="handles hidden">
+        <div class="handle-list" id="handleList"></div>
+      </div>
+
+      <div id="panel" class="panel hidden">
+        <div class="card" id="card">
+          <div class="panel-head">
+            <input class="title-input" id="titleInput" maxlength="8" spellcheck="false" />
+            <button class="head-btn" id="openSettings" title="설정">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.65a1.7 1.7 0 0 0 1-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9c.24.6.82 1 1.47 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
+            </button>
+          </div>
+
+          <div class="image-grid" id="imageGrid"></div>
+
+          <div class="editor-wrap" id="editorWrap">
+            <div class="editor" id="editor" contenteditable="true" spellcheck="false" data-placeholder="여기에 적어 두세요"></div>
+          </div>
+
+          <div class="img-bar hidden" id="imgBar">
+            <span style="opacity:.55;font-weight:700">비율</span>
+            <button data-ratio="1:1">1:1</button>
+            <button data-ratio="4:3">4:3</button>
+            <button data-ratio="3:4">3:4</button>
+            <button data-ratio="16:9">16:9</button>
+            <span style="opacity:.55;font-weight:700;margin-left:4px">크기</span>
+            <input type="range" id="imgScale" min="50" max="150" step="5" value="100" />
+            <button id="imgDelete" style="margin-left:auto">삭제</button>
+          </div>
+
+          <div class="toolbar" id="toolbar">
+            <button class="mode-chip" id="modeChip" title="빼꼼 / 얼음 모드">빼꼼</button>
+            <button class="tb letter" id="btnFont" title="글자 크기">A·</button>
+            <div class="tb-sep"></div>
+            <button class="tb letter" data-cmd="bold" title="굵게 (Ctrl+B)" style="font-weight:800">B</button>
+            <button class="tb letter italic" data-cmd="italic" title="기울임 (Ctrl+I)">I</button>
+            <button class="tb letter under" data-cmd="underline" title="밑줄 (Ctrl+U)">U</button>
+            <button class="tb letter strike" data-cmd="strikeThrough" title="취소선">S</button>
+            <div class="tb-sep"></div>
+            <button class="tb" id="btnAlign" title="정렬">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+            </button>
+            <button class="tb" data-cmd="insertUnorderedList" title="글머리 기호">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.6" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4.6" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4.6" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button class="tb" id="btnCheck" title="체크리스트">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.4" y="4.4" width="6" height="6" rx="1.6"/><path d="M4.9 7.4 6 8.6l1.9-2"/><path d="M13 7.5h7.4M13 16.5h7.4"/><path d="M4.9 14.7l1.1 1.2 1.9-2"/><rect x="3.4" y="13.6" width="6" height="6" rx="1.6"/></svg>
+            </button>
+            <button class="tb" id="btnImage" title="이미지 넣기">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.6" width="18" height="14.8" rx="3"/><circle cx="8.6" cy="9.6" r="1.5"/><path d="M3.6 16.6 8.9 12l3.1 2.8 3.2-3.4 5.2 5.2"/></svg>
+            </button>
+            <button class="tb" id="btnExport" title="보내기 / 백업">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 15.5V4.2"/><path d="m8 8 4-3.8L16 8"/><path d="M5 14.5v3.6A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.6"/></svg>
+            </button>
+          </div>
+
+          <div class="font-pop hidden" id="fontPop">
+            <button id="fontMinus">−</button>
+            <span id="fontVal">18</span>
+            <button id="fontPlus">＋</button>
+          </div>
+          <div class="saved" id="saved">저장됨</div>
+          <div class="toast" id="toast"></div>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" multiple class="hidden" />
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
+
