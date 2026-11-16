@@ -207,3 +207,10 @@
 - 참고: selftest 가 캡처한 `idx` 참조는 외부 store 이벤트로 state 가 교체되면
   분리되므로, 테스트 중 외부 저장 이벤트가 끼어들면 간헐 실패 가능 — 운영 경로는
   panel.js 모듈 `idx` 가 externalHandler 로 재연결돼 영향 없음.
+
+### BUG-08 후속 — v0.2.1 릴리스 (2026-11-16)
+- `npx tauri build` → `GuseokMemo_0.2.1_x64-setup.exe`(1.86 MiB)+`.sig` 생성,
+  릴리스 exe selftest **20/20 PASS**
+- GitHub Release v0.2.1 에 setup.exe+.sig+latest.json 업로드,
+  `releases/latest/download/latest.json` 이 v0.2.1 서빙 확인
+- 코드 푸시: main `7a61e3e`
