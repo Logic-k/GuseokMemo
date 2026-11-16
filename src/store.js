@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { THEMES } from "./themes.js";
 
 export const APP_NAME = "구석메모";
@@ -72,7 +73,7 @@ export let state = defaultState();
 
 let saveTimer = null;
 let externalHandler = null;
-const INSTANCE = Math.random().toString(36).slice(2);
+const WIN_LABEL = getCurrentWindow().label;
 
 export function migrate(raw) {
   const base = defaultState();
@@ -102,7 +103,8 @@ export async function initStore(onExternal) {
   await listen("guseok://store", (event) => {
     try {
       const payload = JSON.parse(event.payload);
-      if (!payload || payload.src === INSTANCE) return;
+      // 자기 창이 저장한 에코는 무시한다 — 타이핑 도중 state 교체로 IME 조합이 깨지는 것을 막는다.
+      if (!payload || payload.src === WIN_LABEL) return;
       const incoming = JSON.parse(payload.raw);
       if (!incoming) return;
       if (JSON.stringify(incoming) === JSON.stringify(state)) return;

@@ -180,6 +180,15 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     await save();
     const raw = await invoke("load_store");
     check("store-write", raw.length > 0 && raw.includes("저장 테스트"), `${raw.length} bytes`);
+
+    // 자기 저장 에코가 state 를 되돌리지 않는지 — 에코 도착 전 변경분이 살아 있어야 함
+    const sBefore = state;
+    const saveP = save();
+    idx.title = "ECHO_PROBE";
+    await saveP;
+    await sleep(400);
+    check("self-echo-skip", state === sBefore && state.indexes.find((i) => i.id === idx.id)?.title === "ECHO_PROBE", state === sBefore ? "kept" : "replaced");
+    idx.title = "저장";
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }

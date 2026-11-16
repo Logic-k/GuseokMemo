@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[derive(serde::Serialize, Clone)]
@@ -42,7 +42,7 @@ fn load_store(app: AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn save_store(app: AppHandle, json: String) -> Result<(), String> {
+fn save_store(app: AppHandle, webview: WebviewWindow, json: String) -> Result<(), String> {
     let p = store_path(&app)?;
     let bak = p.with_file_name("store.bak.json");
     if p.exists() {
@@ -51,9 +51,10 @@ fn save_store(app: AppHandle, json: String) -> Result<(), String> {
     let tmp = p.with_file_name("store.tmp.json");
     fs::write(&tmp, json.as_bytes()).map_err(|e| e.to_string())?;
     fs::rename(&tmp, &p).map_err(|e| e.to_string())?;
-    // 모든 창에 저장본을 브로드캐스트 — JS emit 은 창이 닫히는 도중(pagehide)에는
-    // 전파되지 않을 수 있어 저장 커맨드 안에서 직접 쏜다.
-    let payload = json!({ "src": "disk", "raw": json }).to_string();
+    // 다른 창에는 저장본을 브로드캐스트(페이지 숨김 도중의 pagehide 플러시도 전파되도록 Rust 에서 직접 보냄).
+    // src 에 저장한 창의 라벨을 넣어, 저장한 창 자신의 에코는 JS 쪽에서 무시한다 —
+    // 자기 에코까지 처리하면 타이핑 도중 state 가 교체되며 IME 조합이 깨진다.
+    let payload = json!({ "src": webview.label(), "raw": json }).to_string();
     let _ = app.emit("guseok://store", payload);
     Ok(())
 }

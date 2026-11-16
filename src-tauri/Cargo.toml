@@ -1,6 +1,6 @@
 [package]
 name = "guseok-memo"
-version = "0.2.1"
+version = "0.2.2"
 description = "Edge memo for the office desktop"
 edition = "2021"
 rust-version = "1.77"

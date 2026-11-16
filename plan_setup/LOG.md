@@ -214,3 +214,48 @@
 - GitHub Release v0.2.1 에 setup.exe+.sig+latest.json 업로드,
   `releases/latest/download/latest.json` 이 v0.2.1 서빙 확인
 - 코드 푸시: main `7a61e3e`
+
+## BUG-09 — 한글 입력이 두 번 눌리는 것처럼 깨짐 (2026-11-16, 사용자 신고)
+
+- 재현: 한글 입력 시 "테스트"가 "ㅌ 테스"처럼 앞 자모만 확정되고
+  다음 키에서 새 조합이 시작되는 현상. 타이핑 버스트마다 반복.
+- 원인(복합):
+  1. **자기 저장 에코**: BUG-08 수정에서 브로드캐스트를 Rust `save_store`로
+     옮기면서 `src`가 창 라벨이 아닌 `"disk"`로 고정돼, 패널 자신의 저장도
+     외부 이벤트로 되돌아옴 → `initStore` 리스너가 `state = migrate(...)` 교체 +
+     externalHandler 호출 → `applyStyle`이 포커스된 편집기의
+     `spellcheck`·폰트 스타일을 기록 → WebView2 IME 조합 파기.
+  2. **조합 중 DOM 변경**: `updateEmptyState`가 첫 입력 시 `is-empty` 클래스를
+     토글 — 이것도 포커스된 편집기의 속성 변경이라 첫 글자 조합을 깰 수 있음.
+  3. **stale 덮어쓰기 잔여 경로**: 외부 이벤트가 `state`를 통째 교체하면
+     편집 중인 `idx` 객체가 분리(detach)되고, 대기 중인 디바운스 저장이
+     stale 내용을 디스크에 씀.
+- 수정:
+  - `main.rs` `save_store`: 브로드캐스트 `src`에 **저장한 창의 라벨**
+    (`webview.label()`)을 실어 보냄 — `WebviewWindow` 파라미터로 호출 창 확보.
+  - `store.js`: 에코 필터를 `payload.src === getCurrentWindow().label`로 복원
+    (기존 `INSTANCE` 랜덤값은 창 간 고유하나 저장 쪽 src와 정합성 없음 → 라벨 방식으로 통일).
+  - `panel.js` 외부 핸들러:
+    - `applyStyle(target, touchEditor)` — 포커스된 에디터는 style/spellcheck 미적용.
+    - 같은 인덱스 편집 중이면 `idx.content = editor.innerHTML`로 **화면 DOM을
+      상태에 되심어** 대기 저장이 방금 친 텍스트를 지우지 않게 함
+      (타이틀 입력 중에도 동일 처리).
+    - 인덱스가 실제로 전환된 경우(`switched`)에는 포커스와 무관하게 렌더 —
+      BUG-08 오염 수정 보존.
+    - 포커스 중엔 `renderContent`/`renderImages`/기하 재배치 스킵.
+  - `panel.js` `updateEmptyState`: `composing` 플래그로 compositionstart~end 사이
+    클래스 토글 유예, `compositionend`/`blur`에서 해제.
+- 회귀 검사:
+  - selftest `self-echo-skip` — 자기 저장 에코가 state 를 되돌리지 않는지 단언 → PASS.
+  - `plan_setup/cdp-ime-check.cjs` — ①자기 에코 무시 ②외부 저장은 정상 전파
+    ③조합 중 외부 저장에도 포커스 편집기 DOM 불변 — 3/3 PASS.
+  - CDP `Input.imeSetComposition` 실제 한글 조합 검증: 조합 중 save_store 호출
+    → 조합 텍스트 노드 identity 유지, `테→테스→테스트` 정상 커밋.
+  - `cdp-index-isolation.cjs` 재실행 — 인덱스 분리 저장 유지 확인
+    (테스트 인덱스 동적 생성 방식으로 변경 — 사용자 store가 리셋되어
+    기존 고정 ID가 없어졌고, 핸들 미렌더 시 즉시 중단해 오염 방지).
+  - debug selftest **21/21 PASS**.
+- 미검증: 실제 Windows IME(타자기)로의 손 타이핑 — CDP imeSetComposition 으로는
+  조합 유지를 확인했지만 실키보드 경로는 사용자 확인 필요.
+- 주의: CDP 테스트가 panel 쪽에서 인덱스를 만들 때 handles 핸들은 외부 이벤트로
+  렌더됨(자기 에코 무시의 부수효과) — 테스트 작성 시 유의.

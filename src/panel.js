@@ -57,10 +57,12 @@ function persist(delay = 400) {
   }, delay);
 }
 
-function applyStyle(target) {
+function applyStyle(target, touchEditor = true) {
   card.style.setProperty("--bg", hexToRgba(target.bg, Math.max(0.25, target.opacity / 100)));
   card.style.setProperty("--fg", target.fg);
   card.style.setProperty("--accent", target.accent);
+  // 포커스된 편집기의 속성/스타일을 바꾸면 IME 조합이 깨진다 — 입력 중엔 에디터는 건드리지 않는다.
+  if (!touchEditor) return;
   editor.style.fontSize = target.fontSize + "px";
   editor.style.fontFamily = fontCss(target.font);
   editor.spellcheck = !!state.common.spellcheck;
@@ -104,7 +106,14 @@ function renderContent(target) {
   updateEmptyState();
 }
 
+let composing = false;
+editor.addEventListener("compositionstart", () => { composing = true; });
+editor.addEventListener("compositionend", () => { composing = false; updateEmptyState(); });
+editor.addEventListener("blur", () => { composing = false; });
+
 function updateEmptyState() {
+  // 한글 IME 조합 중에 클래스를 바꾸면 조합이 끊긴다 — compositionend 뒤로 미룬다.
+  if (composing) return;
   const empty = !editor.textContent.trim() && !editor.querySelector(".ck, ul, ol, h1, h2, h3, img");
   editor.classList.toggle("is-empty", empty);
 }
@@ -783,14 +792,21 @@ async function boot() {
     const wasFocused = editor.matches(":focus");
     const pinned = idx;
     idx = current;
-    applyStyle(idx);
+    const switched = !pinned || pinned.id !== current.id;
+    // 같은 인덱스를 편집 중이면 외부 stale 내용 대신 화면의 실제 DOM을 상태에 되심는다 —
+    // 그래야 대기 중인 저장이 방금 친 텍스트를 지우지 않는다.
+    if (!switched) {
+      if (wasFocused) idx.content = editor.innerHTML;
+      if (document.activeElement === titleInput) idx.title = titleInput.value;
+    }
+    applyStyle(idx, switched || !wasFocused);
     if (document.activeElement !== titleInput) titleInput.value = idx.title || "";
     modeChip.textContent = idx.mode === "ice" ? "얼음" : "빼꼼";
     modeChip.dataset.mode = idx.mode || "peek";
-    if (!wasFocused && (!pinned || pinned.content !== current.content)) renderContent(idx);
-    renderImages(idx);
+    if (switched || (!wasFocused && pinned.content !== current.content)) renderContent(idx);
+    if (switched || !wasFocused) renderImages(idx);
     const nextGeomKey = geomKey();
-    if (opened && lastGeomKey && nextGeomKey !== lastGeomKey) {
+    if (opened && (switched || !wasFocused) && lastGeomKey && nextGeomKey !== lastGeomKey) {
       const lay = await getLayout(state);
       const r = panelRect(current, lay);
       try {
