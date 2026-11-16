@@ -259,3 +259,33 @@
   조합 유지를 확인했지만 실키보드 경로는 사용자 확인 필요.
 - 주의: CDP 테스트가 panel 쪽에서 인덱스를 만들 때 handles 핸들은 외부 이벤트로
   렌더됨(자기 에코 무시의 부수효과) — 테스트 작성 시 유의.
+
+## BUG-10 — 체크리스트 항목 안에서 한글 입력이 계속 깨짐 (2026-11-16, 사용자 신고)
+
+- 재현: 일반 문단은 v0.2.2에서 해결됐으나, `.ck` 체크리스트 항목 안에서는
+  여전히 "2번 눌림/글자 갈라짐" 발생.
+- 원인: `.ck` 전용 keydown 경로가 IME 조합을 가로챔.
+  1. **조합 중 Enter** — 항목 끝 Enter(마지막 자모 확정 의도)가
+     `ckFromSelection()` → `preventDefault()` + 새 `.ck` 행 생성 + `caretInto`로
+     커서 이동 → 활성 조합이 강제 확정/유실. 한글 입력은 항목마다 Enter를
+     누르므로 매번 재발.
+  2. **조합 중 Backspace** — 빈 항목에서 조합 시작 직후 Backspace 시
+     행 삭제/unwrap이 조합 중 DOM을 교체할 수 있는 경로.
+  3. **btnCheck의 `setTimeout` 정리** — 체크리스트 버튼으로 행 생성 후
+     `el.textContent = ""` + `placeCaretEnd`가 0ms 뒤 실행 — 생성 직후 바로
+     타이핑을 시작하면 막 시작된 조합을 지움.
+  4. `selectionchange`/`keyup` → `syncToolbar` → `queryCommandState` 난사도
+     조합 중 잡음(보수적으로 차단).
+- 수정 (`src/panel.js`):
+  - keydown 핸들러 최상단에 `e.isComposing || e.key === "Process" || keyCode === 229`
+    가드 — 조합 중엔 커스텀 Enter/Backspace 처리 전면 중단. 조합 Enter는
+    브라우저가 커밋만 하고 삼키므로, 다음 Enter가 행 생성(표준 동작).
+  - `btnCheck` 클릭의 `setTimeout` 정리 제거 — `<br>` 유지해도 입력에 지장 없음.
+  - `syncToolbar`에 `composing` 가드.
+- 검증:
+  - CDP `imeSetComposition` + `dispatchKeyEvent`: 조합 중 Enter → 행 수 1 유지·
+    조합 텍스트 보존; 조합 종료 후 Enter → 새 행 정상 생성; 빈 행 Backspace →
+    행 삭제 정상.
+  - selftest `ime-enter-no-row`, `ime-enter-after-commit` 추가 →
+    **23/23 PASS**.
+  - 일반 `<p>` 조합은 이번 변경 영향 없음(기존 통과 경로 동일).

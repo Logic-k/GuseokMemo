@@ -203,6 +203,7 @@ function exec(cmd, value = null) {
 }
 
 function syncToolbar() {
+  if (composing) return; // 조합 중 queryCommandState 난사는 IME를 흔들 수 있다
   const map = { bold: "bold", italic: "italic", underline: "underline", strikeThrough: "strikeThrough" };
   document.querySelectorAll("[data-cmd]").forEach((btn) => {
     const cmd = btn.dataset.cmd;
@@ -383,6 +384,9 @@ function escapeHtml(s) {
 }
 
 editor.addEventListener("keydown", (e) => {
+  // IME 조합 중엔 브라우저가 키를 소비해야 한다 — 커스텀 처리(새 행/행 삭제/커서 이동)가
+  // 조합을 강제 확정시켜 한글이 "ㅌ 테스"처럼 갈라지는 원인.
+  if (e.isComposing || e.key === "Process" || e.keyCode === 229) return;
   if (e.key === "Enter" && !e.shiftKey) {
     const ck = ckFromSelection();
     if (ck) {
@@ -506,10 +510,7 @@ document.getElementById("btnCheck").addEventListener("click", () => {
   }
   caretInto(row);
   scheduleContentSave();
-  setTimeout(() => {
-    const el = row.querySelector(".ck-text");
-    if (el) { el.textContent = ""; placeCaretEnd(el); }
-  }, 0);
+  // <br>을 비동기로 지우던 정리는 제거 — 생성 직후 타이핑이 시작되면 조합이 지워졌다.
 });
 
 /* ---------------- font size ---------------- */

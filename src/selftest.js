@@ -88,6 +88,21 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     const doneCk = editor.querySelector(".ck");
     check("checkbox-checked-parse", !!doneCk && doneCk.classList.contains("done"), doneCk ? doneCk.className : "none");
 
+    // IME 조합 중 Enter/Backspace는 브라우저가 처리해야 한다 — ck 행 생성/삭제 가로채기 금지
+    editor.innerHTML = '<div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text">테</span></div>';
+    const ckSel = editor.querySelector(".ck-text");
+    const r9 = document.createRange();
+    r9.selectNodeContents(ckSel); r9.collapse(false);
+    const s9 = window.getSelection(); s9.removeAllRanges(); s9.addRange(r9);
+    editor.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", isComposing: true, bubbles: true, cancelable: true }));
+    await new Promise((r) => setTimeout(r, 30));
+    check("ime-enter-no-row", editor.querySelectorAll(".ck").length === 1, `cks=${editor.querySelectorAll(".ck").length}`);
+    editor.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true }));
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+    await new Promise((r) => setTimeout(r, 30));
+    check("ime-enter-after-commit", editor.querySelectorAll(".ck").length === 2, `cks=${editor.querySelectorAll(".ck").length}`);
+
     const waitFor = async (cond, ms = 3000) => {
       const end = Date.now() + ms;
       while (Date.now() < end) {
