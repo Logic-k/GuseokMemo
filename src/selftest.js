@@ -142,8 +142,12 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     idx.mode = "peek";
     await save();
     window.dispatchEvent(new Event("blur"));
-    await sleep(1900);
-    check("peek-autoclose", !(await win.isVisible()));
+    let hid = false;
+    for (let i = 0; i < 40 && !hid; i++) {
+      await sleep(150);
+      hid = !(await win.isVisible());
+    }
+    check("peek-autoclose", hid);
 
     const lay = await getLayout(state);
     const rect = panelRect(idx, lay);
@@ -155,6 +159,22 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     await sleep(1900);
     check("ice-stays-open", await win.isVisible());
     idx.mode = "peek";
+
+    // 인덱스 전환 회귀: 에디터 포커스가 남은 채 다른 인덱스를 열면 내용이 실제로 바뀌어야 한다.
+    const other = state.indexes.find((i) => i.id !== idx.id);
+    if (other) {
+      other.content = "<p>__OTHER_INDEX__</p>";
+      editor.focus();
+      await invoke("show_panel", { x: 0, y: 0, w: 400, h: 400, indexId: other.id });
+      await sleep(400);
+      check("index-switch-rerender", editor.innerHTML.includes("__OTHER_INDEX__"), editor.innerHTML.slice(0, 60));
+      await invoke("show_panel", { x: 0, y: 0, w: 400, h: 400, indexId: idx.id });
+      await sleep(400);
+      check("index-switch-back", !editor.innerHTML.includes("__OTHER_INDEX__"), editor.innerHTML.slice(0, 60));
+    } else {
+      check("index-switch-rerender", true, "single index");
+      check("index-switch-back", true, "single index");
+    }
 
     idx.content = "<p>저장 테스트</p>";
     await save();

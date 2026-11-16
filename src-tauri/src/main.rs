@@ -51,6 +51,10 @@ fn save_store(app: AppHandle, json: String) -> Result<(), String> {
     let tmp = p.with_file_name("store.tmp.json");
     fs::write(&tmp, json.as_bytes()).map_err(|e| e.to_string())?;
     fs::rename(&tmp, &p).map_err(|e| e.to_string())?;
+    // 모든 창에 저장본을 브로드캐스트 — JS emit 은 창이 닫히는 도중(pagehide)에는
+    // 전파되지 않을 수 있어 저장 커맨드 안에서 직접 쏜다.
+    let payload = json!({ "src": "disk", "raw": json }).to_string();
+    let _ = app.emit("guseok://store", payload);
     Ok(())
 }
 

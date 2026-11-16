@@ -163,3 +163,47 @@
   - 설치·재시작 경로는 tauri-plugin-updater 표준 플로우 — 실 업데이트는 차기 버전에서 확인 가능
 - 남은 수동 확인: 구버전 설치본 → v0.2.0 자동 업데이트 실기 동작(구버전엔 updater 없음 —
   이번 한 번은 새 설치 파일로 교체 필요. 이후 버전부터 자동).
+
+---
+
+## BUG-08 — 인덱스 간 메모 오염 + 저장 유실 (2026-11-16, 사용자 신고)
+
+- 증상: "메모가 각각 저장되지도 않고, 해당 메모가 다른 인덱스에도 연결되네요"
+- 실데이터 증거: store.json 의 welcome1 콘텐츠에
+  `<div class="ck"><input type="checkbox"> 텍스트<span class="ck-text"></span></div>` 처럼
+  입력 텍스트가 `.ck-text` span 밖 고아 텍스트 노드로 저장된 구조 발견.
+- 원인 1 (오염): `panel.js render()` 가 `editor.matches(":focus")` 이면
+  `renderContent()` 를 건너뜀. 패널이 열린 상태에서 다른 손잡이 클릭/Ctrl+숫자/단축키로
+  인덱스를 전환하면 `idx` 만 새 인덱스로 바뀌고 DOM 은 이전 메모를 유지 →
+  이후 `idx.content = editor.innerHTML` 이 이전 메모 내용을 새 인덱스에 기록·저장.
+- 원인 2 (저장 유실): `guseok://store` 수신 시 `state = migrate(incoming)` 로
+  전체 state 를 통째 교체 → 다른 창의 디바운스 저장이 패널의 미저장 편집을 덮어씀.
+  또한 `pagehide` 플러시는 디스크에만 쓰고 emit 을 안 해, 닫힌 뒤 다른 창의
+  stale state 저장이 마지막 편집을 되돌릴 수 있었음.
+- 원인 3 (자동 닫힘 잔존): `panel-open` 이 대기 중인 `closeTimer` 를 해제하지 않아
+  빼꼼 자동 닫힘 예약 상태로 재오픈하면 새 패널이 곧바로 닫힘.
+- 수정:
+  - `render()`: `switched`(인덱스 id 변경) 시 포커스와 무관하게 `renderContent()` 강제.
+  - `panel-open` 리스너: 전환 전 `idx.content = editor.innerHTML` 확정 +
+    `state.common.lastIndexId = target.id` + `saveStore({immediate:true})` + `cancelClose()`.
+  - `handles.js open()`: `lastIndexId` 변경을 immediate 저장으로 앞당김.
+  - `store.js`: JS emit 제거 → Rust `save_store` 가 저장 성공 시
+    `guseok://store`(src:"disk")를 브로드캐스트 → pagehide 플러시도 전파.
+    `migrate()` 에 인덱스 id 검증/중복 제거 추가.
+  - `panel.js`: `normalizeChecklist()` — 렌더 시 `.ck` 의 input/span 외 자식을
+    `.ck-text` 안으로 이동(고아 텍스트 자가 복구). `htmlToMarkdown` 은 `.ck` 의
+    `textContent` 전체를 읽어 고아 텍스트도 내보내기에 포함.
+- 회귀 검사: selftest 에 `index-switch-rerender`/`index-switch-back` 추가
+  (에디터 포커스 상태에서 다른 인덱스 오픈 시 내용이 실제로 바뀌는지 단언).
+  `peek-autoclose` 는 peekDelay=1500 환경에서 1900ms 고정 대기가 부족해
+  최대 6초 폴링으로 보강.
+- 검증:
+  - debug selftest **20/20 PASS** (신규 2 + 기존 18)
+  - CDP 실사용 재현 (`plan_setup/cdp-index-isolation.cjs`):
+    A 입력→B 전환→B는 자기 내용만, A 복귀 시 내용 유지,
+    store.json 에서 A/B 내용 분리 저장 확인, welcome1 고아 텍스트 정규화 확인
+  - 첫 실행의 mode-peek/store-write 실패는 검증 중 실수로 중복 실행한
+    인스턴스가 single-instance 토글을 보내 발생한 테스트 아티팩트(재실행 시 통과)
+- 참고: selftest 가 캡처한 `idx` 참조는 외부 store 이벤트로 state 가 교체되면
+  분리되므로, 테스트 중 외부 저장 이벤트가 끼어들면 간헐 실패 가능 — 운영 경로는
+  panel.js 모듈 `idx` 가 externalHandler 로 재연결돼 영향 없음.

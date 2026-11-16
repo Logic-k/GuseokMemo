@@ -82,7 +82,7 @@ async function open(id) {
   const r = panelRect(idx, lay);
   activeId = id;
   state.common.lastIndexId = id;
-  saveStore();
+  await saveStore({ immediate: true });
   render();
   await invoke("show_panel", { x: r.x, y: r.y, w: r.w, h: r.h, indexId: id });
 }

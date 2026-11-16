@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { emit, listen } from "@tauri-apps/api/event";
+import { listen } from "@tauri-apps/api/event";
 import { THEMES } from "./themes.js";
 
 export const APP_NAME = "구석메모";
@@ -79,10 +79,14 @@ export function migrate(raw) {
   const s = { ...base, ...(raw && typeof raw === "object" ? raw : {}) };
   s.common = { ...base.common, ...(raw && raw.common ? raw.common : {}) };
   if (!Array.isArray(s.indexes) || s.indexes.length === 0) s.indexes = base.indexes;
+  const seen = new Set();
   s.indexes = s.indexes.slice(0, MAX_INDEXES).map((it, i) => {
     const d = defaultIndex(i + 1);
     const item = it && typeof it === "object" ? it : {};
-    return { ...d, ...item, images: Array.isArray(item.images) ? item.images : [] };
+    const merged = { ...d, ...item, images: Array.isArray(item.images) ? item.images : [] };
+    if (!merged.id || seen.has(merged.id)) merged.id = uid();
+    seen.add(merged.id);
+    return merged;
   });
   return s;
 }
@@ -113,8 +117,8 @@ export function saveStore({ immediate = false } = {}) {
   const run = async () => {
     const json = JSON.stringify(state);
     try {
+      // 저장 성공 시 Rust 쪽에서 guseok://store 를 브로드캐스트한다(pagehide 플러시도 전파됨).
       await invoke("save_store", { json });
-      await emit("guseok://store", JSON.stringify({ src: INSTANCE, raw: json }));
     } catch (err) {
       console.warn("store save failed", err);
     }

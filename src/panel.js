@@ -78,8 +78,28 @@ function ensureParagraphs() {
   if (!editor.firstElementChild) editor.innerHTML = "<p><br></p>";
 }
 
+function normalizeChecklist() {
+  editor.querySelectorAll(".ck").forEach((ck) => {
+    let span = null;
+    Array.from(ck.children).forEach((c) => {
+      if (!span && c.classList && c.classList.contains("ck-text")) span = c;
+    });
+    if (!span) {
+      span = document.createElement("span");
+      span.className = "ck-text";
+      ck.appendChild(span);
+    }
+    Array.from(ck.childNodes).forEach((n) => {
+      if (n === span || (n.nodeType === 1 && n.tagName === "INPUT")) return;
+      span.appendChild(n);
+    });
+    if (!span.firstChild) span.innerHTML = "<br>";
+  });
+}
+
 function renderContent(target) {
   editor.innerHTML = target.content || "<p><br></p>";
+  normalizeChecklist();
   ensureParagraphs();
   updateEmptyState();
 }
@@ -143,12 +163,13 @@ function geomKey() {
 }
 
 function render(target) {
+  const switched = !idx || idx.id !== target.id;
   idx = target;
   applyStyle(target);
   if (document.activeElement !== titleInput) titleInput.value = target.title || "";
   modeChip.textContent = target.mode === "ice" ? "얼음" : "빼꼼";
   modeChip.dataset.mode = target.mode || "peek";
-  if (!editor.matches(":focus")) renderContent(target);
+  if (switched || !editor.matches(":focus")) renderContent(target);
   renderImages(target);
   syncToolbar();
   lastGeomKey = geomKey();
@@ -652,7 +673,7 @@ function htmlToMarkdown(root) {
     if (el.closest("li") && el.tagName !== "LI") return;
     if (el.classList.contains("ck")) {
       const box = el.querySelector('input[type="checkbox"]');
-      const txt = el.querySelector(".ck-text")?.textContent || "";
+      const txt = (el.textContent || "").trim();
       lines.push(`- [${box?.checked ? "x" : " "}] ${txt}`);
     } else if (el.tagName === "LI") {
       lines.push(`- ${el.textContent}`);
@@ -784,7 +805,13 @@ async function boot() {
   await listen("guseok://panel-open", (e) => {
     const target = indexById(e.payload?.id) || state.indexes[0];
     if (!target) return;
+    // 다른 인덱스로 전환하기 전에 현재 에디터 내용을 이전 메모에 확정하고,
+    // 표시 중인 인덱스를 lastIndexId 로 즉시 저장해 다른 창의 디바운스 저장에 밀리지 않게 한다.
+    if (idx && idx.id !== target.id && !testing) idx.content = editor.innerHTML;
+    state.common.lastIndexId = target.id;
+    if (!testing) saveStore({ immediate: true });
     opened = true;
+    cancelClose();
     openedAt = Date.now();
     pointerInside = document.documentElement.matches(":hover");
     selImg = -1;
