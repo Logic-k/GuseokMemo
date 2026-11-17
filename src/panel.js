@@ -525,10 +525,23 @@ function changeFont(delta) {
 
 const fontPop = document.getElementById("fontPop");
 const fontVal = document.getElementById("fontVal");
+const opacityRange = document.getElementById("opacityRange");
+const opacityVal = document.getElementById("opacityVal");
 document.getElementById("btnFont").addEventListener("click", () => {
   fontPop.classList.toggle("hidden");
-  if (idx) fontVal.textContent = idx.fontSize;
+  if (idx) {
+    fontVal.textContent = idx.fontSize;
+    opacityRange.value = idx.opacity ?? 100;
+    opacityVal.textContent = opacityRange.value + "%";
+  }
 });
+opacityRange.addEventListener("input", () => {
+  if (!idx) return;
+  idx.opacity = +opacityRange.value;
+  opacityVal.textContent = opacityRange.value + "%";
+  applyStyle(idx, false); // 카드 배경만 — 포커스된 에디터를 건드리지 않아 IME 조합에 안전
+});
+opacityRange.addEventListener("change", () => saveStore());
 document.getElementById("fontMinus").addEventListener("click", () => {
   changeFont(-1);
   if (idx) fontVal.textContent = idx.fontSize;

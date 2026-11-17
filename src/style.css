@@ -78,6 +78,42 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
 .handle.active { width: 37px; border-color: rgba(20,20,30,.28); }
 .handle:active { filter: brightness(0.97); }
 
+.handle.del-armed {
+  width: 37px;
+  background: #d94f4f;
+  color: #fff;
+  border-color: rgba(160, 30, 30, 0.5);
+  box-shadow: -4px 3px 12px rgba(160, 30, 30, 0.35);
+  animation: delPulse 0.9s ease-in-out infinite;
+}
+@keyframes delPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.18); }
+}
+
+.handle-add {
+  width: 26px;
+  height: 22px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  padding-bottom: 2px;
+  color: rgba(20, 22, 34, 0.55);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px dashed rgba(20, 20, 30, 0.28);
+  box-shadow: -2px 2px 8px rgba(15, 18, 35, 0.10);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.handle-add:hover {
+  color: rgba(20, 22, 34, 0.9);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(20, 20, 30, 0.5);
+}
+
 .handle .dot {
   position: absolute;
   bottom: 6px;
@@ -150,16 +186,26 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
 .title-input {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 750;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--fg);
-  opacity: 0.62;
+  opacity: 0.78;
   border: 0;
+  border-bottom: 1px dashed transparent;
+  border-radius: 4px 4px 0 0;
+  padding: 2px 4px 3px;
   background: transparent;
   outline: none;
   user-select: text;
+  transition: border-color 0.15s, opacity 0.15s, background 0.15s;
+}
+.title-input::placeholder { color: var(--fg); opacity: 0.45; font-weight: 500; }
+.title-input:hover { opacity: 1; border-bottom-color: rgba(20, 22, 34, 0.28); }
+.title-input:focus {
+  opacity: 1;
+  border-bottom-color: rgba(20, 22, 34, 0.45);
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .head-btn {
@@ -418,6 +464,14 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
 }
 .font-pop button:hover { background: rgba(20, 22, 34, 0.08); }
 .font-pop span { min-width: 24px; text-align: center; font-weight: 700; }
+.font-pop .fp-sep { width: 1px; height: 16px; background: rgba(20, 22, 34, 0.14); margin: 0 5px; }
+.font-pop .fp-label { min-width: auto; font-size: 11px; font-weight: 700; color: rgba(20, 22, 34, 0.6); margin-right: 2px; }
+.font-pop input[type="range"] {
+  width: 74px;
+  accent-color: #4a6b8a;
+  cursor: pointer;
+}
+.font-pop #opacityVal { min-width: 34px; font-size: 11px; font-weight: 700; color: rgba(20, 22, 34, 0.75); }
 
 
 

@@ -1,7 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { getCurrentWindow, LogicalPosition } from "@tauri-apps/api/window";
-import { state, initStore, saveStore, indexById, activeIndex } from "./store.js";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { state, initStore, saveStore, indexById, activeIndex, defaultIndex, applyTheme, MAX_INDEXES } from "./store.js";
+import { THEMES } from "./themes.js";
 import { getLayout, panelRect, STRIP_W } from "./layout.js";
 
 const win = getCurrentWindow();
@@ -12,17 +13,21 @@ let activeId = null;
 let dragging = false;
 let snapTimer = 0;
 let downstream = false;
+let pendingDelete = null; // { id, timer } — 우클릭으로 무장된 삭제 대기 핸들
+
+const showAdd = () => state.indexes.length < MAX_INDEXES;
 
 function render() {
   listEl.innerHTML = "";
   const hh = lay ? lay.hh : 96;
   state.indexes.forEach((idx) => {
     const el = document.createElement("div");
-    el.className = "handle" + (idx.id === activeId ? " active" : "");
+    const armed = pendingDelete && pendingDelete.id === idx.id;
+    el.className = "handle" + (idx.id === activeId ? " active" : "") + (armed ? " del-armed" : "");
     el.style.height = Math.round(hh) + "px";
     el.style.setProperty("--hbg", idx.bg);
     el.style.setProperty("--hfg", idx.fg);
-    const chars = (idx.title || "메모").slice(0, 8).split("");
+    const chars = (armed ? "삭제" : idx.title || "메모").slice(0, 8).split("");
     chars.forEach((c) => {
       const sp = document.createElement("span");
       sp.className = "ch";
@@ -30,13 +35,20 @@ function render() {
       el.appendChild(sp);
     });
     el.dataset.id = idx.id;
-    el.title = idx.title;
+    el.title = armed ? "한 번 더 클릭하면 삭제" : idx.title;
     listEl.appendChild(el);
   });
+  if (showAdd()) {
+    const add = document.createElement("div");
+    add.className = "handle-add";
+    add.textContent = "+";
+    add.title = "메모 추가";
+    listEl.appendChild(add);
+  }
 }
 
 async function place(show = true) {
-  lay = await getLayout(state);
+  lay = await getLayout(state, showAdd());
   await invoke("place_handles", {
     x: lay.x,
     y: lay.y,
@@ -71,6 +83,48 @@ async function refresh() {
   }
 }
 
+async function addIndex() {
+  if (!showAdd()) return;
+  const n = state.indexes.length + 1;
+  const fresh = defaultIndex(n);
+  fresh.theme = (n - 1) % THEMES.length;
+  applyTheme(fresh, fresh.theme);
+  state.indexes.push(fresh);
+  await saveStore({ immediate: true });
+  await refresh();
+  await open(fresh.id);
+}
+
+async function removeIndex(id) {
+  if (state.indexes.length <= 1) return;
+  const wasActive = activeId === id;
+  state.indexes = state.indexes.filter((i) => i.id !== id);
+  if (state.common.lastIndexId === id) state.common.lastIndexId = state.indexes[0].id;
+  if (pendingDelete) {
+    clearTimeout(pendingDelete.timer);
+    pendingDelete = null;
+  }
+  await saveStore({ immediate: true });
+  if (wasActive) {
+    activeId = null;
+    await invoke("hide_panel");
+  }
+  await refresh();
+}
+
+function armDelete(id) {
+  if (state.indexes.length <= 1) return;
+  if (pendingDelete) clearTimeout(pendingDelete.timer);
+  pendingDelete = {
+    id,
+    timer: setTimeout(() => {
+      pendingDelete = null;
+      render();
+    }, 2600),
+  };
+  render();
+}
+
 async function open(id) {
   const idx = indexById(id);
   if (!idx) return;
@@ -78,7 +132,7 @@ async function open(id) {
     await close();
     return;
   }
-  lay = await getLayout(state);
+  lay = await getLayout(state, showAdd());
   const r = panelRect(idx, lay);
   activeId = id;
   state.common.lastIndexId = id;
@@ -109,18 +163,37 @@ async function step(dir) {
   if (next && next.id !== activeId) await open(next.id);
 }
 
-async function snapToEdge(posY) {
+// 드래그 종료 지점에서 가장 가까운 모니터의 좌/우 가장자리로 자석 스냅.
+// 모든 모니터의 작업 영역을 후보로 두고, 그중 x 거리가 최소인 가장자리를 고른다.
+async function snapToEdge(posX, posY) {
   if (downstream) return;
   downstream = true;
   try {
-    const wa = await invoke("work_area", { which: state.common.monitor });
+    const scale = await win.scaleFactor();
+    const wx = posX / scale;
+    const wy = posY / scale;
+    const areas = await invoke("monitors");
+    let best = null;
+    for (const wa of areas) {
+      // 상하 배치 모니터 구분용 — 드롭 y가 작업 영역 밖이면 패널티
+      const outY = wy < wa.y ? wa.y - wy : wy > wa.y + wa.h ? wy - (wa.y + wa.h) : 0;
+      for (const side of ["left", "right"]) {
+        const targetX = side === "left" ? wa.x : wa.x + wa.w - STRIP_W;
+        const d = Math.abs(wx - targetX) + outY * 0.5;
+        if (!best || d < best.d) best = { d, wa, side };
+      }
+    }
+    const wa = best ? best.wa : await invoke("work_area", { which: state.common.monitor });
     const stripH = lay ? lay.stripH : 112;
-    const y = Math.max(wa.y, Math.min(wa.y + wa.h - stripH, posY));
-    const x = state.common.side === "left" ? wa.x : wa.x + wa.w - STRIP_W;
-    await win.setPosition(new LogicalPosition(x, y));
-    if (lay) lay.y = y;
+    const y = Math.max(wa.y, Math.min(wa.y + wa.h - stripH, wy));
+    state.common.side = best ? best.side : state.common.side;
+    state.common.monitor = String(wa.index);
     state.common.anchor = Math.max(0, Math.min(1, (y - wa.y) / Math.max(1, wa.h - stripH)));
-    await saveStore();
+    await place(true);
+    lastLayoutSig = layoutSig();
+    render();
+    lastRenderSig = renderSig();
+    await saveStore({ immediate: true });
   } finally {
     setTimeout(() => {
       downstream = false;
@@ -160,9 +233,32 @@ function bindDrag() {
       }, 500);
       return;
     }
+    if (pendingDelete && pendingDelete.id === id) {
+      await removeIndex(id);
+      return;
+    }
+    if (pendingDelete) {
+      clearTimeout(pendingDelete.timer);
+      pendingDelete = null;
+      render();
+    }
     await open(id);
   });
+
+  listEl.addEventListener("click", (e) => {
+    if (e.target.closest(".handle-add")) addIndex();
+  });
+
+  listEl.addEventListener("contextmenu", (e) => {
+    const el = e.target.closest(".handle");
+    if (!el) return;
+    e.preventDefault();
+    armDelete(el.dataset.id);
+  });
 }
+
+// CDP 테스트용 내부 훅
+window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, state: () => state, lay: () => lay };
 
 async function boot() {
   await initStore(async () => {
@@ -176,7 +272,7 @@ async function boot() {
     clearTimeout(snapTimer);
     snapTimer = setTimeout(async () => {
       dragging = false;
-      await snapToEdge(payload.y / (await win.scaleFactor()));
+      await snapToEdge(payload.x, payload.y);
     }, 320);
   });
 

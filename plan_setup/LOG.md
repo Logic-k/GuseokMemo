@@ -289,3 +289,39 @@
   - selftest `ime-enter-no-row`, `ime-enter-after-commit` 추가 →
     **23/23 PASS**.
   - 일반 `<p>` 조합은 이번 변경 영향 없음(기존 통과 경로 동일).
+
+## FEAT-1 — 편의성 개선 묶음: 패널 내 제목/투명도, 사이드바 추가·삭제, 멀티모니터 자석 스냅 (2026-11-17, 사용자 요청)
+
+- 요청:
+  1. 메모 제목을 설정 진입 없이 패널에서 바로 변경.
+  2. 투명도를 메모 작성 중 조절.
+  3. 사이드바에서 메모 추가·삭제.
+  4. 빈 메모는 "여기에 적어주세요" 표시, 입력 시 사라짐(혼동 최소화).
+  5. 좌/우·듀얼모니터 — 스트립을 가장자리 근처로 옮기면 자석처럼 스냅.
+- 구현:
+  - `index.html`: titleInput에 placeholder="메모 이름"/title="제목 바꾸기",
+    fontPop에 투명도 range(25–100, 5단계)+값 표시 추가,
+    에디터 placeholder 문구를 "여기에 적어주세요"로 정합.
+  - `src/style.css`: 제목 hover/focus 시 밑줄·배경으로 편집 가능 어포던스,
+    `.handle-add`(점선 + 버튼), `.handle.del-armed`(빨간 펄스 "삭제") 스타일.
+  - `src/panel.js`: opacityRange input → `idx.opacity` + `applyStyle(idx,false)`
+    (카드 배경만 — IME 조합 중 에디터 미변경), change 시 saveStore.
+    제목 입력은 기존 input→persist 경로 그대로(발견성만 개선).
+  - `src/handles.js`: 스트립 하단 `+` 버튼(`MAX_INDEXES` 미만일 때) →
+    defaultIndex+테마 배정 후 즉시 저장·열람. 핸들 우클릭 → 2.6초간
+    "삭제" 무장(del-armed) → 한 번 더 클릭 시 삭제(활성이면 패널 닫기,
+    마지막 1개는 삭제 불가). `__handles` CDP 테스트 훅 노출.
+  - `src/layout.js`: `getLayout(state, showAdd)` — `+` 버튼 높이(ADD_H=30)를
+    스트립 높이에 반영.
+  - `src-tauri/src/main.rs`: `monitors` 명령 추가 — 모든 모니터의 작업 영역
+    (논리 좌표) 반환.
+  - `snapToEdge` 재작성 — 드래그 종료 지점 기준 **모든 모니터**의 좌/우
+    가장자리 후보 중 최소 거리 선택(상하 배치 구분용 y범위 벗어남 패널티),
+    `state.common.side`/`monitor`/`anchor` 갱신 후 place+즉시 저장.
+    기존: 선택된 모니터 안에서만 스냅.
+- 검증:
+  - selftest 신규 `title-edit-panel`, `opacity-panel`, `placeholder-attr`
+    포함 **26/26 PASS** (debug exe + vite).
+  - `cdp-sidebar-features.cjs` **9/9 PASS** — monitors 명령(2대 반환),
+    `+` 클릭→인덱스 추가→패널 자동 오픈, 우클릭 무장→클릭 삭제,
+    모니터0 좌/우·모니터1 좌 가장자리 스냅 각각 정확한 side/monitor 선택.

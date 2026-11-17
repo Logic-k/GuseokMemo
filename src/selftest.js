@@ -173,6 +173,28 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     window.dispatchEvent(new Event("blur"));
     await sleep(1900);
     check("ice-stays-open", await win.isVisible());
+
+    // 패널 내 제목·투명도 직접 편집 회귀
+    const titleEl = document.getElementById("titleInput");
+    const opRange = document.getElementById("opacityRange");
+    const opVal = document.getElementById("opacityVal");
+    const prevTitle = idx.title;
+    titleEl.value = "제목변경";
+    titleEl.dispatchEvent(new Event("input", { bubbles: true }));
+    check("title-edit-panel", idx.title === "제목변경", String(idx.title));
+    idx.title = prevTitle;
+    titleEl.value = prevTitle;
+
+    const prevOpacity = idx.opacity;
+    opRange.value = "55";
+    opRange.dispatchEvent(new Event("input", { bubbles: true }));
+    const bgVar = document.getElementById("card").style.getPropertyValue("--bg");
+    check("opacity-panel", idx.opacity === 55 && opVal.textContent === "55%" && bgVar.includes("0.55"), `op=${idx.opacity} bg=${bgVar}`);
+    idx.opacity = prevOpacity;
+    opRange.value = String(prevOpacity);
+    opRange.dispatchEvent(new Event("input", { bubbles: true }));
+
+    check("placeholder-attr", editor.dataset.placeholder === "여기에 적어주세요", String(editor.dataset.placeholder));
     idx.mode = "peek";
 
     // 인덱스 전환 회귀: 에디터 포커스가 남은 채 다른 인덱스를 열면 내용이 실제로 바뀌어야 한다.

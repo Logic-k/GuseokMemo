@@ -15,7 +15,7 @@
       <div id="panel" class="panel hidden">
         <div class="card" id="card">
           <div class="panel-head">
-            <input class="title-input" id="titleInput" maxlength="8" spellcheck="false" />
+            <input class="title-input" id="titleInput" maxlength="8" spellcheck="false" placeholder="메모 이름" title="제목 바꾸기" />
             <button class="head-btn" id="openSettings" title="설정">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.65a1.7 1.7 0 0 0 1-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9c.24.6.82 1 1.47 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
             </button>
@@ -24,7 +24,7 @@
           <div class="image-grid" id="imageGrid"></div>
 
           <div class="editor-wrap" id="editorWrap">
-            <div class="editor" id="editor" contenteditable="true" spellcheck="false" data-placeholder="여기에 적어 두세요"></div>
+            <div class="editor" id="editor" contenteditable="true" spellcheck="false" data-placeholder="여기에 적어주세요"></div>
           </div>
 
           <div class="img-bar hidden" id="imgBar">
@@ -40,7 +40,7 @@
 
           <div class="toolbar" id="toolbar">
             <button class="mode-chip" id="modeChip" title="빼꼼 / 얼음 모드">빼꼼</button>
-            <button class="tb letter" id="btnFont" title="글자 크기">A·</button>
+            <button class="tb letter" id="btnFont" title="글자 크기 / 투명도">A·</button>
             <div class="tb-sep"></div>
             <button class="tb letter" data-cmd="bold" title="굵게 (Ctrl+B)" style="font-weight:800">B</button>
             <button class="tb letter italic" data-cmd="italic" title="기울임 (Ctrl+I)">I</button>
@@ -68,6 +68,10 @@
             <button id="fontMinus">−</button>
             <span id="fontVal">18</span>
             <button id="fontPlus">＋</button>
+            <div class="fp-sep"></div>
+            <span class="fp-label">투명도</span>
+            <input type="range" id="opacityRange" min="25" max="100" step="5" value="100" />
+            <span id="opacityVal">100%</span>
           </div>
           <div class="saved" id="saved">저장됨</div>
           <div class="toast" id="toast"></div>

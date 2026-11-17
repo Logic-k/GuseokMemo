@@ -4,12 +4,15 @@ import { ratioValue } from "./themes.js";
 export const STRIP_W = 40;
 export const HANDLE_GAP = 7;
 
-export async function getLayout(state) {
+export const ADD_H = 30; // 스트립 하단 "메모 추가" 버튼 높이+간격
+
+export async function getLayout(state, showAdd = false) {
   const wa = await invoke("work_area", { which: state.common.monitor || "auto" });
   const count = Math.max(1, state.indexes.length);
+  const add = showAdd ? ADD_H : 0;
   const maxStrip = wa.h * 0.84;
-  const stripH = Math.min(maxStrip, count * 112 + (count - 1) * HANDLE_GAP);
-  const hh = (stripH - (count - 1) * HANDLE_GAP) / count;
+  const stripH = Math.min(maxStrip, count * 112 + (count - 1) * HANDLE_GAP + add);
+  const hh = (stripH - (count - 1) * HANDLE_GAP - add) / count;
   const span = Math.max(0, wa.h - stripH);
   const y = wa.y + Math.round(span * (state.common.anchor ?? 0.5));
   const side = state.common.side === "left" ? "left" : "right";

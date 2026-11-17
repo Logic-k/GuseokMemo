@@ -147,6 +147,33 @@ fn place_handles(app: AppHandle, x: f64, y: f64, w: f64, h: f64, visible: bool) 
 }
 
 #[tauri::command]
+fn monitors(app: AppHandle) -> Result<Vec<WorkArea>, String> {
+    let monitors: Vec<_> = app.available_monitors().map_err(|e| e.to_string())?;
+    if monitors.is_empty() {
+        return Err("no monitor".into());
+    }
+    Ok(monitors
+        .iter()
+        .enumerate()
+        .map(|(i, m)| {
+            let p = m.position();
+            let s = m.size();
+            let scale = m.scale_factor();
+            let (wl, wt, wr, wb) = monitor_work_area(p.x, p.y, s.width as i32, s.height as i32);
+            WorkArea {
+                x: wl as f64 / scale,
+                y: wt as f64 / scale,
+                w: (wr - wl) as f64 / scale,
+                h: (wb - wt) as f64 / scale,
+                scale,
+                index: i as i32,
+                name: m.name().cloned().unwrap_or_else(|| format!("모니터 {}", i + 1)),
+            }
+        })
+        .collect())
+}
+
+#[tauri::command]
 fn work_area(app: AppHandle, which: String) -> Result<WorkArea, String> {
     let monitors: Vec<_> = app.available_monitors().map_err(|e| e.to_string())?;
     if monitors.is_empty() {
@@ -369,6 +396,7 @@ fn main() {
             hide_panel,
             place_handles,
             work_area,
+            monitors,
             register_shortcuts,
             qa_log,
             quit_app
