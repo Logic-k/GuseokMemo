@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { state } from "./store.js";
+import { state, migrate } from "./store.js";
 import { getLayout, panelRect } from "./layout.js";
 
 function caretToEnd(el) {
@@ -226,6 +226,123 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     await sleep(400);
     check("self-echo-skip", state === sBefore && state.indexes.find((i) => i.id === idx.id)?.title === "ECHO_PROBE", state === sBefore ? "kept" : "replaced");
     idx.title = "저장";
+
+    // --- migrate v1 → v2 회귀 (phase-01-task-01, TD-03) ---
+    // plan_setup/fixtures/store-v1.json과 동일 구조 — vite dev에서는 원본 fixture를 fetch해 단언.
+    const V1_STORE = {
+      version: 1,
+      common: {
+        monitor: "auto",
+        side: "right",
+        mode: "mouse",
+        openKey: "ctrl_shift_m",
+        peekDelay: 350,
+        toggleBy: "chip",
+        spellcheck: false,
+        autostart: false,
+        hideTaskbar: true,
+        anchor: 0.42,
+        lastIndexId: "i9x2ka",
+      },
+      indexes: [
+        {
+          id: "i9x2ka",
+          title: "할일",
+          theme: 0,
+          bg: "#FDF3C9",
+          fg: "#2E2A1E",
+          accent: "#E9C866",
+          fontSize: 18,
+          font: "system",
+          opacity: 100,
+          ratio: "3:4",
+          mode: "peek",
+          content:
+            '<div class="ck" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">아침 메일 확인</span></div>' +
+            '<div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text">주간 보고서 초안</span></div><p><br></p>',
+          images: [],
+        },
+        {
+          id: "i4m7qz",
+          title: "회의",
+          theme: 2,
+          bg: "#DCEEFB",
+          fg: "#16324A",
+          accent: "#8CC6EC",
+          fontSize: 20,
+          font: "malgun",
+          opacity: 85,
+          ratio: "4:3",
+          mode: "ice",
+          content: "<h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><li>이번 주 우선순위 정리</li></ul><p><br></p>",
+          images: [{ src: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//", ratio: "16:9", scale: 120 }],
+        },
+      ],
+    };
+    let v1 = V1_STORE;
+    let v1Src = "inline";
+    try {
+      const fres = await fetch("/plan_setup/fixtures/store-v1.json");
+      if (fres.ok) {
+        v1 = await fres.json();
+        v1Src = "fixture";
+      }
+    } catch {}
+    const mv = migrate(v1);
+    check(
+      "migrate-v1-to-v2",
+      mv.version === 2 &&
+        mv.common.darkMode === "system" &&
+        mv.common.notifyMethod === "panel" &&
+        Array.isArray(mv.templates) &&
+        mv.templates.length === 3 &&
+        mv.templates.every((t) => t.builtin === true && !!t.id && !!t.name) &&
+        mv.indexes.length === v1.indexes.length &&
+        mv.indexes.every((i) => i.hidden === false && Array.isArray(i.reminders)),
+      `src=${v1Src} idx=${mv.indexes.length} tpl=${(mv.templates || []).length}`
+    );
+    // TD-10: 알 수 없는 키 보존 + 기존 데이터 유지 (다운그레이드 안전)
+    const mvKeep = migrate({ ...V1_STORE, futureField: { nested: 1 } });
+    check(
+      "migrate-keep-unknown",
+      mvKeep.futureField?.nested === 1 &&
+        mvKeep.indexes[0].content === V1_STORE.indexes[0].content &&
+        mvKeep.indexes[1].images.length === 1 &&
+        mvKeep.common.lastIndexId === V1_STORE.common.lastIndexId
+    );
+    // 구버전 백업(필드 일부 누락·형식 오류) — settings 복원 경로(migrate→Object.assign)와 동일하게 정규화
+    const oldBackup = {
+      version: 1,
+      indexes: [
+        { id: "old1", title: "옛 메모", content: "<p>보존</p>" },
+        "not-an-object",
+        { id: "old1", title: "중복 id" },
+        { id: "old2", title: "형식 오류", reminders: "bad", hidden: true },
+        { id: "old3", title: "리마인더", reminders: [{ at: "2027-01-01T09:00" }, 42] },
+      ],
+    };
+    const mb = migrate(oldBackup);
+    const restored = JSON.parse(JSON.stringify(state));
+    Object.assign(restored, mb); // settings.js restore()의 Object.assign(state, migrate(parsed))와 동일 경로
+    check(
+      "migrate-old-backup",
+      restored.version === 2 &&
+        restored.indexes.length === 5 &&
+        restored.indexes[0].content === "<p>보존</p>" &&
+        restored.indexes[0].fontSize === 18 &&
+        restored.indexes[0].hidden === false &&
+        restored.indexes[2].id !== "old1" &&
+        new Set(restored.indexes.map((i) => i.id)).size === restored.indexes.length &&
+        restored.indexes[3].hidden === true &&
+        restored.indexes[3].reminders.length === 0 &&
+        restored.indexes[4].reminders.length === 1 &&
+        restored.indexes[4].reminders[0].at === "2027-01-01T09:00" &&
+        restored.indexes[4].reminders[0].repeat === "none" &&
+        restored.indexes[4].reminders[0].enabled === true &&
+        restored.common.darkMode === "system" &&
+        restored.common.openKey === "ctrl_shift_m",
+      `ids=${restored.indexes.map((i) => i.id).join(",")}`
+    );
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }

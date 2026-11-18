@@ -6,7 +6,10 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
+use tauri::{
+    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindow,
+    WebviewWindowBuilder,
+};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[derive(serde::Serialize, Clone)]
@@ -71,7 +74,8 @@ fn set_autostart(enabled: bool) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     if enabled {
         let value = format!("\"{}\"", exe.display());
-        key.set_value("GuseokMemo", &value).map_err(|e| e.to_string())?;
+        key.set_value("GuseokMemo", &value)
+            .map_err(|e| e.to_string())?;
     } else {
         let _ = key.delete_value("GuseokMemo");
     }
@@ -81,7 +85,10 @@ fn set_autostart(enabled: bool) -> Result<(), String> {
 #[tauri::command]
 fn open_data_dir(app: AppHandle) -> Result<(), String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
-    std::process::Command::new("explorer").arg(dir).spawn().map_err(|e| e.to_string())?;
+    std::process::Command::new("explorer")
+        .arg(dir)
+        .spawn()
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -114,13 +121,25 @@ fn open_settings(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn show_panel(app: AppHandle, x: f64, y: f64, w: f64, h: f64, index_id: String) -> Result<(), String> {
-    let win = app.get_webview_window("panel").ok_or("panel window missing")?;
-    win.set_size(LogicalSize::new(w, h)).map_err(|e| e.to_string())?;
-    win.set_position(LogicalPosition::new(x, y)).map_err(|e| e.to_string())?;
+fn show_panel(
+    app: AppHandle,
+    x: f64,
+    y: f64,
+    w: f64,
+    h: f64,
+    index_id: String,
+) -> Result<(), String> {
+    let win = app
+        .get_webview_window("panel")
+        .ok_or("panel window missing")?;
+    win.set_size(LogicalSize::new(w, h))
+        .map_err(|e| e.to_string())?;
+    win.set_position(LogicalPosition::new(x, y))
+        .map_err(|e| e.to_string())?;
     win.show().map_err(|e| e.to_string())?;
     win.set_focus().map_err(|e| e.to_string())?;
-    app.emit("guseok://panel-open", json!({ "id": index_id })).map_err(|e| e.to_string())?;
+    app.emit("guseok://panel-open", json!({ "id": index_id }))
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -134,10 +153,21 @@ fn hide_panel(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn place_handles(app: AppHandle, x: f64, y: f64, w: f64, h: f64, visible: bool) -> Result<(), String> {
-    let win = app.get_webview_window("handles").ok_or("handles window missing")?;
-    win.set_size(LogicalSize::new(w, h)).map_err(|e| e.to_string())?;
-    win.set_position(LogicalPosition::new(x, y)).map_err(|e| e.to_string())?;
+fn place_handles(
+    app: AppHandle,
+    x: f64,
+    y: f64,
+    w: f64,
+    h: f64,
+    visible: bool,
+) -> Result<(), String> {
+    let win = app
+        .get_webview_window("handles")
+        .ok_or("handles window missing")?;
+    win.set_size(LogicalSize::new(w, h))
+        .map_err(|e| e.to_string())?;
+    win.set_position(LogicalPosition::new(x, y))
+        .map_err(|e| e.to_string())?;
     if visible {
         win.show().map_err(|e| e.to_string())?;
     } else {
@@ -167,7 +197,10 @@ fn monitors(app: AppHandle) -> Result<Vec<WorkArea>, String> {
                 h: (wb - wt) as f64 / scale,
                 scale,
                 index: i as i32,
-                name: m.name().cloned().unwrap_or_else(|| format!("모니터 {}", i + 1)),
+                name: m
+                    .name()
+                    .cloned()
+                    .unwrap_or_else(|| format!("모니터 {}", i + 1)),
             }
         })
         .collect())
@@ -185,7 +218,11 @@ fn work_area(app: AppHandle, which: String) -> Result<WorkArea, String> {
         for (i, m) in monitors.iter().enumerate() {
             let p = m.position();
             let s = m.size();
-            if cursor.0 >= p.x && cursor.0 < p.x + s.width as i32 && cursor.1 >= p.y && cursor.1 < p.y + s.height as i32 {
+            if cursor.0 >= p.x
+                && cursor.0 < p.x + s.width as i32
+                && cursor.1 >= p.y
+                && cursor.1 < p.y + s.height as i32
+            {
                 chosen = i;
                 break;
             }
@@ -207,21 +244,24 @@ fn work_area(app: AppHandle, which: String) -> Result<WorkArea, String> {
         h: (wb - wt) as f64 / scale,
         scale,
         index: chosen as i32,
-        name: m.name().cloned().unwrap_or_else(|| format!("모니터 {}", chosen + 1)),
+        name: m
+            .name()
+            .cloned()
+            .unwrap_or_else(|| format!("모니터 {}", chosen + 1)),
     })
 }
 
 #[cfg(target_os = "windows")]
 fn cursor_point() -> (i32, i32) {
     #[repr(C)]
-    struct POINT {
+    struct Point {
         x: i32,
         y: i32,
     }
     extern "system" {
-        fn GetCursorPos(point: *mut POINT) -> i32;
+        fn GetCursorPos(point: *mut Point) -> i32;
     }
-    let mut p = POINT { x: 0, y: 0 };
+    let mut p = Point { x: 0, y: 0 };
     unsafe {
         GetCursorPos(&mut p);
     }
@@ -236,36 +276,46 @@ fn cursor_point() -> (i32, i32) {
 #[cfg(target_os = "windows")]
 fn monitor_work_area(x: i32, y: i32, w: i32, h: i32) -> (i32, i32, i32, i32) {
     #[repr(C)]
-    struct RECT {
+    struct Rect {
         left: i32,
         top: i32,
         right: i32,
         bottom: i32,
     }
     #[repr(C)]
-    struct MONITORINFO {
+    struct MonitorInfo {
         cb_size: u32,
-        rc_monitor: RECT,
-        rc_work: RECT,
+        rc_monitor: Rect,
+        rc_work: Rect,
         dw_flags: u32,
     }
     #[repr(C)]
-    struct POINT {
+    struct Point {
         x: i32,
         y: i32,
     }
     extern "system" {
-        fn MonitorFromPoint(pt: POINT, flags: u32) -> isize;
-        fn GetMonitorInfoW(monitor: isize, info: *mut MONITORINFO) -> i32;
+        fn MonitorFromPoint(pt: Point, flags: u32) -> isize;
+        fn GetMonitorInfoW(monitor: isize, info: *mut MonitorInfo) -> i32;
     }
-    let pt = POINT { x, y };
+    let pt = Point { x, y };
     unsafe {
         let hmon = MonitorFromPoint(pt, 2);
         if hmon != 0 {
-            let mut info = MONITORINFO {
-                cb_size: std::mem::size_of::<MONITORINFO>() as u32,
-                rc_monitor: RECT { left: 0, top: 0, right: 0, bottom: 0 },
-                rc_work: RECT { left: 0, top: 0, right: 0, bottom: 0 },
+            let mut info = MonitorInfo {
+                cb_size: std::mem::size_of::<MonitorInfo>() as u32,
+                rc_monitor: Rect {
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                },
+                rc_work: Rect {
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                },
                 dw_flags: 0,
             };
             if GetMonitorInfoW(hmon, &mut info) != 0 {
@@ -324,7 +374,11 @@ fn qa_write(msg: &str) {
     use std::io::Write;
     let line = format!("[QA] {}\n", msg);
     let path = std::env::temp_dir().join("guseok-qa.log");
-    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+    {
         let _ = f.write_all(line.as_bytes());
     }
 }
@@ -352,7 +406,7 @@ fn autostart_qa() {
                 winreg::enums::KEY_SET_VALUE,
             )
             .and_then(|k| k.set_value("GuseokMemo", &v)),
-        None => set_autostart(false).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e)),
+        None => set_autostart(false).map_err(std::io::Error::other),
     };
     let ok = enable.is_ok() && present && restored.is_ok();
     qa_write(&format!(
@@ -407,23 +461,28 @@ fn main() {
             let selftest = std::env::args().any(|a| a == "--selftest");
             let demo_settings = std::env::args().any(|a| a == "--demo-settings");
 
-            let handles = WebviewWindowBuilder::new(app, "handles", WebviewUrl::App("index.html".into()))
-                .title("구석메모")
-                .inner_size(52.0, 280.0)
-                .decorations(false)
-                .transparent(true)
-                .resizable(false)
-                .maximizable(false)
-                .minimizable(false)
-                .closable(false)
-                .always_on_top(true)
-                .skip_taskbar(true)
-                .shadow(false)
-                .focused(false)
-                .visible(false)
-                .build()?;
+            let handles =
+                WebviewWindowBuilder::new(app, "handles", WebviewUrl::App("index.html".into()))
+                    .title("구석메모")
+                    .inner_size(52.0, 280.0)
+                    .decorations(false)
+                    .transparent(true)
+                    .resizable(false)
+                    .maximizable(false)
+                    .minimizable(false)
+                    .closable(false)
+                    .always_on_top(true)
+                    .skip_taskbar(true)
+                    .shadow(false)
+                    .focused(false)
+                    .visible(false)
+                    .build()?;
 
-            let panel_url = if selftest { "index.html?panel=1&selftest=1" } else { "index.html?panel=1" };
+            let panel_url = if selftest {
+                "index.html?panel=1&selftest=1"
+            } else {
+                "index.html?panel=1"
+            };
             let _panel = WebviewWindowBuilder::new(app, "panel", WebviewUrl::App(panel_url.into()))
                 .title("구석메모 메모")
                 .inner_size(420.0, 460.0)
@@ -440,13 +499,14 @@ fn main() {
                 .visible(false)
                 .build()?;
 
-            let settings = WebviewWindowBuilder::new(app, "settings", WebviewUrl::App("settings.html".into()))
-                .title("구석메모 설정")
-                .inner_size(600.0, 760.0)
-                .min_inner_size(520.0, 600.0)
-                .center()
-                .visible(false)
-                .build()?;
+            let settings =
+                WebviewWindowBuilder::new(app, "settings", WebviewUrl::App("settings.html".into()))
+                    .title("구석메모 설정")
+                    .inner_size(600.0, 760.0)
+                    .min_inner_size(520.0, 600.0)
+                    .center()
+                    .visible(false)
+                    .build()?;
             let settings_for_event = settings.clone();
             settings.on_window_event(move |event| {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
@@ -517,12 +577,3 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-
-
-
-
-
-
-
-

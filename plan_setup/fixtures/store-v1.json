@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "common": {
+    "monitor": "auto",
+    "side": "right",
+    "mode": "mouse",
+    "openKey": "ctrl_shift_m",
+    "peekDelay": 350,
+    "toggleBy": "chip",
+    "spellcheck": false,
+    "autostart": false,
+    "hideTaskbar": true,
+    "anchor": 0.42,
+    "lastIndexId": "i9x2ka"
+  },
+  "indexes": [
+    {
+      "id": "i9x2ka",
+      "title": "할일",
+      "theme": 0,
+      "bg": "#FDF3C9",
+      "fg": "#2E2A1E",
+      "accent": "#E9C866",
+      "fontSize": 18,
+      "font": "system",
+      "opacity": 100,
+      "ratio": "3:4",
+      "mode": "peek",
+      "content": "<div class=\"ck\" data-ck=\"1\"><input type=\"checkbox\" checked=\"\"><span class=\"ck-text\">아침 메일 확인</span></div><div class=\"ck\" data-ck=\"1\"><input type=\"checkbox\"><span class=\"ck-text\">주간 보고서 초안</span></div><p><br></p>",
+      "images": []
+    },
+    {
+      "id": "i4m7qz",
+      "title": "회의",
+      "theme": 2,
+      "bg": "#DCEEFB",
+      "fg": "#16324A",
+      "accent": "#8CC6EC",
+      "fontSize": 20,
+      "font": "malgun",
+      "opacity": 85,
+      "ratio": "4:3",
+      "mode": "ice",
+      "content": "<h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><li>이번 주 우선순위 정리</li></ul><p><br></p>",
+      "images": [
+        {
+          "src": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//",
+          "ratio": "16:9",
+          "scale": 120
+        }
+      ]
+    }
+  ]
+}

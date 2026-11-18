@@ -5,6 +5,26 @@ import { THEMES } from "./themes.js";
 
 export const APP_NAME = "구석메모";
 export const MAX_INDEXES = 10;
+// store.json 스키마 버전 — TD-03: 기존 `version` 키 재사용, migrate()의 단계 연쇄 대상.
+export const SCHEMA_VERSION = 2;
+
+// v2 — 리마인더 원소 기본형 (ARCH §5, R-02/03). at은 로컬 ISO 문자열(반복이면 다음 발생 시각).
+export const defaultReminder = () => ({
+  id: "r" + Math.random().toString(36).slice(2, 8),
+  at: null,
+  repeat: "none", // "none" | "daily" | "weekly"
+  note: "",
+  enabled: true,
+  lastFiredAt: null,
+});
+
+// v2 — 템플릿 원소 기본형 (R-06). builtin은 앱 제공 템플릿 여부.
+export const defaultTemplate = () => ({
+  id: "t" + Math.random().toString(36).slice(2, 8),
+  name: "",
+  content: "",
+  builtin: false,
+});
 
 export const defaultIndex = (n = 1) => ({
   id: "i" + Math.random().toString(36).slice(2, 8),
@@ -20,6 +40,8 @@ export const defaultIndex = (n = 1) => ({
   mode: "peek",
   content: "",
   images: [],
+  hidden: false, // v2 — R-07 스트립 비표시
+  reminders: [], // v2 — R-02/03 (defaultReminder 원소)
 });
 
 const STARTERS = [
@@ -51,7 +73,7 @@ export const defaultState = () => {
     return { ...defaultIndex(i + 1), id: "welcome" + (i + 1), ...s, bg: t.bg, fg: t.fg, accent: t.accent };
   });
   return {
-    version: 1,
+    version: SCHEMA_VERSION,
     common: {
       monitor: "auto",
       side: "right",
@@ -64,8 +86,17 @@ export const defaultState = () => {
       hideTaskbar: true,
       anchor: 0.42,
       lastIndexId: "welcome1",
+      darkMode: "system", // v2 — "light"|"dark"|"system" (R-08)
+      notifyMethod: "panel", // v2 — OQ-02 결정 전 보수적 기본값 (후보: toast|panel|sound)
     },
     indexes,
+    // v2 — R-06 기본 템플릿: STARTERS 3종 재사용 + builtin 표시 (공통 자산)
+    templates: STARTERS.map((s, i) => ({
+      id: "tpl" + (i + 1),
+      name: s.title,
+      content: s.content,
+      builtin: true,
+    })),
   };
 };
 
@@ -74,6 +105,30 @@ export let state = defaultState();
 let saveTimer = null;
 let externalHandler = null;
 const WIN_LABEL = getCurrentWindow().label;
+
+// 버전별 단계 변환 — STEPS[n]은 store를 version n → n+1로 변환한다 (TD-03 연쇄).
+// 위의 spread merge가 알 수 없는 키를 이미 보존하므로(TD-10), 각 단계는
+// 그 버전에 새로 생긴 필드의 형식 정규화만 담당한다.
+const STEPS = {
+  // v1 → v2: common.darkMode/notifyMethod, idx.hidden/reminders[], 최상위 templates[]
+  1(s, base) {
+    if (typeof s.common.darkMode !== "string") s.common.darkMode = base.common.darkMode;
+    if (typeof s.common.notifyMethod !== "string") s.common.notifyMethod = base.common.notifyMethod;
+    for (const idx of s.indexes) {
+      idx.hidden = idx.hidden === true;
+      idx.reminders = Array.isArray(idx.reminders)
+        ? idx.reminders
+            .filter((r) => r && typeof r === "object")
+            .map((r) => ({ ...defaultReminder(), ...r }))
+        : [];
+    }
+    s.templates = Array.isArray(s.templates)
+      ? s.templates
+          .filter((t) => t && typeof t === "object")
+          .map((t) => ({ ...defaultTemplate(), ...t }))
+      : base.templates;
+  },
+};
 
 export function migrate(raw) {
   const base = defaultState();
@@ -89,6 +144,12 @@ export function migrate(raw) {
     seen.add(merged.id);
     return merged;
   });
+  // 입력이 선언한 버전부터 단계 적용 — version 키 없는 구버전 파일은 1로 간주.
+  // 미래 버전 파일은 단계를 건너뛰고 version을 그대로 보존한다(TD-10 다운그레이드 안전).
+  const declared =
+    raw && typeof raw === "object" && Number.isInteger(raw.version) && raw.version >= 1 ? raw.version : 1;
+  for (let v = declared; v < SCHEMA_VERSION; v++) STEPS[v]?.(s, base);
+  s.version = Math.max(declared, SCHEMA_VERSION);
   return s;
 }
 
