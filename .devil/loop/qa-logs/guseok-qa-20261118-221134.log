@@ -1,0 +1,2305 @@
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 858 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] SUMMARY 26/26 passed
+[QA] PASS store-restore :: 1290 bytes
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 858 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] SUMMARY 26/26 passed
+[QA] PASS store-restore :: 1290 bytes
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-142640 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-143051 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 858 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] SUMMARY 26/26 passed
+==== e2e-run 20261118-170140 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ipty2w6,iqut87f,old2,old3
+[QA] SUMMARY 29/29 passed
+[QA] PASS store-restore :: 2119 bytes
+==== e2e-run 20261118-170502 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,inf7zpw,i1yisma,old2,old3
+[QA] SUMMARY 29/29 passed
+==== e2e-run 20261118-171119 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,igjnv91,ikijchv,old2,old3
+[QA] SUMMARY 29/29 passed
+==== e2e-run 20261118-171932 ====
+==== e2e-run 20261118-171936 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-172118 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iphpsp6,i1gc130,old2,old3
+[QA] SUMMARY 29/29 passed
+==== verify-store-restore 20261118-172406 ====
+==== e2e-run 20261118-172416 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-172744 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,it846j9,ilaa40a,old2,old3
+[QA] SUMMARY 29/29 passed
+[QA] PASS store-restore :: 2119 bytes
+==== e2e-run 20261118-174108 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iruh8o7,icmi1eu,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] SUMMARY 39/39 passed
+==== e2e-run 20261118-174424 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iyjrvw1,i2fvss2,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] SUMMARY 39/39 passed
+==== e2e-run 20261118-175810 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false
+[QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iki2kpc,ig70jj2,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rgeeg48","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true
+[QA] SUMMARY 42/42 passed
+[QA] PASS store-restore :: 2119 bytes
+==== e2e-run 20261118-180122 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iha4gvt,iuwmkdq,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"roqeshz","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] SUMMARY 42/42 passed
+[QA] PASS store-restore :: 2119 bytes
+[QA] reminder :: emit reminderId=vrfymiss1 indexId=if4z1du at=2026-11-18T17:59:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=vrfyfire1 indexId=if4z1du at=2026-11-18T18:04:25 repeat=none missed=false
+==== e2e-run 20261118-181730 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ip5nxu3,i3njnw9,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rrrgsj1","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] SUMMARY 42/42 passed
+[QA] PASS store-restore :: 2119 bytes
+[QA] set-data-dir :: ok path=Some("C:\\Users\\김민오\\AppData\\Local\\Temp\\guseok-e2e-datadir-1794993463025") effective=C:\Users\김민오\AppData\Local\Temp\guseok-e2e-datadir-1794993463025
+[QA] set-data-dir :: FAIL path=Some("C:\\Users\\김민오\\AppData\\Local\\Temp\\guseok-e2e-missing-1794993463025") err=폴더가 없습니다: C:\Users\김민오\AppData\Local\Temp\guseok-e2e-missing-1794993463025
+[QA] set-data-dir :: ok path=None effective=C:\Users\김민오\AppData\Roaming\com.guseok.memo
+[QA] set-data-dir :: ok path=None effective=C:\Users\김민오\AppData\Roaming\com.guseok.memo
+==== e2e-run 20261118-182154 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,irlmez6,ijwwz4f,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r1b23u6","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] SUMMARY 42/42 passed
+[QA] PASS store-restore :: 2119 bytes
+[QA] set-data-dir :: ok path=Some("C:\\Users\\김민오\\AppData\\Local\\Temp\\guseok-e2e-datadir-1794993771082") effective=C:\Users\김민오\AppData\Local\Temp\guseok-e2e-datadir-1794993771082
+[QA] set-data-dir :: FAIL path=Some("C:\\Users\\김민오\\AppData\\Local\\Temp\\guseok-e2e-missing-1794993771082") err=폴더가 없습니다: C:\Users\김민오\AppData\Local\Temp\guseok-e2e-missing-1794993771082
+[QA] set-data-dir :: ok path=None effective=C:\Users\김민오\AppData\Roaming\com.guseok.memo
+[QA] set-data-dir :: ok path=None effective=C:\Users\김민오\AppData\Roaming\com.guseok.memo
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] set-data-dir :: ok path=Some("C:\\Users\\김민오\\AppData\\Local\\Temp\\guseok-restart-verify") effective=C:\Users\김민오\AppData\Local\Temp\guseok-restart-verify
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] set-data-dir :: FAIL path=Some("C:\\Users\\김민오\\AppData\\Local\\Temp\\guseok-nowrite") err=폴더에 쓸 수 없습니다: 액세스가 거부되었습니다. (os error 5)
+==== e2e-run 20261118-183948 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,igx0b74,id9pj31,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rm1yrnh","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 1
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2119 bytes
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+==== e2e-run 20261118-184152 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,i4fse23,i75hwvu,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r82trku","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 3
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2119 bytes
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1349
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1349
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1349
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1349
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1696 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,idevwrn,iuqljn2,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rb0a4ql","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 8
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2128 bytes
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+==== e2e-run 20261118-185016 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1696 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,imt79xt,ifap416,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rhgtcz1","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 15
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2128 bytes
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+==== e2e-run 20261118-185424 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1696 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ixu6v6g,id57j5u,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r5cdqq7","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 18
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2128 bytes
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2349
+==== e2e-run 20261118-190608 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1696 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ifeu1g6,isem99a,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rwzzwfm","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 22
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2128 bytes
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+==== e2e-run 20261118-190937 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=1887
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1696 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ifxvp3a,iorf3lj,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rsbw0g2","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 25
+[QA] SUMMARY 45/45 passed
+[QA] PASS store-restore :: 2128 bytes
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2341
+==== e2e-run 20261118-192727 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,i4efz21,ii2xfgv,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"t6y0o5l","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"s9xu9z4","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rfkdlha","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 29
+[QA] SUMMARY 61/61 passed
+==== e2e-run 20261118-193003 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,irqogom,i5luuue,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tib1rz2","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"s4ab5oo","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rtgpb4a","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 30
+[QA] SUMMARY 61/61 passed
+==== e2e-run 20261118-194355 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ik07u8p,igzwt46,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"taqn94n","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"s5nhhni","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rkfeu6p","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] FAIL hidden-migrate-normalize :: [true,"yes",false,1]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 31
+[QA] SUMMARY 67/68 passed
+[QA] PASS store-restore :: 2388 bytes
+==== e2e-run 20261118-194616 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,id09y1f,iua7gwq,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"ti61udr","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"smtqips","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rmc3sb3","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 32
+[QA] SUMMARY 68/68 passed
+[QA] PASS store-restore :: 2388 bytes
+==== e2e-run 20261118-195055 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ilkaylu,iyrtei0,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tr8i20s","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"sht5rv2","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rrp7scf","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 33
+[QA] SUMMARY 68/68 passed
+[QA] PASS store-restore :: 2388 bytes
+==== e2e-run 20261118-195525 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ij981oo,icx4zt0,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tru0zco","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"stonzvv","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r0eww0n","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 34
+[QA] SUMMARY 68/68 passed
+[QA] PASS store-restore :: 2388 bytes
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-201300 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ii8a7o3,i20q8sq,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"t577ypv","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"sd1njyt","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rc166bc","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 37
+[QA] SUMMARY 68/68 passed
+[QA] PASS store-restore :: 2388 bytes
+==== e2e-run 20261118-201640 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ibu5emk,ivfs38a,old2,old3
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tfw8dzk","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"szwoe0n","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"ryynejh","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 38
+[QA] SUMMARY 68/68 passed
+[QA] PASS store-restore :: 2388 bytes
+==== e2e-run 20261118-202331 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ilfc2ou,iwgspq4,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"t9p3tgm","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"s6rdfiq","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rwq7cqa","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 39
+[QA] SUMMARY 70/70 passed
+[QA] PASS store-restore :: 2388 bytes
+==== e2e-run 20261118-202610 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2179
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1956 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,icv53ye,it72bfz,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"ttrpovb","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"srhz3ca","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rn1bi5t","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 40
+[QA] SUMMARY 70/70 passed
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2344
+==== e2e-run 20261118-212649 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2206
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ig5iw25,i5iqsig,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tx6hqc5","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"say1iy7","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rp60azq","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 43
+[QA] PASS search-window-exists :: handles,settings,search,panel
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 73/73 passed
+[QA] PASS store-restore :: 2415 bytes
+==== e2e-run 20261118-213058 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2206
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,i1w6cuy,i8yx504,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"t9059v4","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"sq7rl2w","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rde1gwc","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 44
+[QA] PASS search-window-exists :: search,handles,settings,panel
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 73/73 passed
+[QA] PASS store-restore :: 2415 bytes
+==== e2e-run 20261118-213252 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2206
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ipz84ny,icqjn47,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tjexztk","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"sora7cf","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r6qs7ty","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 45
+[QA] PASS search-window-exists :: panel,handles,search,settings
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 73/73 passed
+[QA] PASS store-restore :: 2415 bytes
+==== manual-entry-run 20261118-213553 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2206
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ijdoex8,iw70e0u,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"t3fq3ky","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"ss3ul5m","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rgmj6go","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 46
+[QA] PASS search-window-exists :: search,settings,handles,panel
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 73/73 passed
+[QA] PASS store-restore :: 2415 bytes
+==== e2e-run 20261118-215203 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2310
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ipx8of9,iihuadu,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tgjqpp3","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"szfw0e7","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rboijf6","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS reminder-ui-roundtrip :: set=true enabled=true->false removed=true
+[QA] PASS reminder-status-toastcap :: cls=true live=3 pending=2
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 47
+[QA] PASS search-window-exists :: panel,handles,settings,search,toast
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 75/75 passed
+[QA] PASS store-restore :: 2415 bytes
+[QA] reminder :: emit reminderId=r2p3jjt indexId=if4z1du at=2026-11-18T21:50:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq4 indexId=if4z1du at=2026-11-18T21:51:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq5 indexId=if4z1du at=2026-11-18T21:51:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq3 indexId=if4z1du at=2026-11-18T21:51:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq2 indexId=if4z1du at=2026-11-18T21:51:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq1 indexId=if4z1du at=2026-11-18T21:51:00 repeat=none missed=true
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-215902 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2310
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,i70x619,ioyuc0l,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"tjgm0hn","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"suh2cfd","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"rb01c27","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS reminder-ui-roundtrip :: set=true enabled=true->false removed=true
+[QA] PASS reminder-status-toastcap :: cls=true live=3 pending=2
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 48
+[QA] PASS search-window-exists :: search,handles,panel,settings,toast
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 75/75 passed
+[QA] PASS store-restore :: 2415 bytes
+[QA] reminder :: emit reminderId=rvdu4j0 indexId=if4z1du at=2026-11-18T21:58:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq2 indexId=if4z1du at=2026-11-18T21:59:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq5 indexId=if4z1du at=2026-11-18T21:59:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq3 indexId=if4z1du at=2026-11-18T21:59:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq4 indexId=if4z1du at=2026-11-18T21:59:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq1 indexId=if4z1du at=2026-11-18T21:59:00 repeat=none missed=true
+==== e2e-run 20261118-220228 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2310
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ixsjhzy,ie9r1h8,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"t61uhsu","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"s1qnwpe","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r5sfugi","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS reminder-ui-roundtrip :: set=true enabled=true->false removed=true
+[QA] PASS reminder-status-toastcap :: cls=true live=3 pending=2
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 49
+[QA] PASS search-window-exists :: panel,handles,search,toast,settings
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 75/75 passed
+[QA] PASS store-restore :: 2415 bytes
+[QA] reminder :: emit reminderId=rmmxfec indexId=if4z1du at=2026-11-18T22:01:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq2 indexId=if4z1du at=2026-11-18T22:02:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq1 indexId=if4z1du at=2026-11-18T22:02:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq4 indexId=if4z1du at=2026-11-18T22:02:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq3 indexId=if4z1du at=2026-11-18T22:02:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq5 indexId=if4z1du at=2026-11-18T22:02:00 repeat=none missed=true
+==== e2e-run 20261118-220620 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-221012 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] store-watch :: reload C:\Users\김민오\AppData\Roaming\com.guseok.memo\store.json bytes=2310
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1983 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ifwi2js,i9i8xuz,old2,old3
+[QA] PASS downgrade-v1-preserves-v2 :: v=2 tpl=1 rem=1
+[QA] PASS downgrade-reupgrade-roundtrip :: idx0.hidden=true rem=1
+[QA] PASS migrate-templates-normalize :: [{"id":"ut1","name":"주간","content":"<p>주간 본문</p>","builtin":false},{"id":"ttrcx94","name":"필드누락","content":"","builtin":false}]
+[QA] PASS migrate-snippets-normalize :: [{"id":"us1","name":"인사","text":"안녕 {date}","builtin":false},{"id":"su4gqt8","name":"","text":"이름없음","builtin":false}]
+[QA] PASS migrate-snippets-default :: snippets=4
+[QA] PASS template-apply-html :: <h2>주간 회의</h2><p>안건</p>
+[QA] PASS template-apply-object
+[QA] PASS template-apply-subst :: <p>2026-11-18 일지</p>
+[QA] PASS template-builtin-apply :: <h2>주간 회의</h2><ul><li>지난주 진행 상황 공유</li><
+[QA] PASS snippet-date :: 2026년 11월 18일 수요일
+[QA] PASS snippet-values-map
+[QA] PASS snippet-values-override
+[QA] PASS snippet-unknown-kept :: a {zzz} b 2026년 11월 18일 수요일
+[QA] PASS snippet-repeat
+[QA] PASS snippet-nontext
+[QA] PASS snippet-custom-value
+[QA] PASS snippet-builtin :: {date}
+[QA] PASS snippet-insert-position :: 앞[2026-11-18] 뒤
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] PASS migrate-reminder-fields :: [{"id":"r1","at":"2027-05-01T09:00","repeat":"daily","note":"n","enabled":false,"lastFiredAt":"2026-01-01T00:00"},{"id":"r3i76ne","at":"2027-05-02T10:00","repeat":"none","note":"","enabled":true,"lastFiredAt":null}]
+[QA] PASS reminder-fire :: [QA] reminder :: emit reminderId=rqafire1 indexId=if4z1du at=2026-11-18T17:58:27 repeat=none missed=false | [QA] PASS re
+[QA] PASS reminder-missed :: [QA] reminder :: emit reminderId=rqamiss1 indexId=if4z1du at=2026-11-18T17:53:28 repeat=none missed=true | [QA] PASS rem
+[QA] PASS reminder-ui-roundtrip :: set=true enabled=true->false removed=true
+[QA] PASS reminder-status-toastcap :: cls=true live=3 pending=2
+[QA] PASS hidden-migrate-normalize :: [true,false,false,false]
+[QA] PASS hidden-migrate-all-hidden :: [false,true]
+[QA] PASS hidden-toggle-save :: ok=true stored=true vis=2
+[QA] PASS hidden-active-fallback :: act=if4z1du last=i215i32
+[QA] PASS hidden-layout-count :: count=2 vis=2
+[QA] PASS hidden-ctrl-n-skip :: lastId=if4z1du want=if4z1du
+[QA] PASS hidden-last-one-guard :: refused=false visible=1
+[QA] PASS external-reload :: applied=true qa=logged
+[QA] PASS external-ime-focus :: focused=true dom=<p>EXT_FOCUS_PROBE</p>
+[QA] PASS external-self-echo :: reload lines stayed 50
+[QA] PASS search-window-exists :: handles,search,toast,panel,settings
+[QA] PASS search-window-show-hide :: shown=true hidden=true
+[QA] PASS migrate-searchkey-default
+[QA] SUMMARY 75/75 passed
+[QA] PASS store-restore :: 2415 bytes
+[QA] reminder :: emit reminderId=rvl9bbh indexId=if4z1du at=2026-11-18T22:09:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq5 indexId=if4z1du at=2026-11-18T22:10:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq2 indexId=if4z1du at=2026-11-18T22:10:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq3 indexId=if4z1du at=2026-11-18T22:10:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq1 indexId=if4z1du at=2026-11-18T22:10:00 repeat=none missed=true
+[QA] reminder :: emit reminderId=cdpq4 indexId=if4z1du at=2026-11-18T22:10:00 repeat=none missed=true

@@ -1355,6 +1355,98 @@ fn store_watch_loop(app: AppHandle) {
     }
 }
 
+// ==================== 동기 충돌 — 충돌본 보관 (OQ-03, R-05) ====================
+//
+// 외부 변경(src:"external")을 적용할 때 로컬 미저장 편집이 덮어쓰이면, 덮어쓰이는
+// 로컬 저장본 전체를 store.json 옆의 store.conflict-<로컬시각>.json으로 보관한다.
+// 충돌 판정은 JS(store.js)의 몫 — Rust는 보관 파일의 원자적 쓰기만 담당한다.
+// 감시 루프는 store.json의 스탬프만 보므로 충돌본 쓰기가 리로드를 유발하지 않고,
+// set_data_dir 이전은 store.json만 옮기므로 충돌본은 생성된 폴더에 그대로 남는다
+// (콜드 백업 — 이전 대상에서 의도적으로 제외).
+
+/// 충돌본 파일명 — n=0이면 `store.conflict-<stamp>.json`, 이후는 -2, -3… 순번.
+/// stamp는 로컬 벽시계(conflict_stamp), 파일명 불가 문자가 없다.
+fn conflict_file_name(stamp: &str, n: u32) -> String {
+    if n == 0 {
+        format!("store.conflict-{stamp}.json")
+    } else {
+        format!("store.conflict-{stamp}-{}.json", n + 1)
+    }
+}
+
+/// dir 안에서 아직 존재하지 않는 첫 충돌본 경로. 같은 초의 연속 충돌은 순번으로
+/// 구분하고, 극단적인 동명은 epoch 접미로 빠져나온다.
+fn pick_conflict_path(dir: &Path, stamp: &str) -> PathBuf {
+    for n in 0..1000u32 {
+        let p = dir.join(conflict_file_name(stamp, n));
+        if !p.exists() {
+            return p;
+        }
+    }
+    dir.join(conflict_file_name(
+        &format!("{stamp}-{}", now_epoch_secs()),
+        0,
+    ))
+}
+
+/// 파일명 스탬프 — 로컬 벽시계 ISO("2026-11-19T09:30:15")에서 Windows 파일명
+/// 불가 ':'만 '-'로 치환 → "2026-11-19T09-30-15". 사람이 읽는 백업 이름이라
+/// 로컬 시각 그대로를 쓴다(리마인더의 벽시계 계약과 동일 기준).
+fn conflict_stamp() -> String {
+    format_local_iso(now_local_secs()).replace(':', "-")
+}
+
+/// 이름 선택 + tmp→rename(저장과 같은 재시도 공용) — 절반 쓰인 충돌본을 피한다.
+/// 같은 이름을 고르는 경쟁은 호출자(CONFLICT_WRITE 락)가 직렬화로 막는다.
+fn write_conflict_copy(dir: &Path, stamp: &str, json: &str) -> Result<PathBuf, String> {
+    let dst = pick_conflict_path(dir, stamp);
+    let tmp = dst.with_extension("tmp");
+    fs::write(&tmp, json.as_bytes()).map_err(|e| e.to_string())?;
+    match rename_with_retry(
+        &RENAME_RETRY_DELAYS_MS,
+        || fs::rename(&tmp, &dst),
+        std::thread::sleep,
+    ) {
+        Ok(_) => Ok(dst),
+        Err(e) => {
+            let _ = fs::remove_file(&tmp); // 실패한 tmp는 잔재로 두지 않는다
+            Err(e.to_string())
+        }
+    }
+}
+
+/// 충돌본 쓰기 직렬화 — 창이 여럿이어도 invoke는 단일 Rust 프로세스에 모이므로,
+/// 이름 선택~rename 구간을 뮤텍스로 묶으면 같은 파일명을 동시에 고르지 않는다.
+static CONFLICT_WRITE: OnceLock<Mutex<()>> = OnceLock::new();
+
+#[tauri::command]
+fn save_conflict_copy(app: AppHandle, json: String) -> Result<String, String> {
+    let p = store_path(&app)?;
+    let dir = p
+        .parent()
+        .ok_or_else(|| "store.json has no parent dir".to_string())?
+        .to_path_buf();
+    let _guard = CONFLICT_WRITE
+        .get_or_init(|| Mutex::new(()))
+        .lock()
+        // poison돼도 쓰기 자체는 안전 — 계속 진행(다른 OnceLock들과 같은 정책)
+        .unwrap_or_else(|e| e.into_inner());
+    match write_conflict_copy(&dir, &conflict_stamp(), &json) {
+        Ok(dst) => {
+            qa_write(&format!(
+                "conflict-copy :: wrote {} bytes={}",
+                dst.display(),
+                json.len()
+            ));
+            Ok(dst.to_string_lossy().into_owned())
+        }
+        Err(e) => {
+            qa_write(&format!("conflict-copy :: FAIL {e}"));
+            Err(e)
+        }
+    }
+}
+
 fn qa_write(msg: &str) {
     use std::io::Write;
     let line = format!("[QA] {}\n", msg);
@@ -1453,6 +1545,7 @@ fn main() {
             register_shortcuts,
             qa_log,
             qa_log_path,
+            save_conflict_copy,
             quit_app
         ])
         .setup(|app| {
@@ -2335,6 +2428,77 @@ mod tests {
         assert_eq!(s.unwrap().len, 2);
         // 디렉터리는 파일이 아니다 → None
         assert_eq!(file_stamp(&dir), None);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    // ---- 동기 충돌 — 충돌본 보관 (phase-04-task-03, OQ-03) ----
+
+    #[test]
+    fn conflict_file_name_numbering() {
+        // n=0은 순번 없는 기본명, 이후는 -2, -3… (Windows "파일 (2)" 관습과 같은 1-base)
+        assert_eq!(
+            conflict_file_name("2026-11-19T09-30-15", 0),
+            "store.conflict-2026-11-19T09-30-15.json"
+        );
+        assert_eq!(
+            conflict_file_name("2026-11-19T09-30-15", 1),
+            "store.conflict-2026-11-19T09-30-15-2.json"
+        );
+        assert_eq!(
+            conflict_file_name("2026-11-19T09-30-15", 9),
+            "store.conflict-2026-11-19T09-30-15-10.json"
+        );
+    }
+
+    #[test]
+    fn conflict_stamp_is_filename_safe() {
+        // "YYYY-MM-DDTHH-MM-SS" — Windows 파일명 불가 문자가 없다.
+        let s = conflict_stamp();
+        assert_eq!(s.len(), 19, "{s}");
+        for bad in [':', '/', '\\', '*', '?', '"', '<', '>', '|'] {
+            assert!(!s.contains(bad), "stamp contains {bad:?}: {s}");
+        }
+    }
+
+    #[test]
+    fn pick_conflict_path_skips_occupied() {
+        let dir = datadir_fixture("conflict-pick");
+        let stamp = "2026-11-19T09-30-15";
+        // 비어 있으면 기본명
+        assert_eq!(
+            pick_conflict_path(&dir, stamp),
+            dir.join("store.conflict-2026-11-19T09-30-15.json")
+        );
+        // 기본명이 있으면 -2, 그것도 있으면 -3
+        fs::write(dir.join(conflict_file_name(stamp, 0)), b"a").unwrap();
+        assert_eq!(
+            pick_conflict_path(&dir, stamp),
+            dir.join("store.conflict-2026-11-19T09-30-15-2.json")
+        );
+        fs::write(dir.join(conflict_file_name(stamp, 1)), b"b").unwrap();
+        assert_eq!(
+            pick_conflict_path(&dir, stamp),
+            dir.join("store.conflict-2026-11-19T09-30-15-3.json")
+        );
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn write_conflict_copy_roundtrip_and_unique() {
+        let dir = datadir_fixture("conflict-write");
+        let stamp = "2026-11-19T09-30-15";
+        let a = write_conflict_copy(&dir, stamp, "{\"v\":1}").unwrap();
+        let b = write_conflict_copy(&dir, stamp, "{\"v\":2}").unwrap();
+        // 같은 스탬프의 연속 충돌은 서로 다른 파일 — 둘 다 내용 보존(데이터 손실 0)
+        assert_ne!(a, b);
+        assert_eq!(fs::read_to_string(&a).unwrap(), "{\"v\":1}");
+        assert_eq!(fs::read_to_string(&b).unwrap(), "{\"v\":2}");
+        // tmp 잔재 없음 — 확정본만 남는다
+        let tmp_left = fs::read_dir(&dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .any(|e| e.file_name().to_string_lossy().ends_with(".tmp"));
+        assert!(!tmp_left);
         let _ = fs::remove_dir_all(&dir);
     }
 }

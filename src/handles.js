@@ -353,12 +353,40 @@ function pushToast(item) {
   syncToastWindow();
 }
 
+/* ---------------- 동기 충돌 통지 (OQ-03 = 충돌본 보관) ---------------- */
+//
+// 미저장 편집을 들고 있던 창이 외부 변경을 적용하면 guseok://conflict를 쏜다.
+// 이 창(상주)이 토스트 큐로 사용자에게 보여준다 — 리마인더 토스트와 같은 창·
+// 같은 큐를 재사용하되 kind:"conflict"로 구분해 클릭 시 해당 메모를 연다.
+// reminderId를 충돌본 경로로 삼아 emit 경로와 핸들러 경로의 이중 도착을
+// toastEnqueue의 중복 제거로 흡수한다.
+
+function showConflictToast(p) {
+  const first = (p.indexes || [])[0] || {};
+  const file = p.path ? String(p.path).split(/[\\/]/).pop() : null;
+  invoke("qa_log", {
+    msg: `conflict :: toast win=${p.win || "?"} file=${file || "FAILED"} idx=${first.id || "-"}`,
+  }).catch(() => {});
+  pushToast({
+    kind: "conflict",
+    reminderId: "conflict:" + (p.path || "failed-" + (p.win || "?")),
+    indexId: first.id || null,
+    title: first.title || "메모",
+    note: file
+      ? `편집 중이던 내용은 ${file}에 보관했어요`
+      : "충돌본 보관에 실패했어요 — qa 로그를 확인해주세요",
+  });
+}
+
 // CDP 테스트용 내부 훅
 window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNthVisible, setIndexHidden, state: () => state, lay: () => lay, toasts: () => ({ live: toastLive.length, pending: toastPending.length }), pushToast, clearToasts };
 
 async function boot() {
-  await initStore(async () => {
+  await initStore(async (_next, meta) => {
     await refresh();
+    // 이 창 자체가 미저장 편집을 들고 있을 때 외부 변경이 오면 충돌 — emit 경로와
+    // 같은 토스트로 알리되 reminderId 중복 제거로 이중 표시는 없다.
+    if (meta?.conflict) showConflictToast({ win: "handles", path: meta.conflictPath, indexes: meta.diffs });
   });
   await refresh();
   bindDrag();
@@ -410,6 +438,10 @@ async function boot() {
   });
   await listen("guseok://toast-clear", () => clearToasts());
   await listen("guseok://toast-ready", () => syncToastWindow());
+
+  // 동기 충돌 통지 (OQ-03) — 어느 창이든 미저장 편집 위로 외부 변경을 적용하면
+  // 이 이벤트가 온다. 토스트 표시는 이 창이 대표로 담당하고 qa 로그가 정본이다.
+  await listen("guseok://conflict", (e) => showConflictToast(e.payload || {}));
 
   await listen("guseok://panel-open", (e) => {
     activeId = e.payload?.id || null;

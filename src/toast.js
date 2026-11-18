@@ -21,7 +21,7 @@ function render(items) {
   host.innerHTML = "";
   (items || []).forEach((it) => {
     const el = document.createElement("div");
-    el.className = "rem-toast" + (it.missed ? " missed" : "");
+    el.className = "rem-toast" + (it.missed ? " missed" : "") + (it.kind === "conflict" ? " conflict" : "");
 
     const body = document.createElement("button");
     body.className = "rem-toast-body";
@@ -29,12 +29,22 @@ function render(items) {
 
     const title = document.createElement("div");
     title.className = "rem-toast-title";
-    title.textContent = `${it.title || "메모"} — ${fmtTime(it.at)} 알림`;
-    if (it.missed) {
+    if (it.kind === "conflict") {
+      // OQ-03 충돌본 보관 — 외부 변경이 적용됐고 편집 중이던 로컬본이
+      // store.conflict-*.json에 보관됐음을 알린다. 클릭은 해당 메모를 연다.
+      title.textContent = `${it.title || "메모"} — 외부 변경 적용`;
       const badge = document.createElement("span");
-      badge.className = "rem-badge-miss";
-      badge.textContent = "놓침";
+      badge.className = "rem-badge-miss conflict";
+      badge.textContent = "충돌본 보관";
       title.appendChild(badge);
+    } else {
+      title.textContent = `${it.title || "메모"} — ${fmtTime(it.at)} 알림`;
+      if (it.missed) {
+        const badge = document.createElement("span");
+        badge.className = "rem-badge-miss";
+        badge.textContent = "놓침";
+        title.appendChild(badge);
+      }
     }
     body.appendChild(title);
 

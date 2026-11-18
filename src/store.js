@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { emit, listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { THEMES } from "./themes.js";
 
@@ -122,6 +122,35 @@ let saveTimer = null;
 let externalHandler = null;
 const WIN_LABEL = getCurrentWindow().label;
 
+// OQ-03 — 디스크와 동기화된 마지막 state 직렬화. 외부 변경(src:"external") 도착
+// 시 현재 state가 이 기준선과 다르면 "미저장 편집 있음 = 충돌"로 판정한다 —
+// 디바운스 대기 중인 편집과, 아직 저장 호출조차 안 된 인메모리 변경을 둘 다 포착.
+let lastSavedJson = "";
+// guseok://store 적용을 도착 순서대로 직렬화 — 충돌본 파일 쓰기(비동기)가 진행
+// 중일 때 후속 이벤트가 끼어들어 적용 순서가 뒤집히지 않게 한다.
+let applyChain = Promise.resolve();
+
+// OQ-03 충돌 판정 — 외부(src:"external") 변경에만 적용한다. 같은 앱의 다른 창
+// 저장은 정상 브로드캐스트(기존 last-writer-wins)라 충돌 경로를 타지 않는다.
+// localJson !== savedJson이면 디스크에 아직 반영되지 않은 로컬 편집이 있다.
+export function isStoreConflict(src, localJson, savedJson) {
+  return src === "external" && typeof localJson === "string" && localJson !== savedJson;
+}
+
+// 충돌 안내용 — 로컬본과 외부본이 실제로 다른 인덱스 목록(id·title).
+// 토스트가 어떤 메모가 영향받았는지 보여주고 클릭 점프할 수 있게 한다.
+// 반환이 비면 인덱스가 아닌 common/templates 등만 다른 경우다.
+export function conflictingIndexes(local, incoming) {
+  const inc = new Map((((incoming && incoming.indexes) || [])).map((i) => [i && i.id, i]));
+  return ((local && local.indexes) || [])
+    .filter((i) => {
+      if (!i || typeof i !== "object") return false;
+      const other = inc.get(i.id);
+      return !other || JSON.stringify(i) !== JSON.stringify(other);
+    })
+    .map((i) => ({ id: i.id, title: i.title || "메모" }));
+}
+
 // 버전별 단계 변환 — STEPS[n]은 store를 version n → n+1로 변환한다 (TD-03 연쇄).
 // 위의 spread merge가 알 수 없는 키를 이미 보존하므로(TD-10), 각 단계는
 // 그 버전에 새로 생긴 필드의 형식 정규화만 담당한다.
@@ -183,6 +212,7 @@ export async function initStore(onExternal) {
   try {
     const raw = await invoke("load_store");
     if (raw && raw.trim()) state = migrate(JSON.parse(raw));
+    lastSavedJson = JSON.stringify(state); // 부팅 시점 = 디스크와 동기화된 기준선
   } catch (err) {
     console.warn("store load failed", err);
   }
@@ -193,9 +223,44 @@ export async function initStore(onExternal) {
       if (!payload || payload.src === WIN_LABEL) return;
       const incoming = JSON.parse(payload.raw);
       if (!incoming) return;
-      if (JSON.stringify(incoming) === JSON.stringify(state)) return;
-      state = migrate(incoming);
-      externalHandler?.(state);
+      const localJson = JSON.stringify(state);
+      if (JSON.stringify(incoming) === localJson) {
+        // 내용 동일 — 디스크가 이미 우리 상태라 덮어쓰이는 것이 없다. 기준선만 맞춘다.
+        lastSavedJson = localJson;
+        return;
+      }
+      // OQ-03 — 외부 변경 + 로컬 미저장 편집 = 충돌: 외부본을 적용하되 덮어쓰이는
+      // 로컬본 전체를 store.conflict-*.json으로 보관한다. 이 이벤트가 충돌을 소유하고
+      // 기준선을 당겨 두면, 적용이 끝나기 전 도착한 후속 이벤트가 같은 로컬본을
+      // 중복 보관하지 않는다(적용 완료 시 기준선은 어차피 새 state로 다시 놓인다).
+      const conflict = isStoreConflict(payload.src, localJson, lastSavedJson);
+      if (conflict) lastSavedJson = localJson;
+      const diffs = conflict ? conflictingIndexes(state, incoming) : [];
+      applyChain = applyChain
+        .then(async () => {
+          let conflictPath = null;
+          if (conflict) {
+            try {
+              // 덮어쓰이는 로컬본을 먼저 파일로 보관한 뒤 외부본을 적용한다.
+              conflictPath = await invoke("save_conflict_copy", { json: localJson });
+            } catch (err) {
+              invoke("qa_log", { msg: "FAIL conflict-copy :: " + String(err) }).catch(() => {});
+            }
+          }
+          state = migrate(incoming);
+          lastSavedJson = JSON.stringify(state);
+          if (conflict) {
+            invoke("qa_log", {
+              msg:
+                `conflict :: win=${WIN_LABEL} applied-external preserved=${conflictPath || "FAILED"} ` +
+                `diffs=${diffs.map((d) => d.id).join(",") || "-"}`,
+            }).catch(() => {});
+            // 사용자 통지 — 상주하는 handles 창이 토스트 큐로 표시한다(전 창 브로드캐스트).
+            emit("guseok://conflict", { win: WIN_LABEL, path: conflictPath, indexes: diffs }).catch(() => {});
+          }
+          externalHandler?.(state, { src: payload.src, conflict, conflictPath, diffs });
+        })
+        .catch(() => {}); // 한 이벤트의 실패가 뒤 이벤트 적용을 막지 않게 체인을 살린다
     } catch {}
   });
 }
@@ -207,6 +272,9 @@ export function saveStore({ immediate = false } = {}) {
     try {
       // 저장 성공 시 Rust 쪽에서 guseok://store 를 브로드캐스트한다(pagehide 플러시도 전파됨).
       await invoke("save_store", { json });
+      // 저장 성공 — 디스크 기준선 갱신. 실패하면 기준선이 옛날 그대로라 state는
+      // 계속 "미저장"으로 남고, 다음 외부 변경이 충돌로 판정된다(보존 대상 정확).
+      lastSavedJson = json;
     } catch (err) {
       console.warn("store save failed", err);
     }

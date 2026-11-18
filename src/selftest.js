@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import { emit } from "@tauri-apps/api/event";
 import { getCurrentWindow, getAllWindows } from "@tauri-apps/api/window";
-import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden, MAX_INDEXES } from "./store.js";
+import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden, isStoreConflict, conflictingIndexes, MAX_INDEXES } from "./store.js";
 import { setReminder, removeReminder, setReminderEnabled, reminderStatus, toastEnqueue, TOAST_MAX } from "./reminders.js";
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
@@ -886,6 +887,91 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     await save();
     await sleep(2600);
     check("external-self-echo", reloadLines(await readQa()) === reloadBefore, `reload lines stayed ${reloadBefore}`);
+
+    // --- 동기 충돌 — 충돌본 보관 (phase-04-task-03, OQ-03) ---
+    // 로컬 미저장 편집(기준선 대비 인메모리 변경) + 외부 store 쓰기 = 충돌.
+    // 외부본은 그대로 적용되고, 덮어쓰이는 로컬본 전체가 store.conflict-*.json에 보관된다.
+    // 1) 판정 순수 로직 — 외부+dirty만 충돌: 같은 앱 다른 창의 저장(src=창라벨)은
+    //    정상 브로드캐스트라 충돌 경로를 타지 않는다.
+    check(
+      "conflict-policy-predicate",
+      isStoreConflict("external", '{"a":1}', '{"a":0}') === true &&
+        isStoreConflict("external", '{"a":1}', '{"a":1}') === false &&
+        isStoreConflict("panel", '{"a":1}', '{"a":0}') === false &&
+        isStoreConflict("handles", '{"a":1}', '{"a":0}') === false &&
+        conflictingIndexes({ indexes: [{ id: "x", title: "T", content: "L" }] }, { indexes: [{ id: "x", title: "T", content: "E" }] })
+          .length === 1 &&
+        conflictingIndexes({ indexes: [{ id: "x" }] }, { indexes: [{ id: "y" }] }).length === 1 &&
+        conflictingIndexes({ indexes: [{ id: "x", a: 1 }] }, { indexes: [{ id: "x", a: 1 }] }).length === 0
+    );
+    // 2) 실제 경로 — 기준선 저장 → 인메모리만 변경(미저장) → store.json 외부 덮어쓰기
+    //    → mtime 감지 emit → 충돌 판정 → 충돌본 파일 보관 + 외부본 적용 + 토스트 통지.
+    await save(); // 기준선 확정 — 이 지점의 state == 디스크
+    const localMarker = "QACFLOCAL" + Date.now().toString(36);
+    const extCfMarker = "QACFEXT" + Date.now().toString(36);
+    const cfTarget = state.indexes.find((i) => i.id === idx.id) || state.indexes[0];
+    cfTarget.title = localMarker; // 미저장 편집 — 저장 호출 없이 인메모리만 변경
+    const extCfStore = JSON.parse(await invoke("load_store")); // 디스크 상태 그대로
+    (extCfStore.indexes.find((i) => i.id === cfTarget.id) || extCfStore.indexes[0]).title = extCfMarker;
+    const cfCount = (s) => s.split("\n").filter((l) => l.includes("conflict-copy :: wrote")).length;
+    await invoke("write_text_file", { path: storeFile, content: JSON.stringify(extCfStore) });
+    const cfApplied = await waitFor(() => state.indexes.some((i) => i.title === extCfMarker), 9000);
+    check("conflict-external-applied", cfApplied);
+    const cfHits = await waitQa("conflict-copy :: wrote", 4000);
+    // 충돌본 파일 — qa 라인의 경로로 실제 파일을 읽어 로컬본 보존·파일명 형식을 단언.
+    const cfPath = ((cfHits && /wrote (.+?) bytes=/.exec(cfHits[cfHits.length - 1])) || [])[1];
+    let cfBody = "";
+    if (cfPath) {
+      try {
+        cfBody = await invoke("read_text_file", { path: cfPath.trim() });
+      } catch {}
+    }
+    check(
+      "conflict-copy-preserved",
+      !!cfPath &&
+        /store\.conflict-[^\\/]+\.json$/.test(cfPath.trim()) &&
+        cfBody.includes(localMarker) &&
+        !cfBody.includes(extCfMarker),
+      `${cfPath || "no-path"} local=${cfBody.includes(localMarker)}`
+    );
+    // 사용자 통지 — handles의 충돌 토스트(qa 로그 라인) 또는 toast 창 표시.
+    const toastHits = await waitQa("conflict :: toast", 4000);
+    const toastWin = (await getAllWindows()).find((w) => w.label === "toast");
+    let toastShown = false;
+    if (toastWin) {
+      try {
+        toastShown = await toastWin.isVisible();
+      } catch {}
+    }
+    check("conflict-notify-toast", !!toastHits || toastShown, `qa=${!!toastHits} visible=${toastShown}`);
+    // 토스트 잔재 정리 — 화면에 남지 않게 닫는다.
+    try {
+      await emit("guseok://toast-clear", {});
+    } catch {}
+    await sleep(400);
+    // state 객체가 통째 교체됐으므로 idx·마커를 새 state에서 다시 잡고 원복한다.
+    idx = state.indexes.find((i) => i.id === idx.id) || state.indexes[0];
+    const cfHit = state.indexes.find((i) => i.title === extCfMarker);
+    if (cfHit) cfHit.title = "충돌원복";
+    // 비충돌 회귀 — 깨끗한 상태(기준선==state)에서의 외부 변경은 충돌본 없이 적용.
+    await save();
+    const cfBeforeClean = cfCount(await readQa());
+    const cleanMarker = "QACLEAN" + Date.now().toString(36);
+    const extCleanStore = JSON.parse(await invoke("load_store"));
+    (extCleanStore.indexes.find((i) => i.id === cfTarget.id) || extCleanStore.indexes[0]).title = cleanMarker;
+    await invoke("write_text_file", { path: storeFile, content: JSON.stringify(extCleanStore) });
+    const cleanApplied = await waitFor(() => state.indexes.some((i) => i.title === cleanMarker), 9000);
+    await sleep(400); // 충돌본 쓰기가 있었다면 qa 라인이 찍힐 여유
+    const cfAfterClean = cfCount(await readQa());
+    check(
+      "conflict-none-clean",
+      cleanApplied && cfAfterClean === cfBeforeClean,
+      `applied=${cleanApplied} copies=${cfAfterClean - cfBeforeClean}`
+    );
+    const cleanHit = state.indexes.find((i) => i.title === cleanMarker);
+    if (cleanHit) cleanHit.title = "충돌원복";
+    idx = state.indexes.find((i) => i.id === idx.id) || state.indexes[0];
+    await save();
 
     // --- 검색 창 (phase-02-task-02, R-01/D-1) ---
     // setup에서 미리 생성된 "search" 창이 있고, show_search/hide_search 커맨드로

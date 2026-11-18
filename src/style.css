@@ -635,6 +635,9 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   background: #d94f4f;
   vertical-align: 1px;
 }
+/* OQ-03 충돌본 보관 토스트 — 놓침의 경고색 대신 차분한 액센트 계열 */
+.rem-badge-miss.conflict { background: #4a6b8a; }
+.rem-toast.conflict .rem-toast-title { color: #35506b; }
 .rem-toast-note { font-size: 10.5px; color: rgba(20, 22, 34, 0.6); word-break: break-word; }
 .rem-toast-x {
   flex: 0 0 auto;
