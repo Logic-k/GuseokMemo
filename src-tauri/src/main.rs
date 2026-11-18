@@ -29,7 +29,10 @@ struct WorkArea {
 fn store_path(app: &AppHandle) -> Result<PathBuf, String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    Ok(dir.join("store.json"))
+    // TD-05: config.json 포인터가 유효한 폴더를 가리키면 그곳의 store.json을 쓰고,
+    // 아니면(없음·손상·폴더 없음) 기본 위치로 폴백한다. 호출마다 해석하므로
+    // set_data_dir 이후의 저장·로드·스케줄 초기화가 즉시 새 경로를 따라간다.
+    Ok(resolve_store_dir(&dir, &config_path(&dir)).join("store.json"))
 }
 
 /// store.json → 비어 있으면 store.bak.json 폴백 — load_store 커맨드와
@@ -134,6 +137,213 @@ fn save_store(app: AppHandle, webview: WebviewWindow, json: String) -> Result<()
     Ok(())
 }
 
+// ==================== 저장 폴더 지정 (TD-05, R-04) ====================
+//
+// 포인터 파일 `%APPDATA%\com.guseok.memo\config.json` = { "dataDir": "<폴더>" | null }.
+// 포인터를 store.json 안에 두면 "폴더를 바꾼 사실"이 옮겨간 파일에만 있어 부팅 시
+// 위치를 알 수 없다(치킨앤에그) — 앱 데이터 루트는 고정하고 store.json만 옮긴다.
+// config.json 손상·부분 누락·무효 경로는 전부 기본 경로로 안전 폴백한다.
+
+/// 고정 위치 포인터 파일 — store.json과 같은 앱 데이터 루트(이동 대상 아님).
+fn config_path(app_dir: &Path) -> PathBuf {
+    app_dir.join("config.json")
+}
+
+/// config.json의 dataDir 원시값 — "설정된 값"만 반환한다(get_data_dir의 표시용).
+/// 존재 여부는 resolve_store_dir가 판단. 문자열 아님·빈 값·JSON 손상·파일 없음은 None.
+fn configured_data_dir(cfg: &Path) -> Option<PathBuf> {
+    let raw = fs::read_to_string(cfg).ok()?;
+    let v: serde_json::Value = serde_json::from_str(&raw).ok()?;
+    let s = v.get("dataDir")?.as_str()?.trim();
+    if s.is_empty() {
+        None
+    } else {
+        Some(PathBuf::from(s))
+    }
+}
+
+/// 포인터 해석 — 설정된 폴더가 실제로 존재하는 디렉터리면 그곳, 아니면 기본 dir.
+/// 지정 폴더가 나중에 삭제된 경우도 여기서 기본 경로로 폴백한다(매 호출마다 확인).
+fn resolve_store_dir(app_dir: &Path, cfg: &Path) -> PathBuf {
+    match configured_data_dir(cfg) {
+        Some(d) if d.is_dir() => d,
+        _ => app_dir.to_path_buf(),
+    }
+}
+
+/// 두 디렉터리의 동치 비교 — canonicalize로 철자 차이(대소문·..·끝 구분자)를 흡수한다.
+/// 한쪽이라도 해석 실패(미존재)면 문자열 비교로 폴백.
+fn same_dir(a: &Path, b: &Path) -> bool {
+    match (fs::canonicalize(a), fs::canonicalize(b)) {
+        (Ok(x), Ok(y)) => x == y,
+        _ => a == b,
+    }
+}
+
+/// 지정 폴더의 쓰기 가능 확인 — 시험 파일을 실제로 쓰고 지운다(읽기 전용·ACL 감지).
+fn check_dir_writable(dir: &Path) -> Result<(), String> {
+    let probe = dir.join(format!(".guseok-write-test-{}", std::process::id()));
+    fs::write(&probe, b"ok").map_err(|e| format!("폴더에 쓸 수 없습니다: {e}"))?;
+    let _ = fs::remove_file(&probe);
+    Ok(())
+}
+
+/// 기존 저장본을 새 폴더로 이전 — 원본은 보존한다(복사, 삭제 금지 — 데이터 파괴 금지).
+/// 대상에 이미 store.json이 있으면 그것을 먼저 store.bak.json으로 보존하고, 없으면
+/// 원본 .bak를 함께 복사해 read_store_contents의 폴백 경로를 유지한다.
+/// 복사 후 재읽기 검증 — 내용이 다르면 Err(호출자가 포인터를 갱신하지 않는다).
+/// 반환: store.json을 실제로 옮겼으면 true(원본이 없으면 false — 첫 실행 등).
+fn copy_store_to_dir(from_dir: &Path, to_dir: &Path) -> Result<bool, String> {
+    let src = from_dir.join("store.json");
+    let dst = to_dir.join("store.json");
+    if !src.exists() {
+        return Ok(false); // 옮길 저장본이 없다 — 대상의 기존 파일은 그대로 둔다.
+    }
+    if dst.exists() {
+        fs::copy(&dst, to_dir.join("store.bak.json"))
+            .map_err(|e| format!("대상 폴더의 기존 store.json 보존 실패: {e}"))?;
+    } else {
+        let src_bak = from_dir.join("store.bak.json");
+        if src_bak.exists() {
+            // 폴백 보조 — .bak 복사 실패는 이전 자체를 막지 않는다.
+            let _ = fs::copy(&src_bak, to_dir.join("store.bak.json"));
+        }
+    }
+    fs::copy(&src, &dst).map_err(|e| format!("store.json 복사 실패: {e}"))?;
+    let (a, b) = (
+        fs::read(&src).map_err(|e| e.to_string())?,
+        fs::read(&dst).map_err(|e| e.to_string())?,
+    );
+    if a != b {
+        return Err("복사본 읽기 검증 실패 — 전환하지 않았습니다".into());
+    }
+    Ok(true)
+}
+
+/// config.json 포인터 갱신 — 기존 파일의 알 수 없는 키는 보존하고 dataDir만 교체.
+/// 임시 파일→rename(재시도) 경로로 써 절반 쓰인 포인터를 피한다.
+fn write_data_dir_pointer(cfg: &Path, dir: Option<&Path>) -> Result<(), String> {
+    let mut obj = fs::read_to_string(cfg)
+        .ok()
+        .and_then(|s| serde_json::from_str::<serde_json::Value>(&s).ok())
+        .and_then(|v| v.as_object().cloned())
+        .unwrap_or_default();
+    obj.insert(
+        "dataDir".into(),
+        match dir {
+            Some(d) => json!(d.to_string_lossy()),
+            None => serde_json::Value::Null,
+        },
+    );
+    let body =
+        serde_json::to_string_pretty(&serde_json::Value::Object(obj)).map_err(|e| e.to_string())?;
+    let tmp = cfg.with_file_name("config.tmp.json");
+    fs::write(&tmp, body.as_bytes()).map_err(|e| e.to_string())?;
+    rename_with_retry(
+        &RENAME_RETRY_DELAYS_MS,
+        || fs::rename(&tmp, cfg),
+        std::thread::sleep,
+    )
+    .map(|_| ())
+    .map_err(|e| e.to_string())
+}
+
+/// get_data_dir의 반환 — ARCH §4 계약 {path, effectivePath, isDefault}.
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DataDirInfo {
+    /// config.json에 설정된 지정 폴더(무효·폴백 중이어도 설정값 그대로 — UI 오류 표시용)
+    path: Option<String>,
+    /// 실제 사용 중인 store.json의 부모 디렉터리
+    effective_path: String,
+    /// effectivePath가 기본 앱 데이터 dir이면 true(포인터 없음·무효 포함)
+    is_default: bool,
+}
+
+fn data_dir_info(app_dir: &Path) -> DataDirInfo {
+    let cfg = config_path(app_dir);
+    let effective = resolve_store_dir(app_dir, &cfg);
+    DataDirInfo {
+        path: configured_data_dir(&cfg).map(|p| p.to_string_lossy().into_owned()),
+        effective_path: effective.to_string_lossy().into_owned(),
+        is_default: same_dir(&effective, app_dir),
+    }
+}
+
+/// set_data_dir의 본체 — AppHandle 없이 디렉터리만으로 이전·포인터 갱신을 수행한다.
+/// 순서: 존재·쓰기 가능 확인 → 기존 store 복사·읽기 검증 → config.json 포인터 갱신.
+/// 포인터는 마지막에 갱신하므로 중간 실패는 기존 경로·데이터를 그대로 둔다.
+fn set_data_dir_impl(app_dir: &Path, path: Option<&str>) -> Result<DataDirInfo, String> {
+    fs::create_dir_all(app_dir).map_err(|e| e.to_string())?;
+    let cfg = config_path(app_dir);
+    let cur_dir = resolve_store_dir(app_dir, &cfg);
+    match path {
+        Some(raw) => {
+            let trimmed = raw.trim();
+            if trimmed.is_empty() {
+                return Err("빈 경로입니다".into());
+            }
+            let new_dir = PathBuf::from(trimmed);
+            if !new_dir.is_dir() {
+                return Err(format!("폴더가 없습니다: {trimmed}"));
+            }
+            check_dir_writable(&new_dir)?;
+            // 같은 폴더 재지정은 자기 복사 방지를 위해 이전을 건너뛰고 포인터만 갱신.
+            if !same_dir(&new_dir, &cur_dir) {
+                copy_store_to_dir(&cur_dir, &new_dir)?;
+            }
+            // 기본 dir과 같은 곳을 지정하면 포인터 해제와 동치 — null로 정규화.
+            let pointer = if same_dir(&new_dir, app_dir) {
+                None
+            } else {
+                Some(new_dir.as_path())
+            };
+            write_data_dir_pointer(&cfg, pointer)?;
+        }
+        None => {
+            // 포인터 해제 — 현재 유효 폴더의 저장본을 기본 dir로 복사 후 전환.
+            if !same_dir(&cur_dir, app_dir) {
+                copy_store_to_dir(&cur_dir, app_dir)?;
+            }
+            write_data_dir_pointer(&cfg, None)?;
+        }
+    }
+    Ok(data_dir_info(app_dir))
+}
+
+#[tauri::command]
+fn get_data_dir(app: AppHandle) -> Result<DataDirInfo, String> {
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(data_dir_info(&dir))
+}
+
+/// 저장 폴더 지정/해제 — Some(dir): 존재·쓰기 확인 → 기존 store.json 복사·검증 →
+/// 포인터 갱신. None: 포인터 해제 후 기본 경로로 복귀(마찬가지로 복사 후 전환).
+/// 미존재·쓰기 불가·복사 실패는 Err — 기존 경로·데이터는 그대로 유지된다.
+#[tauri::command]
+fn set_data_dir(app: AppHandle, path: Option<String>) -> Result<(), String> {
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    let info = match set_data_dir_impl(&dir, path.as_deref()) {
+        Ok(i) => i,
+        Err(e) => {
+            qa_write(&format!("set-data-dir :: FAIL path={path:?} err={e}"));
+            return Err(e);
+        }
+    };
+    // 저장 폴더가 바뀌었으므로 스케줄 소스도 새 경로로 재동기화 — 이전은 마지막
+    // 저장본의 복사라 내용은 동일하지만, 대상에 기존 store.json이 있던 경우도 흡수한다.
+    // (스케줄러 스레드는 인메모리 SCHEDULE만 보고, 디스크 접점은 save_store·부팅
+    // 초기화라 store_path 해석을 그대로 따라간다.)
+    let raw = read_store_contents(&resolve_store_dir(&dir, &config_path(&dir)).join("store.json"));
+    update_schedule_from_store(&raw);
+    qa_write(&format!(
+        "set-data-dir :: ok path={path:?} effective={}",
+        info.effective_path
+    ));
+    Ok(())
+}
+
 #[tauri::command]
 fn set_autostart(enabled: bool) -> Result<(), String> {
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
@@ -157,6 +367,9 @@ fn set_autostart(enabled: bool) -> Result<(), String> {
 #[tauri::command]
 fn open_data_dir(app: AppHandle) -> Result<(), String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    // 저장 폴더가 지정돼 있으면 store.json이 실제로 있는 그 폴더를 연다 (TD-05).
+    let dir = resolve_store_dir(&dir, &config_path(&dir));
     std::process::Command::new("explorer")
         .arg(dir)
         .spawn()
@@ -960,6 +1173,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             load_store,
             save_store,
+            get_data_dir,
+            set_data_dir,
             set_autostart,
             read_text_file,
             open_data_dir,
@@ -1495,5 +1710,169 @@ mod tests {
         assert!(rs[1].enabled); // enabled 누락 → 기본 true (defaultReminder와 동일)
         assert_eq!(reminders_from_store("not json").len(), 0);
         assert_eq!(reminders_from_store("{}").len(), 0);
+    }
+
+    // ---- 저장 폴더 지정 (phase-04-task-01, TD-05) ----
+
+    /// 테스트 격리용 임시 앱 데이터 dir — 실제 %APPDATA%를 건드리지 않는다.
+    fn datadir_fixture(tag: &str) -> PathBuf {
+        let d = std::env::temp_dir().join(format!(
+            "guseok-datadir-{tag}-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir_all(&d).unwrap();
+        d
+    }
+
+    #[test]
+    fn pointer_absent_or_broken_resolves_default() {
+        let app = datadir_fixture("resolve-default");
+        let cfg = config_path(&app);
+        // config.json 없음 → 기본
+        assert_eq!(resolve_store_dir(&app, &cfg), app);
+        // 손상된 JSON → 기본
+        fs::write(&cfg, b"{not json").unwrap();
+        assert_eq!(resolve_store_dir(&app, &cfg), app);
+        // dataDir 누락·null·비문자열·빈 문자열 → 기본
+        for body in [
+            "{}",
+            "{\"dataDir\":null}",
+            "{\"dataDir\":42}",
+            "{\"dataDir\":\"  \"}",
+            "[]",
+        ] {
+            fs::write(&cfg, body).unwrap();
+            assert_eq!(resolve_store_dir(&app, &cfg), app, "{body}");
+        }
+        let _ = fs::remove_dir_all(&app);
+    }
+
+    #[test]
+    fn pointer_valid_resolves_custom_and_missing_falls_back() {
+        let app = datadir_fixture("resolve-app");
+        let custom = datadir_fixture("resolve-custom");
+        let cfg = config_path(&app);
+        // 유효 폴더 → 지정 경로 (재해석마다 파일을 다시 읽으므로 재시작 후에도 유지)
+        write_data_dir_pointer(&cfg, Some(&custom)).unwrap();
+        assert_eq!(resolve_store_dir(&app, &cfg), custom);
+        // 지정 폴더가 사라지면 다음 해석부터 기본으로 폴백
+        fs::remove_dir_all(&custom).unwrap();
+        assert_eq!(resolve_store_dir(&app, &cfg), app);
+        let _ = fs::remove_dir_all(&app);
+    }
+
+    #[test]
+    fn check_dir_writable_probe() {
+        let dir = datadir_fixture("writable");
+        check_dir_writable(&dir).unwrap();
+        // 시험 파일이 잔재로 남지 않는다
+        assert!(fs::read_dir(&dir).unwrap().next().is_none());
+        // 디렉터리가 아닌 경로(파일)와 미존재 경로는 Err
+        let file = dir.join("f.txt");
+        fs::write(&file, b"x").unwrap();
+        assert!(check_dir_writable(&file).is_err());
+        assert!(check_dir_writable(&dir.join("missing-sub")).is_err());
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn write_pointer_roundtrip_and_preserves_unknown_keys() {
+        let app = datadir_fixture("pointer");
+        let cfg = config_path(&app);
+        // 기존 파일의 알 수 없는 키는 보존
+        fs::write(&cfg, "{\"otherKey\":1,\"dataDir\":\"D:\\\\old\"}").unwrap();
+        let custom = datadir_fixture("pointer-target");
+        write_data_dir_pointer(&cfg, Some(&custom)).unwrap();
+        let v: serde_json::Value =
+            serde_json::from_str(&fs::read_to_string(&cfg).unwrap()).unwrap();
+        assert_eq!(v["otherKey"], 1);
+        assert_eq!(configured_data_dir(&cfg).as_deref(), Some(custom.as_path()));
+        // 해제 → dataDir null
+        write_data_dir_pointer(&cfg, None).unwrap();
+        let v: serde_json::Value =
+            serde_json::from_str(&fs::read_to_string(&cfg).unwrap()).unwrap();
+        assert!(v["dataDir"].is_null());
+        assert_eq!(configured_data_dir(&cfg), None);
+        let _ = fs::remove_dir_all(&app);
+        let _ = fs::remove_dir_all(&custom);
+    }
+
+    #[test]
+    fn copy_store_to_dir_copies_and_preserves() {
+        let from = datadir_fixture("copy-from");
+        let to = datadir_fixture("copy-to");
+        fs::write(from.join("store.json"), b"{\"v\":1}").unwrap();
+        fs::write(from.join("store.bak.json"), b"{\"v\":0}").unwrap();
+        // 대상이 비어 있으면 .bak도 함께 옮겨 읽기 폴백을 유지
+        assert!(copy_store_to_dir(&from, &to).unwrap());
+        assert_eq!(fs::read(to.join("store.json")).unwrap(), b"{\"v\":1}");
+        assert_eq!(fs::read(to.join("store.bak.json")).unwrap(), b"{\"v\":0}");
+        // 원본 보존 — 이전은 복사이지 이동이 아니다
+        assert!(from.join("store.json").exists());
+        // 대상에 기존 store.json이 있으면 그것을 .bak로 보존한 뒤 덮어쓴다
+        fs::write(from.join("store.json"), b"{\"v\":2}").unwrap();
+        assert!(copy_store_to_dir(&from, &to).unwrap());
+        assert_eq!(fs::read(to.join("store.json")).unwrap(), b"{\"v\":2}");
+        assert_eq!(fs::read(to.join("store.bak.json")).unwrap(), b"{\"v\":1}");
+        // 원본이 없으면 Ok(false) — 대상 그대로
+        let empty = datadir_fixture("copy-empty");
+        assert!(!copy_store_to_dir(&empty, &to).unwrap());
+        let _ = fs::remove_dir_all(&from);
+        let _ = fs::remove_dir_all(&to);
+        let _ = fs::remove_dir_all(&empty);
+    }
+
+    #[test]
+    fn set_data_dir_impl_full_roundtrip() {
+        let app = datadir_fixture("impl-app");
+        let custom = datadir_fixture("impl-custom");
+        fs::write(app.join("store.json"), b"{\"version\":2}").unwrap();
+        // 지정 → 복사 + 포인터 갱신 + effectivePath 전환
+        let info = set_data_dir_impl(&app, Some(custom.to_str().unwrap())).unwrap();
+        assert!(!info.is_default);
+        assert_eq!(info.path.as_deref(), Some(custom.to_str().unwrap()));
+        assert_eq!(PathBuf::from(&info.effective_path), custom);
+        assert!(custom.join("store.json").exists());
+        assert!(app.join("store.json").exists()); // 원본 보존
+                                                  // 해제 → 기본으로 복사 복귀 + 포인터 null
+        let info2 = set_data_dir_impl(&app, None).unwrap();
+        assert!(info2.is_default);
+        assert_eq!(info2.path, None);
+        assert_eq!(
+            fs::read(app.join("store.json")).unwrap(),
+            b"{\"version\":2}"
+        );
+        assert!(custom.join("store.json").exists()); // 지정 폴더 쪽도 보존
+        let _ = fs::remove_dir_all(&app);
+        let _ = fs::remove_dir_all(&custom);
+    }
+
+    #[test]
+    fn set_data_dir_impl_rejects_and_keeps_state() {
+        let app = datadir_fixture("impl-fail");
+        let custom = datadir_fixture("impl-current");
+        fs::write(app.join("store.json"), b"{}").unwrap();
+        set_data_dir_impl(&app, Some(custom.to_str().unwrap())).unwrap();
+        // 미존재 경로 → Err, 포인터·데이터 그대로
+        let missing = app.join("no-such-dir");
+        assert!(set_data_dir_impl(&app, Some(missing.to_str().unwrap())).is_err());
+        let info = data_dir_info(&app);
+        assert_eq!(PathBuf::from(&info.effective_path), custom);
+        // 파일(디렉터리 아님)·빈 경로도 Err
+        let file = app.join("f.txt");
+        fs::write(&file, b"x").unwrap();
+        assert!(set_data_dir_impl(&app, Some(file.to_str().unwrap())).is_err());
+        assert!(set_data_dir_impl(&app, Some("   ")).is_err());
+        // 기본 dir 지정은 포인터 해제와 동치 — null 정규화 + 기본으로 복귀
+        let info2 = set_data_dir_impl(&app, Some(app.to_str().unwrap())).unwrap();
+        assert!(info2.is_default);
+        assert_eq!(info2.path, None);
+        assert!(app.join("store.json").exists());
+        let _ = fs::remove_dir_all(&app);
+        let _ = fs::remove_dir_all(&custom);
     }
 }
