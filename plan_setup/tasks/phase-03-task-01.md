@@ -1,6 +1,6 @@
 ---
 id: phase-03-task-01
-status: pending
+status: completed
 depends_on: [phase-01-task-01]
 acceptance_criteria:
   - indexes[].reminders[] 스키마가 migrate()로 정규화된다(at/repeat/enabled/lastFiredAt)

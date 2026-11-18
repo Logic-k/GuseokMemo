@@ -335,3 +335,6 @@
 - phase-01-task-02 completed (76e793b+4253cb3): rename_with_retry 백오프 50/100/150ms + 단위 6건(실 점유 재현). 독립 검증 PASS, e2e 29/29. 참고: 구현자 중단→재개 경로에서 동일 변경 커밋 2개 발생(제품 diff 동일, 후자는 attempt+증거만). run-e2e "early exit" 오판 사례 1회 — qa.log SUMMARY로 실제 PASS 확인, harness 판정 개선 후보.
 - phase-01-task-03 completed (2150f93): rust-version 1.90, 버전 세트 확인(tauri 2.12.5·updater 2.14.1·wry 0.57.2 등, 커밋 메시지). validator PASS — phase-01 완료.
 - phase-02-task-01 completed (e0b5c01): src/search.js — extractText+search 코어, hidden 제외, selftest +10 → 39/39. validator PASS.
+- phase-03-task-01 completed (7313cd6): Rust 스케줄러 스레드(2s)·save_store 스케줄 동기화·guseok://reminder emit·놓침 분류. cargo 18/18, selftest 42/42, validator PASS.
+  - 주의: selftest waitQa가 append-only 로그 전체 스캔 → 이전 런 stale 라인 거짓양성 가능(기능은 별도 실증 PASS) — 후속 태스크에서 마커 이후 구간만 스캔하도록 개선 후보.
+  - lastFiredAt 디스크 기록은 JS 리스너가 필요 — phase-03-task-02(blocked) 범위. 재시작 시 이전 발화분은 missed 재보고(정상).
