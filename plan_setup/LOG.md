@@ -345,3 +345,5 @@
 - phase-05-task-02 completed (2da48d6): visibleIndexes/ensureOneVisible/setIndexHidden 코어 + 스트립·step·Ctrl+번호·layout 필터. Ctrl+번호=n번째 visible 해석(보수적, 근거 attempt). 리마인더는 hidden 무관 발화 유지. selftest 68/68, CDP 8/8, validator PASS.
 - phase-06-task-01 completed: TD-09 noRedirectionBitmap **기각** — 적용 빌드에서만 검은 프레임 2건 재현(Win10 19045, 흰 플래시 양쪽 0건 → 이득 없음), 태스크 규칙대로 롤백. 소스 HEAD 복귀, selftest 68/68 유지. 관찰 증거 .devil/loop/phase-06-task-01/attempt-1.md.
 - phase-06-task-02 completed (ed62069): TD-10 allowDowngrades 확정 적용 — v0.2.4 알고리즘이 v2 store를 spread merge로 무파괴 보존함을 시뮬레이션 케이스 2개로 단언. 롤백 운용 절차 attempt-1.md §4. 실 배포는 사용자 승인 대상. selftest 70/70, validator PASS.
+- phase-06-task-03 → blocked(OQ-05): validator 실측 — 멀티모니터 "자동" 실커서 추종 양방향 PASS, 외부 리로드 실 파일 수정 반영 1.5~1.8s PASS. 실기 IME 손 타이핑만 사용자 확인 필요(조합 경로 정상 관찰, 포커스 직후 첫 자모 소실 징후는 아티팩트 가능성 — 실기 확인 대상으로 잔류).
+- **Loop 1차 라운드 종료**: pending 12 중 11 completed(전부 validator PASS), 06-03 + 기존 6 blocked = 7개 사용자 결정 대기. selftest 26→70, cargo 0→32. 잔재 정리 확인(프로세스·포트·store 복원).

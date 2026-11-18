@@ -1,57 +1,60 @@
 ---
 topic: 구석메모 다음 개발 사이클 상태
 updated: 2026-11-18
-status: Loop 실행 중 — phase-06-task-03 검증 중
+status: Loop 1차 라운드 완료 — 실행 가능 태스크 전부 완료, 잔여는 사용자 결정 대기
 ---
 
 # STATE — 다음 개발 사이클
 
 ## 현재 단계
-**Loop 실행 중** (dod-runner 규약, 사용자 시작 지시 2026-11-18).
-기준선 커밋 `loop(bootstrap)` — 문서·하네스 체계.
-환경: Windows 로컬 메인 체크아웃, 동시 구현 상한 1(순차). 역할별 모델 (미정) →
-프로필 기본값 사용(보수적 선택, LOG 근거).
-기존 `plan_setup/LOG.md`는 v0.2.4까지의 이력으로 보존, Loop 이력은 같은 파일에 append.
+**Loop 1차 라운드 완료** (dod-runner 규약, 2026-11-18). 실행 가능한 pending 12개 중
+11개 완료(전부 독립 검증 PASS), 06-03은 실기 IME 확인만 남아 blocked 전환.
+잔여 7개 blocked는 모두 사용자 결정(DESIGN 승인·OQ) 대기.
+환경: Windows 로컬 메인 체크아웃, 순차 실행. 역할별 모델 (미정) → 프로필 기본값.
 
 ## 태스크 현황 (18)
 
 | 상태 | 개수 | 태스크 |
 |---|---|---|
-| completed | 10 | 01-01 (274c85d), 01-02 (76e793b+4253cb3), 01-03 (2150f93), 02-01 (e0b5c01, 39/39), 03-01 (7313cd6, 42/42), 04-01 (18dceb4, CDP 15/15), 04-02 (74fcdb3, 45/45), 05-01 (8094966, 61/61), 05-02 (2da48d6, 68/68), 06-01 (TD-09 기각 — 검은 프레임 회귀 실측, 롤백) — 모두 validator PASS |
-| completed | +1 | 06-02 (ed62069, TD-10 allowDowngrades 확정+스키마 역방향 단언) validator PASS |
-| in_progress | 1 | 06-03 |
-| blocked | 6 | 02-02(DESIGN), 03-02(OQ-02+DESIGN), 04-03(OQ-03), 04-04(DESIGN), 05-03(DESIGN), 05-04(DESIGN) |
+| completed | 11 | 01-01 (274c85d), 01-02 (76e793b+4253cb3), 01-03 (2150f93), 02-01 (e0b5c01, 39/39), 03-01 (7313cd6, 42/42), 04-01 (18dceb4, CDP 15/15), 04-02 (74fcdb3, 45/45), 05-01 (8094966, 61/61), 05-02 (2da48d6, 68/68), 06-01 (TD-09 기각), 06-02 (ed62069, 70/70) — 모두 validator PASS |
+| blocked | 7 | 06-03(OQ-05 실기 IME), 02-02(DESIGN), 03-02(OQ-02+DESIGN), 04-03(OQ-03), 04-04(DESIGN), 05-03(DESIGN), 05-04(DESIGN) |
 
 ## 차단과 해소 조건
 
 | 차단 | 대상 | 해소 |
 |---|---|---|
-| docs/DESIGN.md 미작성·미승인 | 02-02, 03-02, 04-04, 05-03, 05-04 | PLAN.md "DESIGN 승인 절차" — 미리보기 작성→사용자 승인(버전·범위 기록)→blocked 해제 |
-| OQ-02 리마인더 알림 방식 | 03-02 | DESIGN과 함께 사용자 선택(토스트/패널 강조/소리) |
-| OQ-03 동기 충돌 정책 | 04-03 | 사용자 정책 결정(최신 승/병합/보관) |
-| OQ-01 첫 릴리스 범위 | 릴리스 계획 | 사용자가 R-01~R-08 중 선택 — 구현 진행 자체는 무관 |
+| docs/DESIGN.md 미작성·미승인 | 02-02, 03-02, 04-04, 05-03, 05-04 | PLAN.md "DESIGN 승인 절차" — 미리보기→사용자 승인→해제 |
+| OQ-02 리마인더 알림 방식 | 03-02 | 사용자 선택(토스트/패널 강조/소리) |
+| OQ-03 동기 충돌 정책 | 04-03 | 사용자 정책(최신 승/병합/보관) |
+| OQ-05 실기 IME 손 타이핑 | 06-03 | 사용자 실기 — validator가 대체 경로로 조합 파이프라인 정상 확인, 포커스 직후 첫 자모 소실 징후 관찰(아티팩트 가능성) |
+| OQ-01 첫 릴리스 범위 | 릴리스 계획 | 사용자가 R-01~R-08 중 선택 |
+
+## 이번 라운드 검증 결과 요약
+
+- selftest 26(기준선) → **70/70**, cargo test 0 → **32/32**, CDP 신규 3종(data-dir 15, external-reload 5, hidden-strip 8).
+- 실측: 스토어 외부 리로드 반영 0.6~2.2s, 멀티모니터 "자동" 실커서 추종 양방향 PASS,
+  저장 폴더 지정 실 재기동 유지 PASS.
+- 기술 결정 확정: TD-09 noRedirectionBitmap **기각**(적용 빌드만 검은 프레임, 롤백),
+  TD-10 allowDowngrades **적용**(v2→v1 스키마 무파괴 단언).
 
 ## 다음 행동 (재개 지점)
 
-1. (Loop 시작 승인 후) phase-01-task-01~03 (pending, 독립) — 스키마 v2, rename 재시도, 툴체인.
-2. 이어서 phase-02-task-01, 03-01, 04-01, 04-02, 05-01, 05-02 (pending, 코어) — 순차.
-3. 사용자에게 묶어서 확인: OQ-01/02/03 + DESIGN 미리보기 요청 → blocked 해제.
-4. 게이트: lint → unit → e2e → task_validation — 정의는 `harness_setup/quality_gates/`,
-   실행기는 `harness_setup/scripts/` (e2e 26/26 실검증 2026-11-18).
-5. Loop 운영 계약: `loop_setup/LOOP.md` + `.devin/skills/dod-runner/SKILL.md`.
+1. 사용자 결정 묶음: OQ-01/02/03/05 + DESIGN 미리보기 → blocked 해제.
+2. 해제 후 Loop 재개: pending 전환된 UI 태스크부터 phase → id 순.
+3. 게이트: lint → unit → e2e → task_validation (harness_setup/quality_gates/).
 
 ## 합의 참조
 
-- `docs/PRD.md` ## 자율운영 합의 — 권한(파일 수정·빌드·selftest/CDP), 예산(보통),
-  금지(비밀 커밋·자동시작 잔재·데이터 파괴·push 승인 전 금지), 한도 초과=보고 후 중지.
-- 역할별 모델: (미정). 실행 환경: Windows 로컬 데스크톱.
+- `docs/PRD.md` ## 자율운영 합의 — 권한·예산(보통)·금지(push 승인 전 금지)·한도 초과=보고 후 중지.
+- 역할별 모델: (미정) → 프로필 기본값 사용(보수적 선택).
 
 ## 잔여 예산
-보통 수준(통상 구현·검증 반복) — 세부 상한 미확인.
+보통 수준 — 이번 라운드: 태스크 11개 구현+게이트+독립검증, 재시도 없이 1회 통과(01-02는 조정자 개입으로 중단 복구 1회).
 
-## 미검증 잔존 (기존 LOG 연결)
-- 실 Windows IME 손 타이핑, 멀티모니터 "자동" 실기, 외부 리로드 실기 → phase-06-task-03.
-- TD-09 noRedirectionBitmap, TD-10 allowDowngrades → 잠정, phase-06-task-01/02.
-- selftest 트리거 경쟁(setup 1.4s emit 유실 → selftest 침묵, 2026-11-18 실측) —
-  하네스는 cdp-nudge.cjs로 복구, 제품 측 근본 수정은 Loop 개선 후보
-  (harness_setup/quality_gates/e2e.md 주의 절).
+## 미검증 잔존
+
+- 실 Windows IME 손 타이핑(OQ-05) — 사용자 확인 필요. validator 관찰: 실 입력 경로 조합 정상,
+  포커스 직후 첫 자모 소실 징후 3건(주입 아티팩트 가능성, 실기 확인 필요).
+- 멀티모니터 "자동"·외부 리로드 — **검증 완료로 전환**(validator 실측).
+- selftest 트리거 경쟁(부팅 emit 유실 → 침묵) — cdp-nudge 복구 중, 제품 측 근본 수정은 개선 후보.
+- run-e2e "early exit" 오판·qa_write 리더 점유 시 라인 유실·waitQa 스테일 라인 약한 단언 — 하네스 개선 후보.

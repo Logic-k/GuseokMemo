@@ -1,7 +1,8 @@
 ---
 id: phase-06-task-03
-status: pending
+status: blocked
 depends_on: [phase-03-task-01, phase-04-task-02, phase-06-task-01]
+blocked_by: OQ-05 — 실 Windows IME 손 타이핑은 사용자 실기 필요(멀티모니터·외부 리로드는 검증 완료, validator 2026-11-18)
 acceptance_criteria:
   - 실 Windows IME 손 타이핑으로 한글 입력이 패널·검색(구현 시)·리마인더 입력에서 깨지지 않음을 확인·기록
   - 멀티모니터 "자동" 해석이 실제 커서 모니터를 따라가는지 실기 확인·기록
