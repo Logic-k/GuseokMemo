@@ -339,3 +339,5 @@
   - 주의: selftest waitQa가 append-only 로그 전체 스캔 → 이전 런 stale 라인 거짓양성 가능(기능은 별도 실증 PASS) — 후속 태스크에서 마커 이후 구간만 스캔하도록 개선 후보.
   - lastFiredAt 디스크 기록은 JS 리스너가 필요 — phase-03-task-02(blocked) 범위. 재시작 시 이전 발화분은 missed 재보고(정상).
 - phase-04-task-01 completed (18dceb4): config.json 포인터 + get/set_data_dir + 복사·보존 이전. cargo 25/25, selftest 42/42, CDP cdp-data-dir 15/15 — 검증자가 실 재기동·ACL 쓰기거부 추가 실측 PASS. 주의: config.json BOM 시 기본 폴백(무해).
+- phase-04-task-02 completed (74fcdb3): mtime+len 2s 폴링 자동 리로드, FileStamp 자기에코 억제, src:"external" emit. 반영 지연 0.6~2.2s. cargo 32/32, selftest 45/45, CDP 5/5, validator PASS.
+  - 비차단 관찰: qa_write가 deny-write 리더 시 라인 유실 가능(관찰 정본 주의), extHits 스테일 라인 약한 단언, 부팅~2s reload 1건 발생(TOCTOU — JS dedup으로 무해, 충돌 경로 task-03에서 재검토).

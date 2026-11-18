@@ -1,6 +1,6 @@
 ---
 id: phase-04-task-02
-status: pending
+status: completed
 depends_on: [phase-04-task-01]
 acceptance_criteria:
   - Rust가 store.json의 mtime을 주기 감시하고, 자기 저장(save_store)과 구분해 외부 변경만 감지한다
