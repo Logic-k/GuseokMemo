@@ -126,6 +126,9 @@ fn save_store(app: AppHandle, webview: WebviewWindow, json: String) -> Result<()
             return Err(e.to_string());
         }
     }
+    // TD-04: 감시 루프의 자기 에코 억제 — rename으로 확정된 실제 스탬프를 추적값으로
+    // 기록해 두면, 폴링이 이번 저장을 외부 변경으로 오인하지 않는다.
+    note_store_stamp(&p, file_stamp(&p));
     // 다른 창에는 저장본을 브로드캐스트(페이지 숨김 도중의 pagehide 플러시도 전파되도록 Rust 에서 직접 보냄).
     // src 에 저장한 창의 라벨을 넣어, 저장한 창 자신의 에코는 JS 쪽에서 무시한다 —
     // 자기 에코까지 처리하면 타이핑 도중 state 가 교체되며 IME 조합이 깨진다.
@@ -1093,6 +1096,177 @@ fn reminder_scheduler_loop(app: AppHandle) {
     }
 }
 
+// ==================== 외부 변경 감지 — mtime 폴링 (TD-04, R-05) ====================
+//
+// 동기 클라이언트·다른 PC가 바꾼 store.json을 앱이 다시 읽는다. 리마인더와 같은
+// detached 스레드 패턴으로 STORE_WATCH_INTERVAL마다 store.json의 스탬프를
+// (경로 재해석 포함) 비교한다 — notify 크레이트는 의존성·플랫폼 편차 때문에 보류.
+//
+// 자기 에코 억제: save_store가 rename 성공 직후의 실제 스탬프를 추적값으로 기록하고,
+// 폴링은 그 값과 다른 스탬프만 외부 변경으로 판정한다. 추적값이 "우리가 마지막으로
+// 쓴/읽은 상태"인 셈이라 mtime 해상도나 벽시계 추측이 필요 없다.
+
+/// 감시 주기 — 리마인더와 같은 2초: 동기 반영 허용 지연 안이고 stat 한 번의 비용이 없음.
+const STORE_WATCH_INTERVAL: Duration = Duration::from_secs(2);
+
+/// 파일 한 번의 관찰 — 존재할 때 mtime + 길이. 파일이 없거나 metadata를 못 읽으면
+/// Option 자체가 None이다. len을 보조로 쓰는 이유: FAT(2초)·일부 네트워크 드라이브의
+/// mtime 해상도가 같은 시각의 다른 쓰기를 못 가리는 경우를 흡수하기 위해.
+/// (같은 mtime + 같은 len의 다른 내용은 해시 없이 못 잡는다 — 읽기 비용 때문에 채택 안 함.)
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+struct FileStamp {
+    modified: SystemTime,
+    len: u64,
+}
+
+/// p의 현재 스탬프 — 일반 파일이 아니거나 metadata/mtime 조회 실패면 None.
+fn file_stamp(p: &Path) -> Option<FileStamp> {
+    let md = fs::metadata(p).ok()?;
+    if !md.is_file() {
+        return None;
+    }
+    Some(FileStamp {
+        modified: md.modified().ok()?,
+        len: md.len(),
+    })
+}
+
+/// 틱의 판정 — 무엇을 할지만 결정하고 파일은 건드리지 않는다(순수).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum WatchDecision {
+    /// 스탬프 동일 — 변화 없음 또는 자기 저장 에코 → 아무 것도 하지 않는다.
+    Quiet,
+    /// 추적값과 다른 파일이 존재 — 읽어서 guseok://store(src:"external")로 전파.
+    Reload,
+    /// 파일이 사라짐(또는 관찰 불가) — 추적값만 리셋하고 반영하지 않는다.
+    /// 빈 내용으로 state를 덮어쓰는 사고를 막고, 재생성은 다음 틱이 Reload로 잡는다.
+    Gone,
+}
+
+/// (추적 스탬프, 관찰 스탬프) → 판정. 다르면 외부 행위 — 존재하면 Reload, 부재면 Gone.
+fn watch_decision(tracked: Option<FileStamp>, current: Option<FileStamp>) -> WatchDecision {
+    match current {
+        Some(cur) if tracked != Some(cur) => WatchDecision::Reload,
+        Some(_) => WatchDecision::Quiet,
+        None => match tracked {
+            Some(_) => WatchDecision::Gone,
+            None => WatchDecision::Quiet,
+        },
+    }
+}
+
+/// 감시 상태 — 감시 중인 경로와 "우리가 아는" 마지막 스탬프.
+/// path는 store_path() 재해석과 비교해 set_data_dir 전환을 감지하는 데 쓴다.
+#[derive(Default)]
+struct WatchState {
+    path: Option<PathBuf>,
+    stamp: Option<FileStamp>,
+}
+
+static STORE_WATCH: OnceLock<Mutex<WatchState>> = OnceLock::new();
+
+fn lock_store_watch() -> MutexGuard<'static, WatchState> {
+    STORE_WATCH
+        .get_or_init(|| Mutex::new(WatchState::default()))
+        .lock()
+        // poison돼도 스탬프는 다음 저장/틱에 재설정되는 캐시 — 계속 진행
+        .unwrap_or_else(|e| e.into_inner())
+}
+
+/// 저장 성공·부팅 초기 로드가 호출하는 추적값 갱신 — "이 스탬프까지는 우리가 안다".
+/// 이 값과 다른 관찰만 외부 변경으로 판정되므로 자기 에코가 억제된다.
+fn note_store_stamp(path: &Path, stamp: Option<FileStamp>) {
+    let mut w = lock_store_watch();
+    w.path = Some(path.to_path_buf());
+    w.stamp = stamp;
+}
+
+/// 틱의 순수 부분 — 경로 전환 감지·자기 에코 억제·추적값 전진을 한 곳에서 한다.
+/// 반환: (판정, 읽기 실패 시 복원할 이전 스탬프).
+fn watch_tick(
+    w: &mut WatchState,
+    path: &Path,
+    cur: Option<FileStamp>,
+) -> (WatchDecision, Option<FileStamp>) {
+    if w.path.as_deref() != Some(path) {
+        // 첫 틱 또는 set_data_dir 전환 — 이전은 이미 복사·동기화 완료 상태라
+        // 새 경로의 현재 스탬프로 조용히 재기준한다(emit 없음).
+        w.path = Some(path.to_path_buf());
+        w.stamp = cur;
+        return (WatchDecision::Quiet, cur);
+    }
+    let prev = w.stamp;
+    let d = watch_decision(prev, cur);
+    match d {
+        WatchDecision::Quiet => {}
+        WatchDecision::Gone => w.stamp = None,
+        WatchDecision::Reload => w.stamp = cur, // 읽기 실패 시 호출부가 되돌린다
+    }
+    (d, prev)
+}
+
+/// mtime 폴링 루프 — 앱 수명과 동일(detached). 외부 변경을 감지하면 파일을 읽어
+/// guseok://store{src:"external", raw}를 전 창에 emit한다. JS 쪽은 src가 창 라벨과
+/// 달라 기존 리스너가 migrate() 경유로 그대로 반영한다 (신규 경로 최소화, TD-04).
+fn store_watch_loop(app: AppHandle) {
+    let mut read_fail_streak = 0u32;
+    loop {
+        std::thread::sleep(STORE_WATCH_INTERVAL);
+        let Ok(p) = store_path(&app) else {
+            continue;
+        };
+        let cur = file_stamp(&p);
+        let (decision, prev_stamp) = {
+            let mut w = lock_store_watch();
+            watch_tick(&mut w, &p, cur)
+        };
+        match decision {
+            WatchDecision::Quiet => read_fail_streak = 0,
+            WatchDecision::Gone => {
+                read_fail_streak = 0;
+                qa_write(&format!("store-watch :: gone {}", p.display()));
+            }
+            WatchDecision::Reload => match fs::read_to_string(&p) {
+                Ok(raw) => {
+                    read_fail_streak = 0;
+                    if raw.trim().is_empty() {
+                        // 반영할 내용이 없다 — 스탬프는 전진 유지(후속 쓰기는 새 스탬프).
+                        qa_write(&format!("store-watch :: empty {}", p.display()));
+                    } else if serde_json::from_str::<serde_json::Value>(&raw).is_err() {
+                        // 동기 클라이언트의 중간 상태(반쯤 쓰인 파일) — 무효 내용을
+                        // 브로드캐스트하지 않는다. 완성 쓰기는 스탬프가 달라 재감지된다.
+                        qa_write(&format!("store-watch :: invalid {}", p.display()));
+                    } else {
+                        qa_write(&format!(
+                            "store-watch :: reload {} bytes={}",
+                            p.display(),
+                            raw.len()
+                        ));
+                        let payload = json!({ "src": "external", "raw": raw }).to_string();
+                        let _ = app.emit("guseok://store", payload);
+                    }
+                }
+                Err(e) => {
+                    // 읽기 실패(동기 클라이언트가 점유·복사 중) — 스탬프를 되돌려
+                    // 다음 틱에 재시도한다. 그 사이 우리 쪽 저장 등이 스탬프를
+                    // 갱신했으면 되돌리지 않는다.
+                    {
+                        let mut w = lock_store_watch();
+                        if w.path.as_deref() == Some(p.as_path()) && w.stamp == cur {
+                            w.stamp = prev_stamp;
+                        }
+                    }
+                    read_fail_streak = read_fail_streak.saturating_add(1);
+                    // 연속 실패는 첫 번만 기록 — 장기 점유에서 로그가 무한 증식하지 않게.
+                    if read_fail_streak == 1 {
+                        qa_write(&format!("store-watch :: read-fail {} {e}", p.display()));
+                    }
+                }
+            },
+        }
+    }
+}
+
 fn qa_write(msg: &str) {
     use std::io::Write;
     let line = format!("[QA] {}\n", msg);
@@ -1297,6 +1471,16 @@ fn main() {
                 update_schedule_from_store(&raw);
                 let sched_app = handle.clone();
                 std::thread::spawn(move || reminder_scheduler_loop(sched_app));
+            }
+            // TD-04: 외부 변경 감시 — 부팅 로드 직후의 파일 상태가 "우리가 아는" 기준
+            // 스탬프. store_path가 포인터를 매번 재해석하므로 set_data_dir 전환도
+            // 스레드가 자동으로 따라간다(경로 변경 시 조용히 재기준).
+            if let Ok(p) = store_path(&handle) {
+                note_store_stamp(&p, file_stamp(&p));
+            }
+            {
+                let watch_app = handle.clone();
+                std::thread::spawn(move || store_watch_loop(watch_app));
             }
             let _ = handle;
             if demo || selftest {
@@ -1874,5 +2058,114 @@ mod tests {
         assert!(app.join("store.json").exists());
         let _ = fs::remove_dir_all(&app);
         let _ = fs::remove_dir_all(&custom);
+    }
+
+    // ---- 외부 변경 감지 — mtime 폴링 (phase-04-task-02, TD-04) ----
+
+    /// epoch+ms, len으로 스탬프를 만드는 헬퍼.
+    fn stamp(ms: u64, len: u64) -> Option<FileStamp> {
+        Some(FileStamp {
+            modified: UNIX_EPOCH + Duration::from_millis(ms),
+            len,
+        })
+    }
+
+    #[test]
+    fn watch_decision_same_stamp_is_quiet_self_echo() {
+        // save_store가 기록한 추적값과 관찰값이 같으면 자기 에코 — 억제된다.
+        assert_eq!(
+            watch_decision(stamp(1000, 10), stamp(1000, 10)),
+            WatchDecision::Quiet
+        );
+        // 둘 다 부재(파일이 아직 없는 상태 유지)도 조용하다.
+        assert_eq!(watch_decision(None, None), WatchDecision::Quiet);
+    }
+
+    #[test]
+    fn watch_decision_new_stamp_is_reload() {
+        // 다른 mtime → 외부 변경
+        assert_eq!(
+            watch_decision(stamp(1000, 10), stamp(2000, 10)),
+            WatchDecision::Reload
+        );
+        // mtime이 같아도 len이 다르면 변경 — 해상도 한계(FAT·네트워크) 보완
+        assert_eq!(
+            watch_decision(stamp(1000, 10), stamp(1000, 11)),
+            WatchDecision::Reload
+        );
+        // 부재 → 생성도 외부 변경(동기 폴더에 새로 놓인 파일)
+        assert_eq!(watch_decision(None, stamp(500, 3)), WatchDecision::Reload);
+    }
+
+    #[test]
+    fn watch_decision_gone_is_not_reload() {
+        // 파일 삭제는 리로드가 아니다 — 빈 내용으로 덮어쓰지 않게 추적만 리셋.
+        assert_eq!(watch_decision(stamp(1000, 10), None), WatchDecision::Gone);
+    }
+
+    #[test]
+    fn watch_tick_rebases_on_first_and_path_change() {
+        let mut w = WatchState::default();
+        let a = Path::new("a");
+        let b = Path::new("b");
+        // 첫 틱(미초기화) — emit 없이 기준만 잡는다
+        let (d, _) = watch_tick(&mut w, a, stamp(100, 1));
+        assert_eq!(d, WatchDecision::Quiet);
+        assert_eq!(w.path.as_deref(), Some(a));
+        assert_eq!(w.stamp, stamp(100, 1));
+        // 같은 경로 + 같은 스탬프 → Quiet
+        assert_eq!(watch_tick(&mut w, a, stamp(100, 1)).0, WatchDecision::Quiet);
+        // 같은 경로 + 다른 스탬프 → Reload, 추적값 전진·복원용 이전값 반환
+        let (d, prev) = watch_tick(&mut w, a, stamp(200, 1));
+        assert_eq!(d, WatchDecision::Reload);
+        assert_eq!(prev, stamp(100, 1));
+        assert_eq!(w.stamp, stamp(200, 1));
+        // 경로 전환(set_data_dir) — 이전은 복사 완료라 조용히 재기준
+        let (d, _) = watch_tick(&mut w, b, stamp(999, 9));
+        assert_eq!(d, WatchDecision::Quiet);
+        assert_eq!(w.path.as_deref(), Some(b));
+        assert_eq!(w.stamp, stamp(999, 9));
+    }
+
+    #[test]
+    fn watch_tick_gone_then_recreate_is_reload() {
+        let mut w = WatchState::default();
+        let a = Path::new("a");
+        watch_tick(&mut w, a, stamp(100, 1));
+        let (d, _) = watch_tick(&mut w, a, None);
+        assert_eq!(d, WatchDecision::Gone);
+        assert_eq!(w.stamp, None);
+        // 재생성(삭제→다시 놓기)은 다음 틱에 Reload로 잡힌다
+        let (d, _) = watch_tick(&mut w, a, stamp(300, 2));
+        assert_eq!(d, WatchDecision::Reload);
+    }
+
+    #[test]
+    fn watch_tick_reload_advances_stamp_once() {
+        // Reload 후 같은 관찰이 계속되면 Quiet — 한 파일로 반복 emit하지 않는다.
+        let mut w = WatchState::default();
+        let a = Path::new("a");
+        watch_tick(&mut w, a, stamp(100, 1));
+        assert_eq!(
+            watch_tick(&mut w, a, stamp(200, 2)).0,
+            WatchDecision::Reload
+        );
+        assert_eq!(watch_tick(&mut w, a, stamp(200, 2)).0, WatchDecision::Quiet);
+    }
+
+    #[test]
+    fn file_stamp_real_fs_states() {
+        let dir = datadir_fixture("watch-stamp");
+        let f = dir.join("store.json");
+        // 부재 → None
+        assert_eq!(file_stamp(&f), None);
+        // 파일 → Some, len 반영
+        fs::write(&f, b"{}").unwrap();
+        let s = file_stamp(&f);
+        assert!(s.is_some());
+        assert_eq!(s.unwrap().len, 2);
+        // 디렉터리는 파일이 아니다 → None
+        assert_eq!(file_stamp(&dir), None);
+        let _ = fs::remove_dir_all(&dir);
     }
 }

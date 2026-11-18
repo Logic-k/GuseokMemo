@@ -505,6 +505,47 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     // 스케줄 정리 — 테스트용 리마인더가 이후 저장에 남지 않도록 원복 후 저장.
     idx.reminders = prevReminders;
     await save();
+
+    // --- 외부 변경 감지 + 자동 리로드 (phase-04-task-02, R-05/TD-04) ---
+    // 실제 store.json을 앱 밖에서 쓰는 것처럼 write_text_file로 직접 덮어쓴다 —
+    // Rust mtime 폴링(2s)이 감지 → guseok://store(src:"external") emit → migrate()
+    // 경유 반영까지 실제 파일 경로로 확인한다. 감지 기록은 qa_log의
+    // "store-watch :: reload" 라인으로 단언한다(emit 시뮬레이션 아님).
+    const dd = await invoke("get_data_dir");
+    const storeFile = String(dd.effectivePath || "").replace(/[\\/]+$/, "") + "/store.json";
+    const markerTitle = "QAEXT" + Date.now().toString(36);
+    const nextStore = JSON.parse(JSON.stringify(state));
+    const extTarget = nextStore.indexes.find((i) => i.id === idx.id) || nextStore.indexes[0];
+    const prevExtTitle = extTarget.title;
+    extTarget.title = markerTitle;
+    extTarget.content = "<p>EXTERNAL_CONTENT</p>";
+    // 포커스된 에디터 + IME 조합 중에 리로드가 와도 DOM·포커스가 유지돼야 한다(NFR-02) —
+    // 외부 내용과 다른 probe를 넣어 두고 강제 교체되지 않음을 단언한다.
+    editor.innerHTML = "<p>EXT_FOCUS_PROBE</p>";
+    editor.focus();
+    editor.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
+    await invoke("write_text_file", { path: storeFile, content: JSON.stringify(nextStore) });
+    const extApplied = await waitFor(() => state.indexes.some((i) => i.title === markerTitle), 9000);
+    const extHits = await waitQa("store-watch :: reload", 3000);
+    check("external-reload", extApplied && !!extHits, `applied=${extApplied} qa=${extHits ? "logged" : "none"}`);
+    check(
+      "external-ime-focus",
+      document.activeElement === editor && editor.innerHTML.includes("EXT_FOCUS_PROBE"),
+      `focused=${document.activeElement === editor} dom=${editor.innerHTML.slice(0, 50)}`
+    );
+    editor.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true }));
+    // 마커 정리 + idx 재바인딩 — 리로드로 state 객체가 통째 교체됐으므로 이후
+    // 복원·저장이 새 state의 인덱스를 보게 한다.
+    const extHit = state.indexes.find((i) => i.title === markerTitle);
+    if (extHit) extHit.title = prevExtTitle;
+    idx = state.indexes.find((i) => i.id === idx.id) || state.indexes[0];
+    // 자기 저장 에코 억제 — save_store가 rename 후 스탬프를 추적하므로 폴링이
+    // 우리 저장을 외부 변경으로 오인하면 reload 라인이 늘어난다. 한 주기+α 관찰.
+    const reloadLines = (s) => s.split("\n").filter((l) => l.includes("store-watch :: reload")).length;
+    const reloadBefore = reloadLines(await readQa());
+    await save();
+    await sleep(2600);
+    check("external-self-echo", reloadLines(await readQa()) === reloadBefore, `reload lines stayed ${reloadBefore}`);
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }
