@@ -343,3 +343,4 @@
   - 비차단 관찰: qa_write가 deny-write 리더 시 라인 유실 가능(관찰 정본 주의), extHits 스테일 라인 약한 단언, 부팅~2s reload 1건 발생(TOCTOU — JS dedup으로 무해, 충돌 경로 task-03에서 재검토).
 - phase-05-task-01 completed (8094966): src/templates.js — applyTemplate/insertSnippet/snippetValues, snippets[] 최상위 스키마 신설(ARCH §5 무정의 → 별도 배열 보수적 선택, TRD TD-10 보존 정합). selftest 61/61, validator PASS.
 - phase-05-task-02 completed (2da48d6): visibleIndexes/ensureOneVisible/setIndexHidden 코어 + 스트립·step·Ctrl+번호·layout 필터. Ctrl+번호=n번째 visible 해석(보수적, 근거 attempt). 리마인더는 hidden 무관 발화 유지. selftest 68/68, CDP 8/8, validator PASS.
+- phase-06-task-01 completed: TD-09 noRedirectionBitmap **기각** — 적용 빌드에서만 검은 프레임 2건 재현(Win10 19045, 흰 플래시 양쪽 0건 → 이득 없음), 태스크 규칙대로 롤백. 소스 HEAD 복귀, selftest 68/68 유지. 관찰 증거 .devil/loop/phase-06-task-01/attempt-1.md.

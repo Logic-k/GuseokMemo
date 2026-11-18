@@ -1,6 +1,6 @@
 ---
 id: phase-06-task-01
-status: pending
+status: completed
 depends_on: []
 acceptance_criteria:
   - noRedirectionBitmap 적용 여부가 결정되고, 적용 시 handles/panel 창에 설정된다
