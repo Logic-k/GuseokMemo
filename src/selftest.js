@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden } from "./store.js";
+import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden, MAX_INDEXES } from "./store.js";
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
 import { applyTemplate, insertSnippet, snippetValues } from "./templates.js";
@@ -344,6 +344,79 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
         restored.common.darkMode === "system" &&
         restored.common.openKey === "ctrl_shift_m",
       `ids=${restored.indexes.map((i) => i.id).join(",")}`
+    );
+
+    // --- 다운그레이드 안전 (phase-06-task-02, TD-10) ---
+    // 출시 태그 v0.2.4의 migrate() 알고리즘을 그대로 시뮬레이션한다 — 당시 코드는
+    // 버전 분기 없이 defaultState(v1)·defaultIndex에 raw를 spread merge할 뿐이라
+    // (git show v0.2.4:src/store.js) 미지 키가 원본 그대로 살아남는다. v2 store를
+    // 넣어 구버전 앱이 신규 키를 파괴하지 않음을 단언한다.
+    const migrateV1 = (raw) => {
+      const base = {
+        version: 1,
+        common: { lastIndexId: "welcome1", openKey: "ctrl_shift_m" },
+        indexes: [{ id: "welcome1", title: "할일", content: "", images: [] }],
+      };
+      const s = { ...base, ...(raw && typeof raw === "object" ? raw : {}) };
+      s.common = { ...base.common, ...(raw && raw.common ? raw.common : {}) };
+      if (!Array.isArray(s.indexes) || s.indexes.length === 0) s.indexes = base.indexes;
+      const seen = new Set();
+      s.indexes = s.indexes.slice(0, MAX_INDEXES).map((it, i) => {
+        // v0.2.4 defaultIndex 축약형 — `{ ...d, ...item }` 순서라 raw 키가 기본값을 덮어쓴다.
+        const d = { id: "", title: `메모 ${i + 1}`, content: "", images: [] };
+        const item = it && typeof it === "object" ? it : {};
+        const merged = { ...d, ...item, images: Array.isArray(item.images) ? item.images : [] };
+        if (!merged.id || seen.has(merged.id)) merged.id = "sim" + i;
+        seen.add(merged.id);
+        return merged;
+      });
+      return s;
+    };
+    const v2File = {
+      version: 2,
+      common: { lastIndexId: "dg1", darkMode: "dark", notifyMethod: "sound" },
+      indexes: [
+        {
+          id: "dg1", title: "숨김", content: "<p>유지</p>", hidden: true,
+          reminders: [{ id: "rdg1", at: "2027-03-01T09:00", repeat: "daily", note: "n", enabled: false, lastFiredAt: null }],
+          images: [{ src: "data:image/png;base64,x", ratio: "1:1", scale: 100 }],
+        },
+        { id: "dg2", title: "표시", content: "<p>두번째</p>", hidden: false, reminders: [] },
+      ],
+      templates: [{ id: "utd", name: "사용자템플릿", content: "<p>t</p>", builtin: false }],
+      snippets: [{ id: "usd", name: "사용자스니펫", text: "x {date}", builtin: false }],
+      futureTop: { keep: "me" },
+    };
+    // 구버전 앱의 load→save 왕복: migrate 결과를 JSON 직렬화한 저장본과 같은 조건으로 단언.
+    const downSaved = JSON.parse(JSON.stringify(migrateV1(v2File)));
+    check(
+      "downgrade-v1-preserves-v2",
+      downSaved.version === 2 &&
+        downSaved.common.darkMode === "dark" &&
+        downSaved.common.notifyMethod === "sound" &&
+        downSaved.templates?.length === 1 && downSaved.templates[0].id === "utd" &&
+        downSaved.snippets?.length === 1 && downSaved.snippets[0].id === "usd" &&
+        downSaved.futureTop?.keep === "me" &&
+        downSaved.indexes[0].hidden === true &&
+        downSaved.indexes[0].reminders?.length === 1 &&
+        downSaved.indexes[0].reminders[0].at === "2027-03-01T09:00" &&
+        downSaved.indexes[0].content === "<p>유지</p>",
+      `v=${downSaved.version} tpl=${(downSaved.templates || []).length} rem=${(downSaved.indexes[0].reminders || []).length}`
+    );
+    // 왕복 — 다운그레이드된 파일을 다시 v2 앱이 읽으면 declared=2라 STEPS를 건너뛰고
+    // 신규 필드가 그대로여야 한다(데이터 유실 없는 재업그레이드 경로).
+    const reup = migrate(downSaved);
+    check(
+      "downgrade-reupgrade-roundtrip",
+      reup.version === 2 &&
+        reup.templates[0].id === "utd" &&
+        reup.snippets[0].id === "usd" &&
+        reup.futureTop?.keep === "me" &&
+        reup.indexes[0].hidden === true &&
+        reup.indexes[0].reminders[0].id === "rdg1" &&
+        reup.indexes[0].reminders[0].repeat === "daily" &&
+        reup.indexes[0].reminders[0].enabled === false,
+      `idx0.hidden=${reup.indexes[0].hidden} rem=${reup.indexes[0].reminders.length}`
     );
 
     // --- 템플릿/스니펫 코어 (phase-05-task-01, R-06) ---
