@@ -1,6 +1,6 @@
 ---
 id: phase-05-task-01
-status: pending
+status: completed
 depends_on: [phase-01-task-01]
 acceptance_criteria:
   - store.templates[]에 기본 템플릿(빈/할일/회의 등)이 있고 migrate()로 정규화된다

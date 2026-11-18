@@ -341,3 +341,4 @@
 - phase-04-task-01 completed (18dceb4): config.json 포인터 + get/set_data_dir + 복사·보존 이전. cargo 25/25, selftest 42/42, CDP cdp-data-dir 15/15 — 검증자가 실 재기동·ACL 쓰기거부 추가 실측 PASS. 주의: config.json BOM 시 기본 폴백(무해).
 - phase-04-task-02 completed (74fcdb3): mtime+len 2s 폴링 자동 리로드, FileStamp 자기에코 억제, src:"external" emit. 반영 지연 0.6~2.2s. cargo 32/32, selftest 45/45, CDP 5/5, validator PASS.
   - 비차단 관찰: qa_write가 deny-write 리더 시 라인 유실 가능(관찰 정본 주의), extHits 스테일 라인 약한 단언, 부팅~2s reload 1건 발생(TOCTOU — JS dedup으로 무해, 충돌 경로 task-03에서 재검토).
+- phase-05-task-01 completed (8094966): src/templates.js — applyTemplate/insertSnippet/snippetValues, snippets[] 최상위 스키마 신설(ARCH §5 무정의 → 별도 배열 보수적 선택, TRD TD-10 보존 정합). selftest 61/61, validator PASS.
