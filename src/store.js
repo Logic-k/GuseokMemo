@@ -26,6 +26,14 @@ export const defaultTemplate = () => ({
   builtin: false,
 });
 
+// v2 — 스니펫 원소 기본형 (R-06). text는 {date} 같은 치환자를 담은 평문.
+export const defaultSnippet = () => ({
+  id: "s" + Math.random().toString(36).slice(2, 8),
+  name: "",
+  text: "",
+  builtin: false,
+});
+
 export const defaultIndex = (n = 1) => ({
   id: "i" + Math.random().toString(36).slice(2, 8),
   title: n === 1 ? "할일" : `메모 ${n}`,
@@ -97,6 +105,13 @@ export const defaultState = () => {
       content: s.content,
       builtin: true,
     })),
+    // v2 — R-06 기본 스니펫: 치환자는 삽입 시점 값으로 치환 (templates.js insertSnippet 참조)
+    snippets: [
+      { id: "snip1", name: "오늘 날짜", text: "{date}", builtin: true },
+      { id: "snip2", name: "현재 시각", text: "{time}", builtin: true },
+      { id: "snip3", name: "일시", text: "{datetime}", builtin: true },
+      { id: "snip4", name: "작성일", text: "작성일: {iso}", builtin: true },
+    ],
   };
 };
 
@@ -110,7 +125,7 @@ const WIN_LABEL = getCurrentWindow().label;
 // 위의 spread merge가 알 수 없는 키를 이미 보존하므로(TD-10), 각 단계는
 // 그 버전에 새로 생긴 필드의 형식 정규화만 담당한다.
 const STEPS = {
-  // v1 → v2: common.darkMode/notifyMethod, idx.hidden/reminders[], 최상위 templates[]
+  // v1 → v2: common.darkMode/notifyMethod, idx.hidden/reminders[], 최상위 templates[]/snippets[]
   1(s, base) {
     if (typeof s.common.darkMode !== "string") s.common.darkMode = base.common.darkMode;
     if (typeof s.common.notifyMethod !== "string") s.common.notifyMethod = base.common.notifyMethod;
@@ -127,6 +142,11 @@ const STEPS = {
           .filter((t) => t && typeof t === "object")
           .map((t) => ({ ...defaultTemplate(), ...t }))
       : base.templates;
+    s.snippets = Array.isArray(s.snippets)
+      ? s.snippets
+          .filter((sn) => sn && typeof sn === "object")
+          .map((sn) => ({ ...defaultSnippet(), ...sn }))
+      : base.snippets;
   },
 };
 

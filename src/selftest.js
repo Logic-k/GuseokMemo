@@ -3,6 +3,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { state, migrate } from "./store.js";
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
+import { applyTemplate, insertSnippet, snippetValues } from "./templates.js";
 
 function caretToEnd(el) {
   const r = document.createRange();
@@ -344,6 +345,120 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
         restored.common.openKey === "ctrl_shift_m",
       `ids=${restored.indexes.map((i) => i.id).join(",")}`
     );
+
+    // --- 템플릿/스니펫 코어 (phase-05-task-01, R-06) ---
+    // 메모리 내 가짜 state로만 수행 — 실사용자 store의 templates/snippets는 건드리지 않는다.
+    const mtpl = migrate({
+      version: 1,
+      indexes: [{ id: "tp1", title: "t" }],
+      templates: [
+        { id: "ut1", name: "주간", content: "<p>주간 본문</p>", builtin: false },
+        { name: "필드누락" }, // id/content/builtin 누락 → 기본값 병합
+        "junk", // 비객체 → 제거
+      ],
+      snippets: [
+        { id: "us1", name: "인사", text: "안녕 {date}" },
+        { text: "이름없음" }, // id/name/builtin 누락 → 기본값 병합
+        42, // 비객체 → 제거
+      ],
+    });
+    check(
+      "migrate-templates-normalize",
+      mtpl.templates.length === 2 &&
+        mtpl.templates[0].id === "ut1" &&
+        mtpl.templates[0].content === "<p>주간 본문</p>" &&
+        mtpl.templates[0].builtin === false &&
+        mtpl.templates[1].name === "필드누락" &&
+        mtpl.templates[1].content === "" &&
+        mtpl.templates[1].builtin === false &&
+        typeof mtpl.templates[1].id === "string" &&
+        mtpl.templates[1].id.length > 0,
+      JSON.stringify(mtpl.templates)
+    );
+    check(
+      "migrate-snippets-normalize",
+      mtpl.snippets.length === 2 &&
+        mtpl.snippets[0].id === "us1" &&
+        mtpl.snippets[0].text === "안녕 {date}" &&
+        mtpl.snippets[0].builtin === false &&
+        mtpl.snippets[1].name === "" &&
+        mtpl.snippets[1].text === "이름없음" &&
+        typeof mtpl.snippets[1].id === "string" &&
+        mtpl.snippets[1].id.length > 0,
+      JSON.stringify(mtpl.snippets)
+    );
+    // v1 파일에 snippets 키가 없으면 기본 제공분으로 채운다 (mv = 위의 migrate(V1_STORE)).
+    check(
+      "migrate-snippets-default",
+      Array.isArray(mv.snippets) &&
+        mv.snippets.length >= 3 &&
+        mv.snippets.every((s) => s.builtin === true && !!s.id && !!s.name && typeof s.text === "string"),
+      `snippets=${(mv.snippets || []).length}`
+    );
+
+    // applyTemplate — 새 인덱스 content용 HTML 문자열 반환 (가짜 목록으로 단언).
+    const fakeTpls = [
+      { id: "ft1", name: "회의", content: "<h2>주간 회의</h2><p>안건</p>", builtin: true },
+      { id: "ft2", name: "일지", content: "<p>{iso} 일지</p>", builtin: false },
+    ];
+    const newIdx = { content: "" };
+    newIdx.content = applyTemplate("ft1", fakeTpls);
+    check("template-apply-html", newIdx.content === "<h2>주간 회의</h2><p>안건</p>", newIdx.content.slice(0, 60));
+    check(
+      "template-apply-object",
+      applyTemplate(fakeTpls[0], fakeTpls) === newIdx.content &&
+        applyTemplate("없는id", fakeTpls) === "" &&
+        applyTemplate(null, fakeTpls) === "" &&
+        applyTemplate({}, fakeTpls) === "" &&
+        applyTemplate("ft1", "not-array") === ""
+    );
+    // 템플릿 본문의 치환자도 삽입 시점 값으로 치환된다 ({iso} → YYYY-MM-DD).
+    const tplIso = applyTemplate("ft2", fakeTpls);
+    check("template-apply-subst", /^<p>\d{4}-\d{2}-\d{2} 일지<\/p>$/.test(tplIso), tplIso);
+    // builtin 기본 템플릿은 migrate 결과에서 id로 바로 적용 가능하다.
+    const builtinIdx = { content: "" };
+    builtinIdx.content = applyTemplate("tpl2", mv.templates);
+    check("template-builtin-apply", builtinIdx.content.includes("주간 회의"), builtinIdx.content.slice(0, 40));
+
+    // insertSnippet — {date} 등 치환자를 ko-KR 로컬 실제 값으로 치환 (R-06).
+    const year = String(new Date().getFullYear());
+    const snDate = insertSnippet("{date}");
+    check("snippet-date", snDate.includes(year + "년") && !/[{}]/.test(snDate), snDate);
+    check(
+      "snippet-values-map",
+      (() => {
+        const sv = snippetValues(new Date(2026, 4, 7, 9, 30));
+        return sv.iso === "2026-05-07" && sv.time === "09:30" && sv.year === "2026" && sv.date.includes("2026년 5월 7일");
+      })()
+    );
+    check(
+      "snippet-values-override",
+      insertSnippet("메모 {date} {time}", { date: "2026년 1월 2일 금요일", time: "09:05" }) ===
+        "메모 2026년 1월 2일 금요일 09:05"
+    );
+    // 미지 치환자는 원문 보존, 아는 치환자만 치환.
+    const snUnk = insertSnippet("a {zzz} b {date}");
+    check("snippet-unknown-kept", snUnk.includes("{zzz}") && !snUnk.includes("{date}"), snUnk);
+    check("snippet-repeat", insertSnippet("{time}~{time}", { time: "10:00" }) === "10:00~10:00");
+    check("snippet-nontext", insertSnippet(null) === "" && insertSnippet("") === "" && insertSnippet(42) === "");
+    check("snippet-custom-value", insertSnippet("작성자 {who}", { who: "QA" }) === "작성자 QA");
+    // builtin 스니펫이 실제 치환 경로를 탄다.
+    const builtinSn = mv.snippets.find((s) => s.id === "snip1");
+    check("snippet-builtin", !!builtinSn && insertSnippet(builtinSn.text).includes(year + "년"), builtinSn && builtinSn.text);
+
+    // 삽입 위치 — 커서 자리에 들어가는지 기존 에디터 경로(insertText)로 단언.
+    editor.innerHTML = "<p>앞</p><p>뒤</p>";
+    editor.focus();
+    const snP = editor.querySelectorAll("p")[1];
+    const snRange = document.createRange();
+    snRange.setStart(snP.firstChild || snP, 0);
+    snRange.collapse(true);
+    const snSel = window.getSelection();
+    snSel.removeAllRanges();
+    snSel.addRange(snRange);
+    document.execCommand("insertText", false, insertSnippet("[{iso}] "));
+    await new Promise((r) => setTimeout(r, 30));
+    check("snippet-insert-position", /^앞\[\d{4}-\d{2}-\d{2}\] 뒤$/.test(editor.textContent), editor.textContent.slice(0, 60));
 
     // --- 검색 코어 (phase-02-task-01, R-01/TD-06) ---
     // 실사용자 state를 건드리지 않고 메모리 내 가짜 state로 검증한다.
