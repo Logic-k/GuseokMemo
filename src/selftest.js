@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { state, migrate } from "./store.js";
+import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden } from "./store.js";
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
 import { applyTemplate, insertSnippet, snippetValues } from "./templates.js";
@@ -619,6 +619,108 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
 
     // 스케줄 정리 — 테스트용 리마인더가 이후 저장에 남지 않도록 원복 후 저장.
     idx.reminders = prevReminders;
+    await save();
+
+    // --- 인덱스 표시/숨김 코어 (phase-05-task-02, R-07) ---
+    // migrate()는 idx.hidden을 boolean으로 정규화한다 — literal true만 유지,
+    // truthy-but-not-true·누락은 false (STEPS[1] + defaultIndex merge 경로).
+    const mh = migrate({
+      version: 2,
+      indexes: [
+        { id: "h1", title: "a", hidden: true },
+        { id: "h2", title: "b", hidden: "yes" },
+        { id: "h3", title: "c" },
+        { id: "h4", title: "d", hidden: 1 },
+      ],
+    });
+    check(
+      "hidden-migrate-normalize",
+      mh.indexes[0].hidden === true &&
+        mh.indexes[1].hidden === false &&
+        mh.indexes[2].hidden === false &&
+        mh.indexes[3].hidden === false &&
+        JSON.stringify(mh).includes('"hidden":true'),
+      JSON.stringify(mh.indexes.map((i) => i.hidden))
+    );
+    // 전부 숨김 store는 migrate가 첫 인덱스를 자동 표시해 불변식을 유지한다.
+    const mall = migrate({
+      version: 2,
+      indexes: [
+        { id: "ah1", title: "x", hidden: true },
+        { id: "ah2", title: "y", hidden: true },
+      ],
+    });
+    check(
+      "hidden-migrate-all-hidden",
+      mall.indexes[0].hidden === false && mall.indexes[1].hidden === true,
+      JSON.stringify(mall.indexes.map((i) => i.hidden))
+    );
+
+    // live state — 실제 state를 바꾸고 끝에서 원복한다(종료 시 스냅샷 복원이 한 번 더 보장).
+    // 검증이 항상 성립하도록 visible이 2개 미만이면 임시 인덱스를 끼워 넣는다.
+    const hPrevLast = state.common.lastIndexId;
+    let hTmp = null;
+    if (visibleIndexes().length < 2) {
+      hTmp = { ...defaultIndex(0), id: "qahidden" + Date.now().toString(36), title: "QA숨김" };
+      state.indexes.push(hTmp);
+    }
+    const hTarget = visibleIndexes().find((i) => i.id !== idx.id) || visibleIndexes()[0];
+    const hWas = hTarget ? hTarget.hidden === true : false;
+    const visBefore = visibleIndexes().length;
+
+    const hidOk = hTarget ? await setIndexHidden(hTarget.id, true) : false;
+    const rawHidden = JSON.parse(await invoke("load_store"));
+    const storedHidden = (rawHidden.indexes || []).find((i) => i.id === (hTarget && hTarget.id));
+    check(
+      "hidden-toggle-save",
+      !!hTarget && hidOk === true && hTarget.hidden === true && !!storedHidden && storedHidden.hidden === true &&
+        visibleIndexes().length === visBefore - 1,
+      `ok=${hidOk} stored=${storedHidden && storedHidden.hidden} vis=${visibleIndexes().length}`
+    );
+
+    // 숨긴 인덱스를 lastIndexId로 두면 activeIndex()는 첫 visible로 폴백한다.
+    state.common.lastIndexId = hTarget.id;
+    const act = activeIndex();
+    check(
+      "hidden-active-fallback",
+      !!act && act.id !== hTarget.id && act.hidden !== true,
+      `act=${act && act.id} last=${state.common.lastIndexId}`
+    );
+    state.common.lastIndexId = hPrevLast;
+
+    // 레이아웃 — 스트립 손잡이 수량이 visible 개수를 따라간다.
+    const layHid = await getLayout(state);
+    check(
+      "hidden-layout-count",
+      layHid.count === Math.max(1, visibleIndexes().length) && visibleIndexes().length === visBefore - 1,
+      `count=${layHid.count} vis=${visibleIndexes().length}`
+    );
+
+    // Ctrl+번호 — 패널의 실제 keydown 경로로 n번째 *visible* 인덱스가 열리는지 단언.
+    // hTarget이 숨겨진 상태에서 Ctrl+1은 첫 visible(=hTarget 건너뜀)을 열어야 한다.
+    {
+      const sib = visibleIndexes()[0];
+      state.common.lastIndexId = hTarget.id; // 숨긴 인덱스를 가리키게 둬 변경 관찰을 확실하게
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "1", ctrlKey: true, bubbles: true, cancelable: true }));
+      const ctrlOk = await waitFor(() => state.common.lastIndexId === sib.id, 4000);
+      check("hidden-ctrl-n-skip", ctrlOk && !!sib && sib.id !== hTarget.id, `lastId=${state.common.lastIndexId} want=${sib && sib.id}`);
+    }
+
+    // 마지막 visible 1개 보호 — 나머지를 전부 숨긴 뒤 마지막 1개는 숨김 거절.
+    for (const i of visibleIndexes().slice(0, -1)) await setIndexHidden(i.id, true);
+    const lastV = visibleIndexes()[0];
+    const refused = await setIndexHidden(lastV.id, true);
+    check(
+      "hidden-last-one-guard",
+      refused === false && lastV.hidden === false && visibleIndexes().length === 1,
+      `refused=${refused} visible=${visibleIndexes().length}`
+    );
+
+    // 원복 — 숨긴 것들을 전부 표시로, 임시 인덱스 제거, lastIndexId 복원 후 저장.
+    for (const i of state.indexes) i.hidden = false;
+    if (hTarget) hTarget.hidden = hWas;
+    if (hTmp) state.indexes = state.indexes.filter((i) => i.id !== hTmp.id);
+    state.common.lastIndexId = hPrevLast;
     await save();
 
     // --- 외부 변경 감지 + 자동 리로드 (phase-04-task-02, R-05/TD-04) ---

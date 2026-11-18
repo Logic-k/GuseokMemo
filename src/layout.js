@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { ratioValue } from "./themes.js";
+import { visibleIndexes } from "./store.js";
 
 export const STRIP_W = 40;
 export const HANDLE_GAP = 7;
@@ -8,7 +9,8 @@ export const ADD_H = 30; // 스트립 하단 "메모 추가" 버튼 높이+간�
 
 export async function getLayout(state, showAdd = false) {
   const wa = await invoke("work_area", { which: state.common.monitor || "auto" });
-  const count = Math.max(1, state.indexes.length);
+  // R-07 — 스트립 높이·손잡이 높이는 숨기지 않은(visible) 인덱스 수로 계산한다.
+  const count = Math.max(1, visibleIndexes(state).length);
   const add = showAdd ? ADD_H : 0;
   const maxStrip = wa.h * 0.84;
   const stripH = Math.min(maxStrip, count * 112 + (count - 1) * HANDLE_GAP + add);

@@ -4,7 +4,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { listen } from "@tauri-apps/api/event";
 import { getVersion } from "@tauri-apps/api/app";
-import { state, initStore, saveStore, defaultIndex, applyTheme, migrate, MAX_INDEXES } from "./store.js";
+import { state, initStore, saveStore, defaultIndex, applyTheme, migrate, MAX_INDEXES, ensureOneVisible } from "./store.js";
 import { THEMES, RATIOS, FONTS } from "./themes.js";
 
 const win = getCurrentWindow();
@@ -423,6 +423,12 @@ function renderIndex(idx) {
     del.onclick = async () => {
       const at = state.indexes.findIndex((i) => i.id === idx.id);
       state.indexes.splice(at, 1);
+      // R-07 — 표시 중이던 마지막 인덱스를 지웠을 때 전부 숨김이 되지 않게 첫 인덱스를 다시 표시.
+      ensureOneVisible();
+      if (state.common.lastIndexId === idx.id) {
+        const v = state.indexes.find((i) => i.hidden !== true) || state.indexes[0];
+        if (v) state.common.lastIndexId = v.id;
+      }
       tab = "common";
       await commit("인덱스를 삭제했어요");
       render();

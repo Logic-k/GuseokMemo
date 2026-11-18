@@ -159,7 +159,9 @@ export function migrate(raw) {
   s.indexes = s.indexes.slice(0, MAX_INDEXES).map((it, i) => {
     const d = defaultIndex(i + 1);
     const item = it && typeof it === "object" ? it : {};
-    const merged = { ...d, ...item, images: Array.isArray(item.images) ? item.images : [] };
+    // R-07 — hidden은 strict boolean 계약: v2 파일에서도 literal true만 숨김으로
+    // 인정한다("yes"/1 같은 이형 값은 표시로 정규화 — 모든 필터가 `=== true` 기준).
+    const merged = { ...d, ...item, images: Array.isArray(item.images) ? item.images : [], hidden: item.hidden === true };
     if (!merged.id || seen.has(merged.id)) merged.id = uid();
     seen.add(merged.id);
     return merged;
@@ -170,6 +172,8 @@ export function migrate(raw) {
     raw && typeof raw === "object" && Number.isInteger(raw.version) && raw.version >= 1 ? raw.version : 1;
   for (let v = declared; v < SCHEMA_VERSION; v++) STEPS[v]?.(s, base);
   s.version = Math.max(declared, SCHEMA_VERSION);
+  // R-07 — 전부 숨김은 어떤 경로로도 허용하지 않는다 (외부 편집·구버전 백업 포함).
+  ensureOneVisible(s);
   return s;
 }
 
@@ -224,12 +228,48 @@ window.addEventListener("pagehide", () => {
   } catch {}
 });
 
+// R-07 — 스트립에 보이는(숨기지 않은) 인덱스 목록. 표시 관련 모든 필터는
+// 이 순서·조건을 따른다 (handles 렌더·layout 높이·step·Ctrl+번호·검색 제외와 동일 기준).
+export function visibleIndexes(s = state) {
+  const list = s && Array.isArray(s.indexes) ? s.indexes : [];
+  return list.filter((i) => i && i.hidden !== true);
+}
+
+// R-07 — 전부 숨김 금지: 표시 중인 인덱스가 하나도 없으면 첫 인덱스를 다시 표시한다.
+// 삭제·복원·외부 편집 등 setIndexHidden을 거치지 않는 경로에서도 불변식을 유지한다.
+export function ensureOneVisible(s = state) {
+  const list = s && Array.isArray(s.indexes) ? s.indexes : [];
+  if (list.length && !list.some((i) => i && i.hidden !== true)) list[0].hidden = false;
+}
+
 export function activeIndex() {
-  return state.indexes.find((i) => i.id === state.common.lastIndexId) || state.indexes[0];
+  const cur = state.indexes.find((i) => i.id === state.common.lastIndexId);
+  // R-07 — lastIndexId가 숨긴 인덱스를 가리키면 첫 visible로 폴백한다.
+  if (cur && cur.hidden !== true) return cur;
+  return visibleIndexes()[0] || state.indexes[0] || null;
 }
 
 export function indexById(id) {
   return state.indexes.find((i) => i.id === id);
+}
+
+// R-07 — 인덱스 표시/숨김 코어 (토글 UI는 phase-05-task-04가 호출한다).
+// 데이터·메모·리마인더는 유지하고 표시만 바꾼다. 마지막 visible 1개는 숨길 수
+// 없고(전부 숨김 금지), 숨기는 인덱스가 lastIndexId면 첫 visible로 폴백시킨다.
+// 반환: 적용(또는 이미 그 상태)이면 true, id 없음·마지막 1개 보호 거절이면 false.
+export async function setIndexHidden(id, hidden) {
+  const idx = indexById(id);
+  if (!idx) return false;
+  const want = hidden === true;
+  if (idx.hidden === want) return true; // 멱등 — 불필요한 저장·브로드캐스트를 만들지 않는다
+  if (want && visibleIndexes().length <= 1) return false;
+  idx.hidden = want;
+  if (want && state.common.lastIndexId === id) {
+    const first = visibleIndexes()[0];
+    if (first) state.common.lastIndexId = first.id;
+  }
+  await saveStore({ immediate: true });
+  return true;
 }
 
 export function applyTheme(index, themeIdx) {

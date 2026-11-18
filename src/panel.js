@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow, LogicalPosition, LogicalSize } from "@tauri-apps/api/window";
 import { save } from "@tauri-apps/plugin-dialog";
-import { state, initStore, saveStore, indexById } from "./store.js";
+import { state, initStore, saveStore, indexById, visibleIndexes } from "./store.js";
 import { hexToRgba, fontCss } from "./themes.js";
 import { runSelfTest } from "./selftest.js";
 import { getLayout, panelRect } from "./layout.js";
@@ -777,7 +777,8 @@ window.addEventListener("focus", () => {
 document.addEventListener("keydown", async (e) => {
   if ((e.ctrlKey || e.metaKey) && /^[0-9]$/.test(e.key)) {
     const n = e.key === "0" ? 10 : Number(e.key);
-    const target = state.indexes[n - 1];
+    // R-07 — 번호는 스트립 표시 순서 기준 n번째 visible 인덱스 (숨긴 인덱스 건너뜀).
+    const target = visibleIndexes()[n - 1];
     if (target) {
       e.preventDefault();
       const lay = await getLayout(state);
@@ -801,7 +802,7 @@ document.addEventListener("keydown", async (e) => {
 async function boot() {
   await initStore(async (next) => {
     panelEl.dataset.side = next.common.side || "right";
-    const current = next.indexes.find((i) => i.id === idx?.id) || next.indexes[0];
+    const current = next.indexes.find((i) => i.id === idx?.id) || visibleIndexes(next)[0] || next.indexes[0];
     if (!current) return;
     const wasFocused = editor.matches(":focus");
     const pinned = idx;
@@ -833,7 +834,7 @@ async function boot() {
   panelEl.dataset.side = state.common.side || "right";
 
   await listen("guseok://panel-open", (e) => {
-    const target = indexById(e.payload?.id) || state.indexes[0];
+    const target = indexById(e.payload?.id) || visibleIndexes()[0] || state.indexes[0];
     if (!target) return;
     // 다른 인덱스로 전환하기 전에 현재 에디터 내용을 이전 메모에 확정하고,
     // 표시 중인 인덱스를 lastIndexId 로 즉시 저장해 다른 창의 디바운스 저장에 밀리지 않게 한다.
@@ -861,7 +862,7 @@ async function boot() {
         const snap = JSON.parse(snapshot);
         state.indexes = snap.indexes;
         state.common = snap.common;
-        idx = state.indexes.find((i) => i.id === target.id) || state.indexes[0];
+        idx = state.indexes.find((i) => i.id === target.id) || visibleIndexes()[0] || state.indexes[0];
         testing = false;
         selImg = -1;
         editor.innerHTML = idx.content || "<p><br></p>";

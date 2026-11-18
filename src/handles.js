@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { state, initStore, saveStore, indexById, activeIndex, defaultIndex, applyTheme, MAX_INDEXES } from "./store.js";
+import { state, initStore, saveStore, indexById, activeIndex, defaultIndex, applyTheme, MAX_INDEXES, visibleIndexes, ensureOneVisible, setIndexHidden as setIndexHiddenCore } from "./store.js";
 import { THEMES } from "./themes.js";
 import { getLayout, panelRect, STRIP_W } from "./layout.js";
 
@@ -20,7 +20,8 @@ const showAdd = () => state.indexes.length < MAX_INDEXES;
 function render() {
   listEl.innerHTML = "";
   const hh = lay ? lay.hh : 96;
-  state.indexes.forEach((idx) => {
+  // R-07 — 숨긴 인덱스는 스트립에 렌더하지 않는다 (데이터는 유지, 표시만 제외).
+  visibleIndexes().forEach((idx) => {
     const el = document.createElement("div");
     const armed = pendingDelete && pendingDelete.id === idx.id;
     el.className = "handle" + (idx.id === activeId ? " active" : "") + (armed ? " del-armed" : "");
@@ -62,12 +63,13 @@ let lastLayoutSig = "";
 let lastRenderSig = "";
 
 function layoutSig() {
-  return [state.common.side, state.common.monitor, state.common.anchor, state.common.mode, state.indexes.length].join("|");
+  // 전체 개수는 + 버튼(ADD_H) 유무를, visible 개수는 스트립 높이를 바꾼다 — 둘 다 시그니처에 포함.
+  return [state.common.side, state.common.monitor, state.common.anchor, state.common.mode, state.indexes.length, visibleIndexes().length].join("|");
 }
 
 function renderSig() {
   const h = lay ? Math.round(lay.hh) : 96;
-  return activeId + "#" + h + "#" + state.indexes.map((i) => i.id + i.title + i.bg + i.fg).join(",");
+  return activeId + "#" + h + "#" + visibleIndexes().map((i) => i.id + i.title + i.bg + i.fg).join(",");
 }
 
 async function refresh() {
@@ -99,7 +101,9 @@ async function removeIndex(id) {
   if (state.indexes.length <= 1) return;
   const wasActive = activeId === id;
   state.indexes = state.indexes.filter((i) => i.id !== id);
-  if (state.common.lastIndexId === id) state.common.lastIndexId = state.indexes[0].id;
+  // R-07 — 표시 중이던 마지막 인덱스를 지우면 남은 첫 인덱스를 자동 표시해 전부 숨김을 막는다.
+  ensureOneVisible();
+  if (state.common.lastIndexId === id) state.common.lastIndexId = (visibleIndexes()[0] || state.indexes[0]).id;
   if (pendingDelete) {
     clearTimeout(pendingDelete.timer);
     pendingDelete = null;
@@ -156,11 +160,28 @@ async function toggle() {
 }
 
 async function step(dir) {
-  const list = state.indexes;
+  // R-07 — ↑/↓ 순환은 표시 중인 인덱스만 대상으로 한다 (숨긴 인덱스 건너뜀).
+  const list = visibleIndexes();
+  if (!list.length) return;
   const cur = list.findIndex((i) => i.id === activeId);
   const base = cur >= 0 ? cur : Math.max(0, list.findIndex((i) => i.id === state.common.lastIndexId));
   const next = list[(base + dir + list.length) % list.length];
   if (next && next.id !== activeId) await open(next.id);
+}
+
+// R-07 — Ctrl+번호 직접 열기: 번호는 스트립에 보이는 순서 기준 n번째 visible 인덱스.
+async function openNthVisible(n) {
+  const idx = visibleIndexes()[(n || 1) - 1];
+  if (idx) await open(idx.id);
+}
+
+// R-07 — 표시/숨김 코어 호출 + 스트립 재배치·재렌더. 토글 UI(phase-05-task-04)가
+// 없어도 __handles 훅·모듈 import로 호출 가능하다. 데이터 계약·보호·저장은
+// store.js의 setIndexHidden이 담당한다.
+export async function setIndexHidden(id, hidden) {
+  const ok = await setIndexHiddenCore(id, hidden);
+  if (ok) await refresh();
+  return ok;
 }
 
 // 드래그 종료 지점에서 가장 가까운 모니터의 좌/우 가장자리로 자석 스냅.
@@ -258,7 +279,7 @@ function bindDrag() {
 }
 
 // CDP 테스트용 내부 훅
-window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, state: () => state, lay: () => lay };
+window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNthVisible, setIndexHidden, state: () => state, lay: () => lay };
 
 async function boot() {
   await initStore(async () => {
@@ -291,10 +312,7 @@ async function boot() {
     if (action === "toggle") await toggle();
     else if (action === "prev") await step(-1);
     else if (action === "next") await step(1);
-    else if (action === "index") {
-      const idx = state.indexes[(n || 1) - 1];
-      if (idx) await open(idx.id);
-    }
+    else if (action === "index") await openNthVisible(n);
   });
 
   invoke("register_shortcuts", { preset: state.common.openKey || "ctrl_shift_m", enabled: true })
