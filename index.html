@@ -59,6 +59,9 @@
             <button class="tb" id="btnSearch" title="검색 (Ctrl+Shift+F)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.2 20.2-4.1-4.1"/></svg>
             </button>
+            <button class="tb" id="btnReminder" title="리마인더">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.4V12l3.2 2.1"/></svg>
+            </button>
             <button class="tb" id="btnImage" title="이미지 넣기">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.6" width="18" height="14.8" rx="3"/><circle cx="8.6" cy="9.6" r="1.5"/><path d="M3.6 16.6 8.9 12l3.1 2.8 3.2-3.4 5.2 5.2"/></svg>
             </button>
@@ -76,10 +79,24 @@
             <input type="range" id="opacityRange" min="25" max="100" step="5" value="100" />
             <span id="opacityVal">100%</span>
           </div>
+          <div class="rem-pop hidden" id="remPop">
+            <div class="rem-list" id="remList"></div>
+            <div class="rem-form">
+              <input type="datetime-local" id="remAt" />
+              <select id="remRepeat">
+                <option value="none">반복 없음</option>
+                <option value="daily">매일</option>
+                <option value="weekly">매주</option>
+              </select>
+              <button id="remSet" title="리마인더 설정">설정</button>
+            </div>
+          </div>
           <div class="saved" id="saved">저장됨</div>
           <div class="toast" id="toast"></div>
         </div>
       </div>
+
+      <div id="toastHost" class="toast-host hidden"></div>
     </div>
     <input type="file" id="fileInput" accept="image/*" multiple class="hidden" />
     <script type="module" src="/src/main.js"></script>

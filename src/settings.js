@@ -6,6 +6,17 @@ import { listen } from "@tauri-apps/api/event";
 import { getVersion } from "@tauri-apps/api/app";
 import { state, initStore, saveStore, defaultIndex, applyTheme, migrate, MAX_INDEXES, ensureOneVisible } from "./store.js";
 import { THEMES, RATIOS, FONTS } from "./themes.js";
+import {
+  setReminder,
+  removeReminder,
+  setReminderEnabled,
+  reminderStatus,
+  REM_STATUS_LABEL,
+  fmtReminderAt,
+  repeatLabel,
+  listReminders,
+  toLocalIso,
+} from "./reminders.js";
 
 const win = getCurrentWindow();
 const tabsEl = document.getElementById("tabs");
@@ -120,6 +131,17 @@ function renderTabs() {
     render();
   };
   tabsEl.appendChild(common);
+
+  // D-2 — 리마인더 목록·추가는 인덱스 무관한 전역 관리라 공통 다음의 고정 탭.
+  const remTab = el("button", "tab" + (tab === "reminders" ? " on" : ""), "");
+  remTab.innerHTML =
+    '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.4V12l3.2 2.1"/></svg>' +
+    "<span>리마인더</span>";
+  remTab.onclick = () => {
+    tab = "reminders";
+    render();
+  };
+  tabsEl.appendChild(remTab);
 
   state.indexes.forEach((idx) => {
     const b = el("button", "tab" + (tab === idx.id ? " on" : ""));
@@ -453,6 +475,109 @@ function renderIndex(idx) {
   }
 }
 
+/* ---------------- reminders (D-2) ---------------- */
+
+// 예약된 리마인더 전체 목록 + 추가 폼. 해제는 항목을 남긴 채 발화만 끄고(켜기로 복귀),
+// 삭제는 목록에서 지운다 — 둘 다 코어 함수를 거쳐 즉시 저장·스케줄 재동기화된다.
+function renderReminders() {
+  bodyEl.innerHTML = "";
+  bodyEl.appendChild(el("p", "hint-top", "시각이 되면 스트립 옆에 알림이 뜹니다. 클릭하면 그 메모가 열립니다."));
+
+  // --- 추가 폼 ---
+  bodyEl.appendChild(el("div", "section-title", "리마인더 추가"));
+  const idxSel = select(
+    state.indexes.map((i) => ({
+      id: i.id,
+      label: (i.title || "메모") + (i.hidden === true ? " (숨김)" : ""),
+    })),
+    state.indexes[0] && state.indexes[0].id,
+    () => {}
+  );
+  idxSel.id = "remAddIndex";
+  const atInput = document.createElement("input");
+  atInput.type = "datetime-local";
+  atInput.id = "remAddAt";
+  atInput.value = toLocalIso(new Date(Date.now() + 3600000));
+  const repSel = select(
+    [
+      { id: "none", label: "반복 없음" },
+      { id: "daily", label: "매일" },
+      { id: "weekly", label: "매주" },
+    ],
+    "none",
+    () => {}
+  );
+  repSel.id = "remAddRepeat";
+  const addBtn = el("button", "btn primary", "+ 리마인더 추가");
+  addBtn.id = "remAddBtn";
+  addBtn.onclick = async () => {
+    const indexId = idxSel.value;
+    const at = atInput.value;
+    if (!at) {
+      status("알림 시각을 골라주세요");
+      return;
+    }
+    const r = await setReminder(indexId, { at, repeat: repSel.value });
+    if (!r) {
+      status("시각 형식이 올바르지 않아요");
+      return;
+    }
+    status("리마인더를 추가했어요");
+    render();
+  };
+  const addWrap = el("div", "rem-add");
+  addWrap.append(idxSel, atInput, repSel, addBtn);
+  bodyEl.appendChild(addWrap);
+
+  // --- 목록 ---
+  const items = listReminders(state);
+  bodyEl.appendChild(el("div", "section-title", `예약된 리마인더 ${items.length ? `(${items.length})` : ""}`));
+  if (!items.length) {
+    bodyEl.appendChild(el("p", "hint-top", "설정된 리마인더가 없어요. 메모 패널의 시계 버튼이나 위 폼으로 추가할 수 있어요."));
+    return;
+  }
+  const now = Date.now();
+  const list = el("div", "rem-rows");
+  items.forEach(({ idx, r }) => {
+    const st = reminderStatus(r, now);
+    const rowEl = el("div", "rem-row" + (r.enabled === true ? "" : " off"));
+
+    const left = el("div", "rem-left");
+    const head = el("div", "rem-head");
+    const dot = el("span", "dot");
+    dot.style.background = idx.accent;
+    head.append(dot, el("span", "rem-idx", idx.title || "메모"));
+    const when = el("div", "rem-when" + (st.code === "missed" ? " overdue" : ""), fmtReminderAt(r.at));
+    left.append(head, when);
+
+    const mid = el("div", "rem-mid");
+    mid.appendChild(el("span", "rem-rep", repeatLabel(r.repeat)));
+    const badge = el("span", "rem-badge" + (st.code === "missed" ? " overdue" : ""), REM_STATUS_LABEL[st.code] || "");
+    mid.appendChild(badge);
+    if (r.note) mid.appendChild(el("span", "rem-note", r.note));
+
+    const ctrl = el("div", "row-ctrl");
+    const offBtn = el("button", "btn", r.enabled === true ? "해제" : "켜기");
+    offBtn.onclick = async () => {
+      const want = !(r.enabled === true); // setReminderEnabled가 r.enabled를 바꾸기 전에 의도를 먼저 잡는다
+      await setReminderEnabled(idx.id, r.id, want);
+      status(want ? "리마인더를 다시 켰어요" : "리마인더를 해제했어요");
+      render();
+    };
+    const delBtn = el("button", "btn danger", "삭제");
+    delBtn.onclick = async () => {
+      await removeReminder(idx.id, r.id);
+      status("리마인더를 삭제했어요");
+      render();
+    };
+    ctrl.append(offBtn, delBtn);
+
+    rowEl.append(left, mid, ctrl);
+    list.appendChild(rowEl);
+  });
+  bodyEl.appendChild(list);
+}
+
 /* ---------------- data ---------------- */
 
 async function backup() {
@@ -486,7 +611,8 @@ async function restore() {
 function render() {
   renderTabs();
   const idx = state.indexes.find((i) => i.id === tab);
-  if (idx) renderIndex(idx);
+  if (tab === "reminders") renderReminders();
+  else if (idx) renderIndex(idx);
   else renderCommon();
 }
 
@@ -519,6 +645,7 @@ async function boot() {
     const t = e.payload?.tab;
     if (t === "index" && state.indexes[0]) tab = state.indexes[0].id;
     else if (t === "common") tab = "common";
+    else if (t === "reminders") tab = "reminders";
     renderUnlessBusy();
   });
   try {
@@ -527,6 +654,7 @@ async function boot() {
     monitors = [];
   }
   if (forcedTab === "index" && state.indexes[0]) tab = state.indexes[0].id;
+  else if (forcedTab === "reminders") tab = "reminders";
   render();
 
   document.getElementById("closeBtn").onclick = () => win.close();

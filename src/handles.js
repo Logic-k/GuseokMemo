@@ -1,9 +1,20 @@
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { listen, emitTo } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { state, initStore, saveStore, indexById, activeIndex, defaultIndex, applyTheme, MAX_INDEXES, visibleIndexes, ensureOneVisible, setIndexHidden as setIndexHiddenCore } from "./store.js";
 import { THEMES } from "./themes.js";
 import { getLayout, panelRect, STRIP_W } from "./layout.js";
+import {
+  markReminderFired,
+  toastEnqueue,
+  toastRemove,
+  toastPromote,
+  TOAST_MS,
+  TOAST_W,
+  TOAST_ITEM_H,
+  TOAST_GAP,
+  TOAST_PAD,
+} from "./reminders.js";
 
 const win = getCurrentWindow();
 const listEl = document.getElementById("handleList");
@@ -278,8 +289,72 @@ function bindDrag() {
   });
 }
 
+/* ---------------- 리마인더 토스트 (D-2, OQ-02 = 앱 내 토스트) ---------------- */
+//
+// Rust 스케줄러의 guseok://reminder를 받아 토스트 창으로 전달하는 대표 호스트다.
+// handles 창은 패널이 닫혀 있어도(심지어 스트립이 숨겨진 단축키 모드에서도) 상주하므로
+// 알림 도달이 보장된다. 토스트 창(toast.js)은 렌더만 하고, 큐·4초 타이머·위치·
+// 발화 기록(lastFiredAt)은 여기서 관리한다.
+
+const toastLive = []; // 화면에 보이는 토스트 — 최대 TOAST_MAX
+const toastPending = []; // 넘친 대기분 — 자리 나면 순서대로 승격
+const toastTimers = new Map(); // reminderId -> 만료 타이머
+
+// 큐 상태를 토스트 창에 보내고 창 위치·표시를 갱신한다. 큐가 비면 숨긴다.
+// 위치는 스트립 옆(오른쪽 스트립이면 왼쪽): 스트립 세로 중앙에 토스트 스택을 맞춘다.
+async function syncToastWindow() {
+  const items = toastLive.map((t) => ({ ...t }));
+  emitTo("toast", "guseok://toast-state", { items }).catch(() => {});
+  if (!items.length) {
+    invoke("place_toast", { x: 0, y: 0, w: 1, h: 1, visible: false }).catch(() => {});
+    return;
+  }
+  try {
+    const l = await getLayout(state, showAdd());
+    const h = items.length * TOAST_ITEM_H + (items.length - 1) * TOAST_GAP + TOAST_PAD * 2;
+    const x = l.side === "right" ? l.x - TOAST_W - 8 : l.x + STRIP_W + 8;
+    const y = Math.max(l.wa.y + 8, Math.min(l.y + l.stripH / 2 - h / 2, l.wa.y + l.wa.h - h - 8));
+    await invoke("place_toast", { x, y, w: TOAST_W, h, visible: true });
+  } catch {}
+}
+
+function scheduleToastExpiry(item) {
+  clearTimeout(toastTimers.get(item.reminderId));
+  toastTimers.set(
+    item.reminderId,
+    setTimeout(() => expireToast(item.reminderId), TOAST_MS)
+  );
+}
+
+function expireToast(reminderId) {
+  clearTimeout(toastTimers.get(reminderId));
+  toastTimers.delete(reminderId);
+  toastRemove(toastLive, toastPending, reminderId);
+  for (const p of toastPromote(toastLive, toastPending)) scheduleToastExpiry(p);
+  syncToastWindow();
+}
+
+function dismissToast(reminderId) {
+  expireToast(reminderId); // 만료와 같은 경로 — 제거 + 승격 + 동기화
+}
+
+function clearToasts() {
+  for (const t of toastTimers.values()) clearTimeout(t);
+  toastTimers.clear();
+  toastLive.length = 0;
+  toastPending.length = 0;
+  syncToastWindow();
+}
+
+function pushToast(item) {
+  clearTimeout(toastTimers.get(item.reminderId)); // 같은 리마인더 재발화 시 갱신
+  toastEnqueue(toastLive, toastPending, item);
+  if (toastLive.includes(item)) scheduleToastExpiry(item);
+  syncToastWindow();
+}
+
 // CDP 테스트용 내부 훅
-window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNthVisible, setIndexHidden, state: () => state, lay: () => lay };
+window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNthVisible, setIndexHidden, state: () => state, lay: () => lay, toasts: () => ({ live: toastLive.length, pending: toastPending.length }), pushToast, clearToasts };
 
 async function boot() {
   await initStore(async () => {
@@ -301,6 +376,40 @@ async function boot() {
     activeId = null;
     render();
   });
+
+  // 리마인더 발화 — 전 창이 받지만 전달·기록은 이 창이 대표로 담당한다(D-2).
+  // lastFiredAt에 발생 시각(at)을 기록해 일회성은 inert로, 반복은 다음 발생으로
+  // 스케줄이 수렴한다 — 재시작 후 같은 놓침이 재보고되지 않는 래치.
+  await listen("guseok://reminder", async (e) => {
+    const p = e.payload || {};
+    if (!p.indexId || !p.reminderId) return;
+    try {
+      await markReminderFired(p.indexId, p.reminderId, p.at);
+    } catch {}
+    const target = indexById(p.indexId);
+    pushToast({
+      indexId: p.indexId,
+      reminderId: p.reminderId,
+      title: (target && target.title) || "메모",
+      at: p.at,
+      missed: !!p.missed,
+      note: p.note || "",
+    });
+  });
+
+  // 토스트 창의 사용자 행동 — 열기(클릭), 개별 닫기(×), 전체 닫기(Esc), 준비 통지.
+  await listen("guseok://toast-open", async (e) => {
+    const { indexId, reminderId } = e.payload || {};
+    if (reminderId) dismissToast(reminderId);
+    if (!indexId) return;
+    if (indexId !== activeId) await open(indexId); // 이미 그 메모가 열려 있으면 그대로 둔다
+  });
+  await listen("guseok://toast-dismiss", (e) => {
+    const id = e.payload && e.payload.reminderId;
+    if (id) dismissToast(id);
+  });
+  await listen("guseok://toast-clear", () => clearToasts());
+  await listen("guseok://toast-ready", () => syncToastWindow());
 
   await listen("guseok://panel-open", (e) => {
     activeId = e.payload?.id || null;

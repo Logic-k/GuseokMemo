@@ -476,6 +476,35 @@ fn hide_search(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+// ==================== 앱 내 토스트 창 (R-02/03, DESIGN D-2, OQ-02) ====================
+//
+// OQ-02 확정 = 앱 내 토스트 단일. handles.js가 발화 큐를 소유하고, 이 커맨드로
+// 스트립 옆 위치·표시를 지시한다 — 창 자체는 setup에서 미리 생성해 hide/show
+// 재사용(NFR-06, BUG-18 회귀 방지). 내용(렌더·클릭 라우팅)은 toast.js가 담당.
+#[tauri::command]
+fn place_toast(
+    app: AppHandle,
+    x: f64,
+    y: f64,
+    w: f64,
+    h: f64,
+    visible: bool,
+) -> Result<(), String> {
+    let win = app
+        .get_webview_window("toast")
+        .ok_or("toast window missing")?;
+    win.set_size(LogicalSize::new(w, h))
+        .map_err(|e| e.to_string())?;
+    win.set_position(LogicalPosition::new(x, y))
+        .map_err(|e| e.to_string())?;
+    if visible {
+        win.show().map_err(|e| e.to_string())?;
+    } else {
+        let _ = win.hide();
+    }
+    Ok(())
+}
+
 #[tauri::command]
 fn place_handles(
     app: AppHandle,
@@ -1417,6 +1446,7 @@ fn main() {
             hide_panel,
             show_search,
             hide_search,
+            place_toast,
             place_handles,
             work_area,
             monitors,
@@ -1510,6 +1540,30 @@ fn main() {
                 }
             });
             let _ = search;
+
+            // D-2/OQ-02 — 리마인더 앱 내 토스트. 스트립 옆에 뜨는 알림 카드로,
+            // 패널이 닫혀 있어도(권한·OS 알림 설정과 무관하게) 도달한다. handles가
+            // 큐를 소유하며 place_toast로 위치·표시를 지시하고, 클릭은
+            // guseok://toast-* 이벤트로 handles에 되돌아간다.
+            let _toast = WebviewWindowBuilder::new(
+                app,
+                "toast",
+                WebviewUrl::App("index.html?toast=1".into()),
+            )
+            .title("구석메모 알림")
+            .inner_size(300.0, 200.0)
+            .decorations(false)
+            .transparent(true)
+            .resizable(false)
+            .maximizable(false)
+            .minimizable(false)
+            .closable(false)
+            .always_on_top(true)
+            .skip_taskbar(true)
+            .shadow(false)
+            .focused(false)
+            .visible(false)
+            .build()?;
 
             let settings_item = MenuItemBuilder::with_id("settings", "설정").build(app)?;
             let toggle_item = MenuItemBuilder::with_id("toggle", "메모 열기 / 닫기").build(app)?;

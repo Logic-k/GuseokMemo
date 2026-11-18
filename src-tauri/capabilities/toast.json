@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "toast-events",
+  "description": "Toast window: event listen/emit only (toast.js는 이벤트 송수신만 한다 — 창 제어는 handles의 place_toast 커맨드가 담당)",
+  "windows": ["toast"],
+  "permissions": ["core:event:default"]
+}

@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow, getAllWindows } from "@tauri-apps/api/window";
 import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden, MAX_INDEXES } from "./store.js";
+import { setReminder, removeReminder, setReminderEnabled, reminderStatus, toastEnqueue, TOAST_MAX } from "./reminders.js";
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
 import { applyTemplate, insertSnippet, snippetValues } from "./templates.js";
@@ -693,6 +694,55 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     // 스케줄 정리 — 테스트용 리마인더가 이후 저장에 남지 않도록 원복 후 저장.
     idx.reminders = prevReminders;
     await save();
+
+    // --- 리마인더 UI 코어 (phase-03-task-02, R-02/03, D-2) ---
+    // 설정/해제/삭제 코어의 store round-trip — 패널 팝오버·설정 탭이 호출하는 경로.
+    // 저장본에 리마인더가 들어가고 enabled 토글·삭제가 그대로 반영돼야 한다.
+    const remA = await setReminder(idx.id, {
+      at: localIso(Date.now() + 7200000).slice(0, 16),
+      repeat: "daily",
+      note: "qa",
+    });
+    const raws1 = JSON.parse(await invoke("load_store"));
+    const st1 = raws1.indexes.find((i) => i.id === idx.id)?.reminders?.find((r) => r.id === remA?.id);
+    await setReminderEnabled(idx.id, remA?.id, false);
+    const raws2 = JSON.parse(await invoke("load_store"));
+    const st2 = raws2.indexes.find((i) => i.id === idx.id)?.reminders?.find((r) => r.id === remA?.id);
+    await removeReminder(idx.id, remA?.id);
+    const raws3 = JSON.parse(await invoke("load_store"));
+    const st3 = raws3.indexes.find((i) => i.id === idx.id)?.reminders?.find((r) => r.id === remA?.id);
+    check(
+      "reminder-ui-roundtrip",
+      !!remA &&
+        remA.repeat === "daily" &&
+        st1?.enabled === true &&
+        st1?.repeat === "daily" &&
+        st2?.enabled === false &&
+        st3 === undefined,
+      `set=${!!remA} enabled=${st1?.enabled}->${st2?.enabled} removed=${st3 === undefined}`
+    );
+    idx.reminders = prevReminders;
+    await save();
+
+    // reminderStatus 분류(지남 판정) + 토스트 큐 상한 — UI 표시 로직의 순수 단언.
+    const rNow = Date.now();
+    const mkR = (at, repeat, enabled, last) => ({ id: "x", at, repeat, enabled, lastFiredAt: last, note: "" });
+    const clsOk =
+      reminderStatus(mkR(localIso(rNow + 60000), "none", true, null), rNow).code === "scheduled" &&
+      reminderStatus(mkR(localIso(rNow - 60000), "none", true, null), rNow).code === "missed" &&
+      reminderStatus(mkR(localIso(rNow - 60000), "none", false, null), rNow).code === "disabled" &&
+      reminderStatus(mkR(localIso(rNow - 60000), "none", true, localIso(rNow - 30000)), rNow).code === "fired" &&
+      reminderStatus(mkR(localIso(rNow + 60000), "daily", true, null), rNow).code === "scheduled" &&
+      reminderStatus(mkR(localIso(rNow - 6 * 86400000), "daily", true, localIso(rNow - 3 * 86400000)), rNow).code ===
+        "missed";
+    const tLive = [];
+    const tPend = [];
+    for (let i = 0; i < 5; i++) toastEnqueue(tLive, tPend, { reminderId: "qt" + i });
+    check(
+      "reminder-status-toastcap",
+      clsOk && tLive.length === TOAST_MAX && tPend.length === 2,
+      `cls=${clsOk} live=${tLive.length} pending=${tPend.length}`
+    );
 
     // --- 인덱스 표시/숨김 코어 (phase-05-task-02, R-07) ---
     // migrate()는 idx.hidden을 boolean으로 정규화한다 — literal true만 유지,

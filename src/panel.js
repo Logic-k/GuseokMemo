@@ -3,6 +3,16 @@ import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow, LogicalPosition, LogicalSize } from "@tauri-apps/api/window";
 import { save } from "@tauri-apps/plugin-dialog";
 import { state, initStore, saveStore, indexById, visibleIndexes } from "./store.js";
+import {
+  setReminder,
+  removeReminder,
+  setReminderEnabled,
+  reminderStatus,
+  REM_STATUS_LABEL,
+  fmtReminderAt,
+  repeatLabel,
+  toLocalIso,
+} from "./reminders.js";
 import { hexToRgba, fontCss } from "./themes.js";
 import { runSelfTest } from "./selftest.js";
 import { getLayout, panelRect } from "./layout.js";
@@ -181,6 +191,7 @@ function render(target) {
   if (switched || !editor.matches(":focus")) renderContent(target);
   renderImages(target);
   syncToolbar();
+  syncRemBadge();
   lastGeomKey = geomKey();
 }
 
@@ -554,6 +565,105 @@ document.addEventListener("pointerdown", (e) => {
   if (!fontPop.classList.contains("hidden") && !e.target.closest("#fontPop") && !e.target.closest("#btnFont")) {
     fontPop.classList.add("hidden");
   }
+  if (!remPop.classList.contains("hidden") && !e.target.closest("#remPop") && !e.target.closest("#btnReminder")) {
+    remPop.classList.add("hidden");
+  }
+});
+
+/* ---------------- reminder popover (D-2, R-02/03) ---------------- */
+
+const remPop = document.getElementById("remPop");
+const remList = document.getElementById("remList");
+const remAt = document.getElementById("remAt");
+const remRepeat = document.getElementById("remRepeat");
+const btnReminder = document.getElementById("btnReminder");
+
+// 활성 리마인더가 있으면 툴바 버튼에 점 표시.
+function syncRemBadge() {
+  btnReminder.classList.toggle("has-rem", !!idx?.reminders?.some((r) => r && r.enabled === true));
+}
+
+// 팝오버의 현재 리마인더 목록 — 시각 순, 지남은 붉게. 행별 해제/삭제는
+// 코어 함수를 거쳐 즉시 저장된다(저장 = Rust 스케줄 재동기화).
+function renderRemList() {
+  remList.innerHTML = "";
+  if (!idx) return;
+  const rs = (idx.reminders || [])
+    .filter((r) => r && typeof r === "object")
+    .slice()
+    .sort((a, b) => (Date.parse(a?.at || "") || Infinity) - (Date.parse(b?.at || "") || Infinity));
+  if (!rs.length) {
+    const empty = document.createElement("div");
+    empty.className = "rem-empty";
+    empty.textContent = "설정된 리마인더 없음";
+    remList.appendChild(empty);
+    return;
+  }
+  const now = Date.now();
+  rs.forEach((r) => {
+    const st = reminderStatus(r, now);
+    const row = document.createElement("div");
+    row.className = "rem-row" + (r.enabled === true ? "" : " off");
+    const when = document.createElement("span");
+    when.className = "rem-when" + (st.code === "missed" ? " overdue" : "");
+    when.textContent = fmtReminderAt(r.at);
+    const rep = document.createElement("span");
+    rep.className = "rem-rep";
+    rep.textContent = repeatLabel(r.repeat);
+    const flag = document.createElement("span");
+    flag.className = "rem-flag" + (st.code === "missed" ? " overdue" : "");
+    flag.textContent = REM_STATUS_LABEL[st.code] || "";
+    const offBtn = document.createElement("button");
+    offBtn.className = "rem-btn";
+    offBtn.textContent = r.enabled === true ? "해제" : "켜기";
+    offBtn.title = r.enabled === true ? "이 리마인더 해제" : "다시 켜기";
+    offBtn.onclick = async () => {
+      await setReminderEnabled(idx.id, r.id, !(r.enabled === true));
+      renderRemList();
+      syncRemBadge();
+    };
+    const delBtn = document.createElement("button");
+    delBtn.className = "rem-btn rem-del";
+    delBtn.textContent = "×";
+    delBtn.title = "리마인더 삭제";
+    delBtn.onclick = async () => {
+      await removeReminder(idx.id, r.id);
+      renderRemList();
+      syncRemBadge();
+    };
+    row.append(when, rep, flag, offBtn, delBtn);
+    remList.appendChild(row);
+  });
+}
+
+function openRemPop() {
+  // 기본 입력값 = 1시간 뒤(분 단위) — 가장 흔한 "조금 뒤 알림"을 한 번에 설정.
+  remAt.value = toLocalIso(new Date(Date.now() + 3600000));
+  remRepeat.value = "none";
+  renderRemList();
+  remPop.classList.remove("hidden");
+}
+
+btnReminder.addEventListener("click", () => {
+  if (remPop.classList.contains("hidden")) openRemPop();
+  else remPop.classList.add("hidden");
+});
+
+document.getElementById("remSet").addEventListener("click", async () => {
+  if (!idx) return;
+  const at = remAt.value; // "YYYY-MM-DDTHH:MM" — store 계약의 로컬 ISO와 동일 형식
+  if (!at) {
+    toast("알림 시각을 골라주세요");
+    return;
+  }
+  const r = await setReminder(idx.id, { at, repeat: remRepeat.value });
+  if (!r) {
+    toast("시각 형식이 올바르지 않아요");
+    return;
+  }
+  renderRemList();
+  syncRemBadge();
+  toast("리마인더를 설정했어요");
 });
 
 editorWrap.addEventListener(
@@ -796,6 +906,11 @@ document.addEventListener("keydown", async (e) => {
   }
   if (e.key === "Escape") {
     e.preventDefault();
+    // 팝오버가 열려 있으면 패널 닫기 대신 팝오버부터 닫는다.
+    if (!remPop.classList.contains("hidden")) {
+      remPop.classList.add("hidden");
+      return;
+    }
     closePanel();
   }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
@@ -824,6 +939,8 @@ async function boot() {
     if (document.activeElement !== titleInput) titleInput.value = idx.title || "";
     modeChip.textContent = idx.mode === "ice" ? "얼음" : "빼꼼";
     modeChip.dataset.mode = idx.mode || "peek";
+    syncRemBadge();
+    if (!remPop.classList.contains("hidden")) renderRemList();
     if (switched || (!wasFocused && pinned.content !== current.content)) renderContent(idx);
     if (switched || !wasFocused) renderImages(idx);
     const nextGeomKey = geomKey();
@@ -880,6 +997,16 @@ async function boot() {
         render(idx);
       }, 700);
     }
+  });
+
+  // 발화 통지 — 지금 열려 있는 인덱스의 리마인더면 버튼을 잠깐 펄스한다.
+  // 토스트 전달·기록은 handles 창이 담당; 여기서는 시각 피드백만 한다.
+  await listen("guseok://reminder", (e) => {
+    const p = e.payload || {};
+    if (!p.indexId || p.indexId !== idx?.id) return;
+    btnReminder.classList.add("fired");
+    setTimeout(() => btnReminder.classList.remove("fired"), 2600);
+    if (!remPop.classList.contains("hidden")) renderRemList();
   });
 
   const params = new URLSearchParams(location.search);
