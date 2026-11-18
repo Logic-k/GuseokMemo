@@ -420,6 +420,91 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     // matches = 제목 1건 + 본문 2건
     const rCount = search(fakeState, "사과");
     check("search-match-count", rCount.length === 1 && rCount[0].matches === 3 && rCount[0].titleMatch === true, `matches=${rCount[0]?.matches}`);
+
+    // --- 리마인더 스케줄러 (phase-03-task-01, R-02/03, TD-07) ---
+    // migrate()가 reminders 원소를 defaultReminder 형태로 정규화하는지 단언.
+    const mr = migrate({
+      version: 1,
+      indexes: [{
+        id: "ri1",
+        title: "r",
+        reminders: [
+          { id: "r1", at: "2027-05-01T09:00", repeat: "daily", note: "n", enabled: false, lastFiredAt: "2026-01-01T00:00" },
+          { at: "2027-05-02T10:00" }, // id/repeat/enabled/lastFiredAt 누락 → 기본값 채움
+          "junk", // 객체 아님 → 제거
+        ],
+      }],
+    });
+    const mrs = mr.indexes[0].reminders;
+    check(
+      "migrate-reminder-fields",
+      mrs.length === 2 &&
+        mrs[0].at === "2027-05-01T09:00" &&
+        mrs[0].repeat === "daily" &&
+        mrs[0].enabled === false &&
+        mrs[0].lastFiredAt === "2026-01-01T00:00" &&
+        mrs[0].note === "n" &&
+        mrs[1].repeat === "none" &&
+        mrs[1].enabled === true &&
+        mrs[1].lastFiredAt === null &&
+        typeof mrs[1].id === "string" &&
+        mrs[1].id.length > 0,
+      JSON.stringify(mrs)
+    );
+
+    // Rust 상주 스케줄러 e2e — JS가 reminders를 쓰면 스케줄러가 따라가는지 확인하는 경로:
+    // idx.reminders 갱신 → saveStore → save_store가 저장본을 파싱해 인메모리 스케줄 갱신
+    // → 스레드가 due 감지 → guseok://reminder emit + "[QA] reminder :: emit ..." 기록.
+    // CDP 없이 qa_log 파일만으로 발화를 단언한다(emit 관찰 정본은 qa_log).
+    const qaPath = await invoke("qa_log_path");
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const localIso = (t) => {
+      const d = new Date(t);
+      return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    };
+    const readQa = async () => {
+      try {
+        return await invoke("read_text_file", { path: qaPath });
+      } catch {
+        return "";
+      }
+    };
+    const waitQa = async (needle, ms) => {
+      const end = Date.now() + ms;
+      while (Date.now() < end) {
+        const hits = (await readQa()).split("\n").filter((l) => l.includes(needle));
+        if (hits.length) return hits;
+        await sleep(700);
+      }
+      return null;
+    };
+    const prevReminders = idx.reminders;
+    idx.reminders = [
+      { id: "rqafire1", at: localIso(Date.now() + 6000), repeat: "none", note: "qa", enabled: true, lastFiredAt: null },
+    ];
+    await save();
+    const fireHits = await waitQa("reminderId=rqafire1", 25000);
+    check(
+      "reminder-fire",
+      !!fireHits && fireHits.some((l) => l.includes("missed=false")),
+      fireHits ? fireHits.join(" | ").slice(0, 120) : "no emit in qa log"
+    );
+
+    // 재시작 놓침과 동일한 분류 경로 — 과거 미발화분은 missed=true로 보고(자동 발화 아님).
+    idx.reminders = [
+      { id: "rqamiss1", at: localIso(Date.now() - 300000), repeat: "none", note: "", enabled: true, lastFiredAt: null },
+    ];
+    await save();
+    const missHits = await waitQa("reminderId=rqamiss1", 15000);
+    check(
+      "reminder-missed",
+      !!missHits && missHits.some((l) => l.includes("missed=true")),
+      missHits ? missHits.join(" | ").slice(0, 120) : "no emit in qa log"
+    );
+
+    // 스케줄 정리 — 테스트용 리마인더가 이후 저장에 남지 않도록 원복 후 저장.
+    idx.reminders = prevReminders;
+    await save();
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }
