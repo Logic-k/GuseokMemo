@@ -1,6 +1,6 @@
 ---
 id: phase-05-task-03
-status: blocked
+status: completed
 depends_on: []
 acceptance_criteria:
   - 설정/패널 크롬/스트립 비인덱스 영역에 라이트/다크/시스템 따르기 모드가 적용된다

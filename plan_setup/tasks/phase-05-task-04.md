@@ -1,6 +1,6 @@
 ---
 id: phase-05-task-04
-status: blocked
+status: completed
 depends_on: [phase-05-task-01, phase-05-task-02]
 acceptance_criteria:
   - 새 인덱스 생성 시 템플릿을 선택할 수 있다(위치·형태 DESIGN 결정)

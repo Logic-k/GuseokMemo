@@ -1,6 +1,6 @@
 ---
 id: phase-04-task-03
-status: blocked
+status: completed
 depends_on: [phase-04-task-02]
 acceptance_criteria:
   - OQ-03으로 확정된 정책(최신 파일 승/병합/보관)이 충돌 경로에 구현된다

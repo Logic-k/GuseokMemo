@@ -1,6 +1,6 @@
 ---
 id: phase-03-task-02
-status: blocked
+status: completed
 depends_on: [phase-03-task-01]
 acceptance_criteria:
   - 사용자가 인덱스에 시각(및 반복) 리마인더를 설정·해제·목록 조회할 수 있다

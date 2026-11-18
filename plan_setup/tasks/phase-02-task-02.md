@@ -1,6 +1,6 @@
 ---
 id: phase-02-task-02
-status: blocked
+status: completed
 depends_on: [phase-02-task-01]
 acceptance_criteria:
   - 검색 진입점(전역키/트레이/패널 버튼 — DESIGN 결정)으로 검색 UI가 열린다

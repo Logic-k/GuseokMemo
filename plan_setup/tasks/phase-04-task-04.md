@@ -1,6 +1,6 @@
 ---
 id: phase-04-task-04
-status: blocked
+status: completed
 depends_on: [phase-04-task-01]
 acceptance_criteria:
   - 설정에서 저장 폴더를 대화상자로 선택·해제할 수 있다

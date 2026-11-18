@@ -347,3 +347,35 @@
 - phase-06-task-02 completed (ed62069): TD-10 allowDowngrades 확정 적용 — v0.2.4 알고리즘이 v2 store를 spread merge로 무파괴 보존함을 시뮬레이션 케이스 2개로 단언. 롤백 운용 절차 attempt-1.md §4. 실 배포는 사용자 승인 대상. selftest 70/70, validator PASS.
 - phase-06-task-03 → blocked(OQ-05): validator 실측 — 멀티모니터 "자동" 실커서 추종 양방향 PASS, 외부 리로드 실 파일 수정 반영 1.5~1.8s PASS. 실기 IME 손 타이핑만 사용자 확인 필요(조합 경로 정상 관찰, 포커스 직후 첫 자모 소실 징후는 아티팩트 가능성 — 실기 확인 대상으로 잔류).
 - **Loop 1차 라운드 종료**: pending 12 중 11 completed(전부 validator PASS), 06-03 + 기존 6 blocked = 7개 사용자 결정 대기. selftest 26→70, cargo 0→32. 잔재 정리 확인(프로세스·포트·store 복원).
+## Loop 2차 — phase-02-task-02 PASS (검색 UI)
+- 구현 c3fc344f → 커밋 10fba92: search 창 사전생성+show_search/hide_search, Ctrl+Shift+F 전역키(common.searchKey)+btnSearch 진입, search.html/search-window.js, IME 조합 유예, selftest+3
+- 게이트: build/fmt/clippy/cargo test 33/33 + e2e selftest 73/73 + CDP 12/12 (qa-20261118-212755)
+- 독립검증 7fb7d893: 수용 기준 5/5 실관찰 PASS (진입점 실 OS키+버튼 클릭 포함), RESULT: PASS
+
+## Loop 2차 — phase-03-task-02 PASS (리마인더 UI+앱 내 토스트)
+- 구현 34961b94: src/reminders.js+src/toast.js 신규, toast 창 setup 생성+place_toast, capabilities/toast.json(ACL), 패널 remPop+btnReminder, 설정 리마인더 탭, handles 토스트 큐(live3/pending8/4초), selftest+2
+- 게이트: build/fmt/clippy/cargo test 33/33 + e2e selftest 75/75 + CDP 17/17 (qa-20261118-220349)
+- 독립검증 00907b2f: 수용 기준 6/6 실관찰 PASS — 패널 닫힘 상태 토스트 도달·토스트 클릭 show_panel·지남 #c0392b 표시·IME 회귀 3/3. RESULT: PASS
+
+## Loop 2차 — phase-04-task-03 PASS (OQ-03 충돌본 보관)
+- 구현 2e0dee4a → 커밋 8a4b4a9: Rust save_conflict_copy(원자적·순번·뮤텍스), store.js lastSavedJson/isStoreConflict/applyChain, handles 충돌 토스트, selftest+5
+- 게이트: build/fmt/clippy/cargo test 37/37 + e2e selftest 80/80 + CDP conflict 9/9 + external-reload 회귀 5/5
+- 독립검증 ed845806: 수용 기준 4/4 PASS — 충돌본 파일 디스크 직독으로 로컬본 보존 확인, 비충돌/자기에코/다른창저장 경계 검증. RESULT: PASS
+
+## Loop 2차 — phase-04-task-04 PASS (저장 폴더 설정 UI)
+- 구현 8393a520 → 커밋 aa5c6a1: 설정 저장 탭(경로 표시+폴더 열기+변경/기본값 dialog→set_data_dir+오류행+감시 중 배지+충돌 안내), selftest+1
+- 게이트: build/fmt/clippy/cargo test 37/37 + e2e selftest 81/81 + CDP 9/9
+- 독립검증 24ad2f1f: 수용 기준 5/5 PASS — 실효 경로 get_data_dir 일치·오류 #c0392b+경로 유지·reset 동작·81/81 회귀. RESULT: PASS
+
+## Loop 2차 — phase-05-task-03 PASS (다크모드)
+- 구현 b63b576c(전 워커 중단분 인수) → 커밋 ac6ae00: src/darkmode.js+darkmode.css(--chrome-* 토큰, html.dark 토글), 5창 적용, 공통 탭 #darkModeSel, system=matchMedia 추적, selftest+2
+- 게이트: build/fmt/clippy/cargo test 37/37 + e2e selftest 83/83 + CDP 10/10
+- 독립검증 aab2015c: 수용 기준 5/5 PASS — 5창 토글·D-4 팔레트·인덱스 색 무손상·OS 추적·재시작 유지·라이트 회귀 무. RESULT: PASS
+
+## Loop 2차 — phase-05-task-04 PASS (템플릿/스니펫/숨김 UI)
+- 구현 170e3f97 → 커밋 e8e27e6: pick 창(setup 생성)+place_pick, src/pick.js, addIndex(templateId), snipPop+insertSnippet(IME 차단), 설정 눈 토글+템플릿 탭, selftest+3
+- 게이트: build/fmt/clippy/cargo test 37/37 + e2e selftest 86/86 + CDP 11/11
+- 독립검증 ee037926: 수용 기준 5/5 PASS — 템플릿 생성·캐럿 삽입+치환·숨김 필터+최소1개 불변·Esc/블러·86/86 회귀. RESULT: PASS
+
+## Loop 2차 라운드 종료 — UI 6/6 전부 완료, 잔여 06-03(실기 IME)만 사용자 확인 대기
+
