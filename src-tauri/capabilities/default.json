@@ -1,8 +1,8 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Panel and settings capabilities",
-  "windows": ["handles", "panel", "settings"],
+  "description": "Panel, settings and search capabilities",
+  "windows": ["handles", "panel", "settings", "search"],
   "permissions": [
     "core:default",
     "core:window:allow-set-size",
@@ -14,6 +14,7 @@
     "core:window:allow-start-dragging",
     "core:window:allow-current-monitor",
     "core:window:allow-available-monitors",
+    "core:window:allow-get-all-windows",
     "core:window:allow-scale-factor",
     "core:window:allow-outer-position",
     "core:window:allow-outer-size",
@@ -29,4 +30,3 @@
     "process:allow-restart"
   ]
 }
-

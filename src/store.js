@@ -87,6 +87,7 @@ export const defaultState = () => {
       side: "right",
       mode: "mouse",
       openKey: "ctrl_shift_m",
+      searchKey: "ctrl_shift_f", // v2 — 검색 창 전역키 (R-01, D-1). 구 store는 common merge로 기본값 채움
       peekDelay: 350,
       toggleBy: "chip",
       spellcheck: false,

@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow, getAllWindows } from "@tauri-apps/api/window";
 import { state, migrate, defaultIndex, activeIndex, visibleIndexes, setIndexHidden, MAX_INDEXES } from "./store.js";
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
@@ -836,6 +836,30 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     await save();
     await sleep(2600);
     check("external-self-echo", reloadLines(await readQa()) === reloadBefore, `reload lines stayed ${reloadBefore}`);
+
+    // --- 검색 창 (phase-02-task-02, R-01/D-1) ---
+    // setup에서 미리 생성된 "search" 창이 있고, show_search/hide_search 커맨드로
+    // 표시·숨김이 돌아가는지 단언 (런타임 생성 금지 = BUG-18 회귀 방지).
+    const allWins = await getAllWindows();
+    const searchWin = allWins.find((w) => w.label === "search");
+    check("search-window-exists", !!searchWin, allWins.map((w) => w.label).join(","));
+    if (searchWin) {
+      await invoke("show_search");
+      let sVis = false;
+      for (let i = 0; i < 30 && !sVis; i++) {
+        await sleep(100);
+        sVis = await searchWin.isVisible();
+      }
+      await invoke("hide_search");
+      let sHid = false;
+      for (let i = 0; i < 30 && !sHid; i++) {
+        await sleep(100);
+        sHid = !(await searchWin.isVisible());
+      }
+      check("search-window-show-hide", sVis && sHid, `shown=${sVis} hidden=${sHid}`);
+    }
+    // 구버전 store는 common merge로 searchKey 기본값을 채운다 (마이그레이션 불필요 경로).
+    check("migrate-searchkey-default", migrate({ version: 2, indexes: [{ id: "x1", title: "x" }] }).common.searchKey === "ctrl_shift_f");
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }

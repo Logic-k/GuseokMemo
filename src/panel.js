@@ -576,6 +576,12 @@ function pickImage() {
 
 document.getElementById("btnImage").addEventListener("click", pickImage);
 
+// 검색 창 열기 (D-1 진입점 ②) — 전역 검색은 별도 search 창. 포커스가 넘어가면
+// 패널은 빼꼼 모드 규칙대로 자연스럽게 접힌다.
+document.getElementById("btnSearch").addEventListener("click", () => {
+  invoke("show_search").catch(() => {});
+});
+
 fileInput.addEventListener("change", async () => {
   const files = Array.from(fileInput.files || []);
   busy = false;

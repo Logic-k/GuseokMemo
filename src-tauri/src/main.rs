@@ -440,6 +440,42 @@ fn hide_panel(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+// ==================== 전체 검색 창 (R-01, DESIGN D-1) ====================
+
+/// 검색 창 고정 크기 — setup의 inner_size와 동일 값(리사이즈 불가 창이라
+/// 매번 set_size는 불필요, 위치만 show 때 맞춘다).
+const SEARCH_W: f64 = 460.0;
+const SEARCH_H: f64 = 400.0;
+
+/// 검색 창을 커서가 있는 모니터의 작업 영역 안에 띄운다 — 가로 중앙, 세로는
+/// 위쪽 38% 지점(검색 팔레트가 화면 상단 1/3에 오는 관습). 창은 setup에서
+/// 미리 생성됐고 여기서는 위치만 맞춰 show+focus — 런타임 생성 금지(NFR-06/BUG-18).
+#[tauri::command]
+fn show_search(app: AppHandle) -> Result<(), String> {
+    let w = app
+        .get_webview_window("search")
+        .ok_or("search window missing")?;
+    let wa = work_area(app.clone(), "auto".to_string())?;
+    let x = wa.x + (wa.w - SEARCH_W) / 2.0;
+    let y = wa.y + (wa.h - SEARCH_H) * 0.38;
+    w.set_position(LogicalPosition::new(x, y))
+        .map_err(|e| e.to_string())?;
+    w.show().map_err(|e| e.to_string())?;
+    w.set_focus().map_err(|e| e.to_string())?;
+    // 입력 포커스·기존 쿼리 전체선택·재검색은 창 쪽 JS가 수행
+    // (guseok://panel-open과 같은 통지 패턴).
+    let _ = w.emit("guseok://search-open", json!({}));
+    Ok(())
+}
+
+#[tauri::command]
+fn hide_search(app: AppHandle) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("search") {
+        let _ = w.hide();
+    }
+    Ok(())
+}
+
 #[tauri::command]
 fn place_handles(
     app: AppHandle,
@@ -624,36 +660,59 @@ fn monitor_work_area(x: i32, y: i32, w: i32, h: i32) -> (i32, i32, i32, i32) {
     (x, y, x + w, y + h)
 }
 
-fn shortcut_keys(preset: &str) -> Vec<(String, String)> {
+/// 전역 단축키 목록 — toggle(열기)은 preset, prev/next는 고정, search는
+/// search_preset(common.searchKey). 검색 키 옵션은 열기 프리셋과 겹치지 않는
+/// 별도 키셋이라 중복 등록이 구조적으로 불가능하다 (D-1: 기본 Ctrl+Shift+F).
+fn shortcut_keys(preset: &str, search_preset: &str) -> Vec<(String, String)> {
     let toggle = match preset {
         "alt_m" => "Ctrl+Alt+KeyM",
         "shift_space" => "Ctrl+Shift+Space",
         "f9" => "F9",
         _ => "Ctrl+Shift+KeyM",
     };
+    let search = match search_preset {
+        "ctrl_f" => "Ctrl+KeyF",
+        "alt_f" => "Ctrl+Alt+KeyF",
+        "f3" => "F3",
+        _ => "Ctrl+Shift+KeyF",
+    };
     vec![
         ("toggle".to_string(), toggle.to_string()),
         ("prev".to_string(), "Ctrl+Shift+ArrowUp".to_string()),
         ("next".to_string(), "Ctrl+Shift+ArrowDown".to_string()),
+        ("search".to_string(), search.to_string()),
     ]
 }
 
 #[tauri::command]
-fn register_shortcuts(app: AppHandle, preset: String, enabled: bool) -> Result<(), String> {
+fn register_shortcuts(
+    app: AppHandle,
+    preset: String,
+    enabled: bool,
+    search_key: Option<String>,
+) -> Result<(), String> {
     let gs = app.global_shortcut();
     let _ = gs.unregister_all();
     if !enabled {
         return Ok(());
     }
-    for (action, key) in shortcut_keys(&preset) {
+    for (action, key) in shortcut_keys(&preset, search_key.as_deref().unwrap_or("ctrl_shift_f")) {
         let sc = Shortcut::from_str(&key).map_err(|e| format!("{key}: {e}"))?;
         let act = action.clone();
-        gs.on_shortcut(sc, move |app, _shortcut, event| {
+        let res = gs.on_shortcut(sc, move |app, _shortcut, event| {
             if event.state() == ShortcutState::Pressed {
                 let _ = app.emit("guseok://shortcut", json!({ "action": act }));
             }
-        })
-        .map_err(|e| e.to_string())?;
+        });
+        // 검색 키만 점유 실패해도 열기/순환 키는 유지 — 경고만 남기고 계속 진행한다
+        // (열기 단축키는 앱의 핵심 진입점이라 하드 실패, 검색은 추가 기능이라 강등).
+        if let Err(e) = res {
+            if action == "search" {
+                qa_write(&format!("WARN shortcuts :: search {key}: {e}"));
+            } else {
+                return Err(e.to_string());
+            }
+        }
     }
     Ok(())
 }
@@ -1356,6 +1415,8 @@ fn main() {
             open_settings,
             show_panel,
             hide_panel,
+            show_search,
+            hide_search,
             place_handles,
             work_area,
             monitors,
@@ -1423,6 +1484,32 @@ fn main() {
                     let _ = settings_for_event.hide();
                 }
             });
+
+            // D-1 — 검색은 전역 기능이라 panel과 분리된 독립 창. 다른 창과 마찬가지로
+            // setup에서 미리 만들고 hide/show로 재사용한다 (NFR-06, BUG-18 회귀 방지).
+            let search =
+                WebviewWindowBuilder::new(app, "search", WebviewUrl::App("search.html".into()))
+                    .title("구석메모 검색")
+                    .inner_size(SEARCH_W, SEARCH_H)
+                    .decorations(false)
+                    .transparent(true)
+                    .resizable(false)
+                    .maximizable(false)
+                    .minimizable(false)
+                    .always_on_top(true)
+                    .skip_taskbar(true)
+                    .shadow(false)
+                    .focused(false)
+                    .visible(false)
+                    .build()?;
+            let search_for_event = search.clone();
+            search.on_window_event(move |event| {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    api.prevent_close();
+                    let _ = search_for_event.hide();
+                }
+            });
+            let _ = search;
 
             let settings_item = MenuItemBuilder::with_id("settings", "설정").build(app)?;
             let toggle_item = MenuItemBuilder::with_id("toggle", "메모 열기 / 닫기").build(app)?;
@@ -1631,6 +1718,34 @@ mod tests {
         let attempts = r.expect("rename should succeed once occupation clears");
         assert!(attempts >= 2, "expected at least one retry, got {attempts}");
         assert_eq!(content.as_deref(), Some("new"));
+    }
+
+    // ---- 전체 검색 단축키 (phase-02-task-02, D-1) ----
+
+    #[test]
+    fn shortcut_keys_bind_search_presets() {
+        // 기본 Ctrl+Shift+F + 프리셋 매핑 + 알 수 없는 값 폴백.
+        let base = shortcut_keys("ctrl_shift_m", "ctrl_shift_f");
+        assert_eq!(base.len(), 4);
+        assert!(base
+            .iter()
+            .any(|(a, k)| a == "search" && k == "Ctrl+Shift+KeyF"));
+        for (preset, want) in [
+            ("ctrl_f", "Ctrl+KeyF"),
+            ("alt_f", "Ctrl+Alt+KeyF"),
+            ("f3", "F3"),
+            ("nonsense", "Ctrl+Shift+KeyF"),
+        ] {
+            assert!(
+                shortcut_keys("x", preset)
+                    .iter()
+                    .any(|(a, k)| a == "search" && k == want),
+                "{preset}"
+            );
+        }
+        // 네 항목의 키가 서로 겹치지 않아야 한다 (중복 등록 실패 방지).
+        let mut seen = std::collections::HashSet::new();
+        assert!(base.iter().all(|(_, k)| seen.insert(k.clone())));
     }
 
     // ---- 리마인더 스케줄러 (phase-03-task-01, TD-07) ----

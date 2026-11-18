@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>구석메모 검색</title>
+    <link rel="stylesheet" href="/src/search.css" />
+  </head>
+  <body>
+    <div class="search-card" id="searchCard">
+      <div class="search-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.2 20.2-4.1-4.1"/></svg>
+        <input id="searchInput" type="text" placeholder="검색" spellcheck="false" autocomplete="off" />
+      </div>
+      <div class="search-results" id="searchResults"></div>
+      <div class="search-empty hidden" id="searchEmpty"></div>
+      <div class="search-foot">
+        <span>↑↓ 이동</span>
+        <span>Enter 열기</span>
+        <span>Esc 닫기</span>
+      </div>
+    </div>
+    <script type="module" src="/src/search-window.js"></script>
+  </body>
+</html>

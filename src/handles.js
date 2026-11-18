@@ -313,9 +313,10 @@ async function boot() {
     else if (action === "prev") await step(-1);
     else if (action === "next") await step(1);
     else if (action === "index") await openNthVisible(n);
+    else if (action === "search") await invoke("show_search");
   });
 
-  invoke("register_shortcuts", { preset: state.common.openKey || "ctrl_shift_m", enabled: true })
+  invoke("register_shortcuts", { preset: state.common.openKey || "ctrl_shift_m", enabled: true, searchKey: state.common.searchKey || "ctrl_shift_f" })
     .then(() => invoke("qa_log", { msg: "PASS shortcuts :: " + (state.common.openKey || "ctrl_shift_m") }))
     .catch((e) => invoke("qa_log", { msg: "FAIL shortcuts :: " + String(e) }));
 

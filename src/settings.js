@@ -25,6 +25,14 @@ const OPEN_KEYS = [
   { id: "f9", label: "F9" },
 ];
 
+// 검색 창 전역키 — 열기 프리셋과 겹치지 않는 별도 키셋 (main.rs shortcut_keys와 동기).
+const SEARCH_KEYS = [
+  { id: "ctrl_shift_f", label: "Ctrl + Shift + F" },
+  { id: "ctrl_f", label: "Ctrl + F" },
+  { id: "alt_f", label: "Ctrl + Alt + F" },
+  { id: "f3", label: "F3" },
+];
+
 function status(msg) {
   statusEl.textContent = msg;
   clearTimeout(status._t);
@@ -193,7 +201,15 @@ function renderCommon() {
   bodyEl.appendChild(
     row("열기 / 닫기 단축키", "Ctrl+1~9 로 인덱스를 바로 열 수 있어요.", select(OPEN_KEYS, state.common.openKey, async (v) => {
       state.common.openKey = v;
-      await invoke("register_shortcuts", { preset: v, enabled: true }).catch(() => {});
+      await invoke("register_shortcuts", { preset: v, enabled: true, searchKey: state.common.searchKey || "ctrl_shift_f" }).catch(() => {});
+      await commit();
+    }))
+  );
+
+  bodyEl.appendChild(
+    row("검색 단축키", "모든 메모의 제목·본문을 찾는 검색 창을 엽니다.", select(SEARCH_KEYS, state.common.searchKey || "ctrl_shift_f", async (v) => {
+      state.common.searchKey = v;
+      await invoke("register_shortcuts", { preset: state.common.openKey || "ctrl_shift_m", enabled: true, searchKey: v }).catch(() => {});
       await commit();
     }))
   );
