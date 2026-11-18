@@ -1,6 +1,6 @@
 ---
 id: phase-05-task-02
-status: pending
+status: completed
 depends_on: [phase-01-task-01]
 acceptance_criteria:
   - idx.hidden 필드가 migrate()로 정규화되고 store.json에 보존된다
