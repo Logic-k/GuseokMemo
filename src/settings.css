@@ -395,3 +395,122 @@ input[type="color"] {
 .row-ctrl .btn:disabled:hover {
   background: var(--chrome-card);
 }
+
+/* ---------------- 인덱스 숨김 토글 (D-5, R-07) ---------------- */
+
+/* 메모 목록 각 행(탭)의 눈 아이콘 — 탭 버튼과 한 셀로 묶어 행 단위로 읽힌다. */
+.tab-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  align-self: flex-end;
+}
+.tab-cell.hid { opacity: 0.55; } /* 숨긴 인덱스는 반투명 (D-5) */
+
+.tab-eye {
+  width: 20px;
+  height: 24px;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  color: var(--s-dim);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+.tab-eye:hover { background: var(--s-hover2); color: var(--s-ink); }
+.tab-eye svg { display: block; }
+.tab-eye.off { color: var(--s-muted); }
+
+/* 탭 안의 "숨김" 표시 — D-5: 반투명 + 숨김 라벨 */
+.tab-hid {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--s-badge-bg);
+  color: var(--s-badge-fg);
+  margin-left: 2px;
+}
+
+/* 인덱스 페이지 "스트립 표시" 행의 눈 버튼 */
+.eye-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  padding: 7px 0;
+}
+.eye-btn.off { color: var(--s-muted); }
+.eye-btn svg { display: block; }
+
+/* ---------------- 템플릿/스니펫 탭 (D-5, R-06) ---------------- */
+
+.tpl-rows { display: flex; flex-direction: column; }
+.tpl-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--s-line-soft);
+}
+.tpl-row:last-child { border-bottom: 0; }
+.tpl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tpl-name { min-width: 0; flex: 1 1 auto; }
+.tpl-body {
+  width: 100%;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--s-field);
+  background: var(--chrome-card);
+  color: var(--chrome-text);
+  outline: none;
+  resize: vertical;
+}
+.tpl-body:focus { border-color: var(--s-focus); box-shadow: 0 0 0 3px var(--s-focus-ring); }
+.tpl-preview {
+  border: 1px dashed var(--s-dash);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  background: var(--s-well);
+  color: var(--s-ink);
+  overflow-wrap: break-word;
+}
+.tpl-preview h1, .tpl-preview h2, .tpl-preview h3 { margin: 0 0 .2em; }
+.tpl-preview p, .tpl-preview ul, .tpl-preview ol { margin: 0; }
+.tpl-preview ul, .tpl-preview ol { padding-left: 1.3em; }
+.tpl-preview .ck > input[type="checkbox"] { width: 13px; height: 13px; }
+.tpl-preview .ck.done .ck-text { text-decoration: line-through; opacity: .55; }
+.tpl-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--s-well);
+  border: 1px solid var(--s-line);
+  border-radius: 10px;
+}
+.tpl-add .tpl-name { flex: 0 0 130px; min-width: 0; }
+.tpl-add-body { flex: 1 1 auto; min-width: 0; }
+.tpl-add-body {
+  font-size: 12px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--s-field);
+  background: var(--chrome-card);
+  color: var(--chrome-text);
+  outline: none;
+}
+.tpl-add-body:focus { border-color: var(--s-focus); box-shadow: 0 0 0 3px var(--s-focus-ring); }
+.tpl-pv { flex: 0 0 auto; }

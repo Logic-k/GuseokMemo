@@ -4,7 +4,8 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { listen } from "@tauri-apps/api/event";
 import { getVersion } from "@tauri-apps/api/app";
-import { state, initStore, saveStore, defaultIndex, applyTheme, migrate, MAX_INDEXES, ensureOneVisible } from "./store.js";
+import { state, initStore, saveStore, defaultIndex, applyTheme, migrate, MAX_INDEXES, ensureOneVisible, setIndexHidden, defaultTemplate, defaultSnippet } from "./store.js";
+import { insertSnippet } from "./templates.js";
 import { THEMES, RATIOS, FONTS } from "./themes.js";
 import {
   setReminder,
@@ -34,6 +35,12 @@ let appVersion = "";
 let lastExternalReload = null;
 let storageError = "";
 let storageSeq = 0;
+
+// R-07/D-5 — 인덱스 숨김 토글 눈 아이콘 (탭 행·인덱스 페이지 공용).
+const EYE_ON =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.6 12 5.6 21.5 12 21.5 12 18 18.4 12 18.4 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 20 4"/><path d="M9.8 6a9.4 9.4 0 0 1 2.2-.3c6 0 9.5 6.4 9.5 6.4a17 17 0 0 1-3.1 3.9M6.3 7.8A15.6 15.6 0 0 0 2.5 12S6 18.4 12 18.4c1.1 0 2.1-.2 3-.5"/></svg>';
 
 const OPEN_KEYS = [
   { id: "ctrl_shift_m", label: "Ctrl + Shift + M" },
@@ -100,6 +107,15 @@ function checkbox(checked, onChange) {
   return c;
 }
 
+// R-07/D-5 — 눈 아이콘 공통 토글. 마지막 visible 1개는 store 코어가 거절한다 —
+// 그때는 안내만 하고 렌더를 되돌린다(아이콘 상태가 실제와 어긋나지 않게).
+async function toggleIndexHidden(idx) {
+  const want = !(idx.hidden === true);
+  const ok = await setIndexHidden(idx.id, want);
+  status(ok ? (want ? "스트립에서 숨겼어요 · 다시 누르면 표시됩니다" : "스트립에 다시 표시했어요") : "마지막 메모는 숨길 수 없어요");
+  render();
+}
+
 function numberStepper(value, min, max, onChange) {
   const wrap = el("div", "row-ctrl");
   const minus = el("button", "btn", "−");
@@ -149,17 +165,43 @@ function renderTabs() {
   };
   tabsEl.appendChild(remTab);
 
+  // D-5 — 템플릿/스니펫 편집 탭 (R-06). 인덱스 무관한 전역 자산이라 리마인더처럼
+  // 인덱스 탭 앞의 고정 탭.
+  const tplTab = el("button", "tab" + (tab === "templates" ? " on" : ""), "");
+  tplTab.innerHTML =
+    '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.8" width="16" height="16.4" rx="2"/><path d="M4 9h16M9.5 9v11"/></svg>' +
+    "<span>템플릿</span>";
+  tplTab.id = "tplTab";
+  tplTab.onclick = () => {
+    tab = "templates";
+    render();
+  };
+  tabsEl.appendChild(tplTab);
+
   state.indexes.forEach((idx) => {
+    // R-07/D-5 — 메모 목록 각 행(탭)에 눈 아이콘 토글: 숨긴 인덱스는
+    // 반투명 + "숨김" 표시, 다시 누르면 표시로 돌아온다.
+    const cell = el("span", "tab-cell" + (idx.hidden === true ? " hid" : ""));
     const b = el("button", "tab" + (tab === idx.id ? " on" : ""));
     const dot = el("span", "dot");
     dot.style.background = idx.accent;
     b.appendChild(dot);
     b.appendChild(el("span", null, idx.title || "메모"));
+    if (idx.hidden === true) b.appendChild(el("span", "tab-hid", "숨김"));
     b.onclick = () => {
       tab = idx.id;
       render();
     };
-    tabsEl.appendChild(b);
+    const eye = el("button", "tab-eye" + (idx.hidden === true ? " off" : ""));
+    eye.type = "button";
+    eye.innerHTML = idx.hidden === true ? EYE_OFF : EYE_ON;
+    eye.title = idx.hidden === true ? "스트립에 다시 표시" : "스트립에서 숨기기";
+    eye.onclick = (e) => {
+      e.stopPropagation();
+      toggleIndexHidden(idx);
+    };
+    cell.append(b, eye);
+    tabsEl.appendChild(cell);
   });
 
   if (state.indexes.length < MAX_INDEXES) {
@@ -486,6 +528,25 @@ function renderIndex(idx) {
     }))
   );
 
+  // R-07/D-5 — 스트립 표시/숨김 토글: 눈 아이콘 버튼, 기존 삭제 버튼 바로 위 행.
+  // 숨긴 인덱스는 반투명 탭 + "숨김" 표시로도 보인다 (renderTabs 참조).
+  const hidCtl = el("div", "row-ctrl");
+  const hidBadge = el("span", "rem-badge", idx.hidden === true ? "숨김" : "표시 중");
+  hidBadge.id = "hidBadge";
+  const eyeBtn = el("button", "btn eye-btn" + (idx.hidden === true ? " off" : ""));
+  eyeBtn.id = "hidEyeBtn";
+  eyeBtn.innerHTML = idx.hidden === true ? EYE_OFF : EYE_ON;
+  eyeBtn.title = idx.hidden === true ? "스트립에 다시 표시" : "스트립에서 숨기기";
+  eyeBtn.onclick = () => toggleIndexHidden(idx);
+  hidCtl.append(hidBadge, eyeBtn);
+  bodyEl.appendChild(
+    row(
+      "스트립 표시",
+      "숨기면 손잡이 스트립·검색·단축키 순환에서 빠집니다. 메모 데이터는 그대로 유지됩니다.",
+      hidCtl
+    )
+  );
+
   if (state.indexes.length > 1) {
     const del = el("button", "btn danger", "이 인덱스 삭제");
     del.onclick = async () => {
@@ -606,6 +667,128 @@ function renderReminders() {
     list.appendChild(rowEl);
   });
   bodyEl.appendChild(list);
+}
+
+/* ---------------- 템플릿/스니펫 (D-5, R-06) ---------------- */
+//
+// 이름+내용 행 목록 + 추가/삭제/미리보기. 템플릿은 스트립 `+` 선택 창에서,
+// 스니펫은 패널 ❖ 팝오버에서 쓴다 — 둘 다 코어(templates.js)의 치환자 규칙을
+// 공유한다. builtin 행은 삭제 대신 "기본" 배지 (제공분 소실 방지), 편집은 자유.
+
+function tplRow(item, i, kind) {
+  const wrap = el("div", "tpl-row");
+
+  const head = el("div", "tpl-head");
+  const name = el("input", "tpl-name");
+  name.type = "text";
+  name.maxLength = 24;
+  name.value = item.name || "";
+  name.placeholder = "이름";
+  name.addEventListener("change", async () => {
+    item.name = name.value.trim();
+    await commit();
+  });
+  head.appendChild(name);
+
+  const ctl = el("div", "row-ctrl");
+  const pvBtn = el("button", "btn tpl-pv", "미리보기");
+  ctl.appendChild(pvBtn);
+  if (item.builtin === true) {
+    ctl.appendChild(el("span", "rem-badge", "기본"));
+  } else {
+    const del = el("button", "btn danger tpl-del", "삭제");
+    del.onclick = async () => {
+      state[kind].splice(i, 1);
+      await commit(kind === "templates" ? "템플릿을 삭제했어요" : "스니펫을 삭제했어요");
+      render();
+    };
+    ctl.appendChild(del);
+  }
+  head.appendChild(ctl);
+
+  const body = el("textarea", "tpl-body");
+  body.rows = kind === "templates" ? 3 : 2;
+  body.value = kind === "templates" ? item.content || "" : item.text || "";
+  body.spellcheck = false;
+  body.placeholder = kind === "templates" ? "본문 HTML ({date} 등 치환자 가능)" : "삽입 문구 ({date} {time} 등 치환자 가능)";
+  body.addEventListener("change", async () => {
+    if (kind === "templates") item.content = body.value;
+    else item.text = body.value;
+    await commit();
+  });
+
+  // 미리보기 — 템플릿은 본문 HTML 그대로 렌더, 스니펫은 삽입 시점 치환 결과.
+  const pv = el("div", "tpl-preview hidden");
+  pvBtn.onclick = () => {
+    if (pv.classList.contains("hidden")) {
+      if (kind === "templates") pv.innerHTML = item.content || "<p><br></p>";
+      else pv.textContent = insertSnippet(item.text);
+      pv.classList.remove("hidden");
+      pvBtn.textContent = "닫기";
+    } else {
+      pv.classList.add("hidden");
+      pvBtn.textContent = "미리보기";
+    }
+  };
+
+  wrap.append(head, body, pv);
+  return wrap;
+}
+
+function tplAddRow(kind) {
+  const wrap = el("div", "tpl-add");
+  const name = el("input", "tpl-name");
+  name.type = "text";
+  name.maxLength = 24;
+  name.placeholder = "이름";
+  name.id = kind === "templates" ? "tplAddName" : "snipAddName";
+  const body = el("input", "tpl-add-body");
+  body.type = "text";
+  body.placeholder = kind === "templates" ? "본문 HTML ({date} 치환자 가능)" : "삽입 문구 ({date} {time} 등)";
+  body.id = kind === "templates" ? "tplAddBody" : "snipAddText";
+  const add = el("button", "btn primary", "+ 추가");
+  add.id = kind === "templates" ? "tplAddBtn" : "snipAddBtn";
+  add.onclick = async () => {
+    const nm = name.value.trim();
+    const tx = body.value;
+    if (!nm || !tx.trim()) {
+      status("이름과 내용을 입력해 주세요");
+      return;
+    }
+    if (!Array.isArray(state[kind])) state[kind] = [];
+    const item =
+      kind === "templates"
+        ? { ...defaultTemplate(), name: nm, content: tx, builtin: false }
+        : { ...defaultSnippet(), name: nm, text: tx, builtin: false };
+    state[kind].push(item);
+    await commit(kind === "templates" ? "템플릿을 추가했어요" : "스니펫을 추가했어요");
+    render();
+  };
+  wrap.append(name, body, add);
+  return wrap;
+}
+
+function renderTemplates() {
+  bodyEl.innerHTML = "";
+  bodyEl.appendChild(
+    el("p", "hint-top", "새 메모의 시작 본문(템플릿)과 자주 쓰는 문구(스니펫)를 관리합니다. 템플릿은 스트립 + 버튼에서, 스니펫은 패널 ❖ 버튼에서 고릅니다.")
+  );
+
+  bodyEl.appendChild(el("div", "section-title", "템플릿"));
+  const tplList = el("div", "tpl-rows");
+  (Array.isArray(state.templates) ? state.templates : []).forEach((t, i) =>
+    tplList.appendChild(tplRow(t, i, "templates"))
+  );
+  bodyEl.appendChild(tplList);
+  bodyEl.appendChild(tplAddRow("templates"));
+
+  bodyEl.appendChild(el("div", "section-title", "스니펫"));
+  const snList = el("div", "tpl-rows");
+  (Array.isArray(state.snippets) ? state.snippets : []).forEach((s, i) =>
+    snList.appendChild(tplRow(s, i, "snippets"))
+  );
+  bodyEl.appendChild(snList);
+  bodyEl.appendChild(tplAddRow("snippets"));
 }
 
 /* ---------------- 저장 (D-3) ---------------- */
@@ -766,6 +949,7 @@ function render() {
   renderTabs();
   const idx = state.indexes.find((i) => i.id === tab);
   if (tab === "reminders") renderReminders();
+  else if (tab === "templates") renderTemplates();
   else if (tab === "storage") renderStorage();
   else if (idx) renderIndex(idx);
   else renderCommon();
@@ -807,6 +991,7 @@ async function boot() {
     if (t === "index" && state.indexes[0]) tab = state.indexes[0].id;
     else if (t === "common") tab = "common";
     else if (t === "reminders") tab = "reminders";
+    else if (t === "templates") tab = "templates";
     else if (t === "storage") tab = "storage";
     renderUnlessBusy();
   });
@@ -817,6 +1002,7 @@ async function boot() {
   }
   if (forcedTab === "index" && state.indexes[0]) tab = state.indexes[0].id;
   else if (forcedTab === "reminders") tab = "reminders";
+  else if (forcedTab === "templates") tab = "templates";
   else if (forcedTab === "storage") tab = "storage";
   render();
 

@@ -505,6 +505,33 @@ fn place_toast(
     Ok(())
 }
 
+// ==================== 템플릿 선택 창 (R-06, DESIGN D-5) ====================
+//
+// 스트립 `+` 클릭 시 패널 위치에 뜨는 작은 선택 창 — handles.js가 위치·표시를
+// 지시하고 창 내용(템플릿 목록 렌더)은 pick.js가 담당한다. 창은 setup에서 미리
+// 생성해 hide/show로 재사용한다(NFR-06, BUG-18 회귀 방지). 표시할 때 포커스를
+// 가져가야 Esc 취소·외부 클릭(포커스 상실) 닫힘이 동작한다 — 선택창이라
+// 토스트와 달리 일시적 포커스 점유가 의도된 동작이다.
+#[tauri::command]
+fn place_pick(app: AppHandle, x: f64, y: f64, w: f64, h: f64, visible: bool) -> Result<(), String> {
+    let win = app
+        .get_webview_window("pick")
+        .ok_or("pick window missing")?;
+    if visible {
+        win.set_size(LogicalSize::new(w, h))
+            .map_err(|e| e.to_string())?;
+        win.set_position(LogicalPosition::new(x, y))
+            .map_err(|e| e.to_string())?;
+        win.show().map_err(|e| e.to_string())?;
+        let _ = win.set_focus();
+        // 목록 재렌더·openedAt 갱신은 창 쪽 JS가 수행 (guseok://search-open과 같은 패턴).
+        let _ = win.emit("guseok://pick-open", json!({}));
+    } else {
+        let _ = win.hide();
+    }
+    Ok(())
+}
+
 #[tauri::command]
 fn place_handles(
     app: AppHandle,
@@ -1539,6 +1566,7 @@ fn main() {
             show_search,
             hide_search,
             place_toast,
+            place_pick,
             place_handles,
             work_area,
             monitors,
@@ -1657,6 +1685,25 @@ fn main() {
             .focused(false)
             .visible(false)
             .build()?;
+
+            // D-5 — 템플릿 선택 창. 스트립 `+`에서 패널 위치에 뜨는 작은 목록 창.
+            // 다른 보조 창과 마찬가지로 setup에서 만들고 place_pick으로 show/hide.
+            let _pick =
+                WebviewWindowBuilder::new(app, "pick", WebviewUrl::App("index.html?pick=1".into()))
+                    .title("구석메모 템플릿")
+                    .inner_size(200.0, 160.0)
+                    .decorations(false)
+                    .transparent(true)
+                    .resizable(false)
+                    .maximizable(false)
+                    .minimizable(false)
+                    .closable(false)
+                    .always_on_top(true)
+                    .skip_taskbar(true)
+                    .shadow(false)
+                    .focused(false)
+                    .visible(false)
+                    .build()?;
 
             let settings_item = MenuItemBuilder::with_id("settings", "설정").build(app)?;
             let toggle_item = MenuItemBuilder::with_id("toggle", "메모 열기 / 닫기").build(app)?;

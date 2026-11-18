@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, emitTo } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { state, initStore, saveStore, indexById, activeIndex, defaultIndex, applyTheme, MAX_INDEXES, visibleIndexes, ensureOneVisible, setIndexHidden as setIndexHiddenCore } from "./store.js";
+import { applyTemplate } from "./templates.js";
 import { THEMES } from "./themes.js";
 import { getLayout, panelRect, STRIP_W } from "./layout.js";
 import { applyDarkMode, bindDarkMode } from "./darkmode.js";
@@ -97,12 +98,20 @@ async function refresh() {
   }
 }
 
-async function addIndex() {
+// R-06/D-5 — 새 인덱스 생성. templateId가 있으면 코어 applyTemplate로 본문을
+// 채우고 템플릿 이름을 제목으로 쓴다(기존 빈 메모와 같은 저장·열림 경로).
+async function addIndex(templateId = null) {
   if (!showAdd()) return;
   const n = state.indexes.length + 1;
   const fresh = defaultIndex(n);
   fresh.theme = (n - 1) % THEMES.length;
   applyTheme(fresh, fresh.theme);
+  const tpl = templateId ? (state.templates || []).find((t) => t && t.id === templateId) : null;
+  if (tpl) {
+    fresh.content = applyTemplate(tpl) || "";
+    const nm = (tpl.name || "").trim().slice(0, 8); // 제목은 스트립 8자 계약과 동일
+    if (nm) fresh.title = nm;
+  }
   state.indexes.push(fresh);
   await saveStore({ immediate: true });
   await refresh();
@@ -185,6 +194,40 @@ async function step(dir) {
 async function openNthVisible(n) {
   const idx = visibleIndexes()[(n || 1) - 1];
   if (idx) await open(idx.id);
+}
+
+/* ---------------- 템플릿 선택 창 (D-5, R-06) ---------------- */
+//
+// 스트립 `+` 클릭 시 40px 스트립 안이 아니라 패널 위치에 뜨는 작은 선택 창.
+// 창(pick)은 setup에서 미리 생성돼 있고 여기서 위치·표시만 지시한다 — Esc·
+// 외부 클릭 취소와 항목 선택은 pick.js가 guseok://pick-* 이벤트로 되돌린다.
+// 선택 시 기존 addIndex 경로로 생성+열림.
+
+let pickOpen = false;
+const PICK_W = 200;
+const PICK_ROW_H = 34;
+const PICK_PAD = 12;
+const PICK_MAX_H = 330;
+
+async function openTemplatePick() {
+  if (!showAdd()) return;
+  const tplCount = (Array.isArray(state.templates) ? state.templates : []).filter(
+    (t) => t && typeof t === "object"
+  ).length;
+  const h = Math.min(PICK_MAX_H, PICK_PAD + (tplCount + 1) * PICK_ROW_H);
+  lay = await getLayout(state, showAdd());
+  // 패널 위치 — 스트립 세로 중앙에 맞추고 작업 영역 안에 클램프한다
+  // (panelRect의 y 계산과 같은 규칙을 작은 창 높이에 적용).
+  const x = lay.side === "right" ? lay.wa.x + lay.wa.w - STRIP_W - PICK_W : lay.wa.x + STRIP_W;
+  const y = Math.max(lay.wa.y + 8, Math.min(lay.wa.y + lay.wa.h - h - 8, lay.y + lay.stripH / 2 - h / 2));
+  pickOpen = true;
+  await invoke("place_pick", { x, y, w: PICK_W, h, visible: true });
+}
+
+async function closeTemplatePick() {
+  if (!pickOpen) return;
+  pickOpen = false;
+  await invoke("place_pick", { x: 0, y: 0, w: 1, h: 1, visible: false }).catch(() => {});
 }
 
 // R-07 — 표시/숨김 코어 호출 + 스트립 재배치·재렌더. 토글 UI(phase-05-task-04)가
@@ -279,7 +322,7 @@ function bindDrag() {
   });
 
   listEl.addEventListener("click", (e) => {
-    if (e.target.closest(".handle-add")) addIndex();
+    if (e.target.closest(".handle-add")) openTemplatePick();
   });
 
   listEl.addEventListener("contextmenu", (e) => {
@@ -380,7 +423,7 @@ function showConflictToast(p) {
 }
 
 // CDP 테스트용 내부 훅
-window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNthVisible, setIndexHidden, state: () => state, lay: () => lay, toasts: () => ({ live: toastLive.length, pending: toastPending.length }), pushToast, clearToasts };
+window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNthVisible, setIndexHidden, state: () => state, lay: () => lay, toasts: () => ({ live: toastLive.length, pending: toastPending.length }), pushToast, clearToasts, openTemplatePick, closeTemplatePick, pickOpen: () => pickOpen };
 
 async function boot() {
   await initStore(async (_next, meta) => {
@@ -451,6 +494,16 @@ async function boot() {
     activeId = e.payload?.id || null;
     render();
   });
+
+  // 템플릿 선택 창 (D-5) — 항목 선택이면 빈 메모("") 또는 템플릿 id로 생성,
+  // 취소(Esc·외부 클릭)면 창만 닫는다. 취소는 멱등이라 선택 직후 blur 취소가
+  // 뒤따라 와도 무해하다.
+  await listen("guseok://pick-select", async (e) => {
+    const id = e.payload && typeof e.payload.id === "string" && e.payload.id ? e.payload.id : null;
+    await closeTemplatePick();
+    await addIndex(id);
+  });
+  await listen("guseok://pick-cancel", () => closeTemplatePick());
 
   await listen("guseok://shortcut", async (e) => {
     const { action, n } = e.payload || {};

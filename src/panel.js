@@ -14,6 +14,7 @@ import {
   toLocalIso,
 } from "./reminders.js";
 import { hexToRgba, fontCss } from "./themes.js";
+import { insertSnippet } from "./templates.js";
 import { applyDarkMode, bindDarkMode } from "./darkmode.js";
 import { runSelfTest } from "./selftest.js";
 import { getLayout, panelRect } from "./layout.js";
@@ -569,6 +570,9 @@ document.addEventListener("pointerdown", (e) => {
   if (!remPop.classList.contains("hidden") && !e.target.closest("#remPop") && !e.target.closest("#btnReminder")) {
     remPop.classList.add("hidden");
   }
+  if (!snipPop.classList.contains("hidden") && !e.target.closest("#snipPop") && !e.target.closest("#btnSnippet")) {
+    snipPop.classList.add("hidden");
+  }
 });
 
 /* ---------------- reminder popover (D-2, R-02/03) ---------------- */
@@ -665,6 +669,75 @@ document.getElementById("remSet").addEventListener("click", async () => {
   renderRemList();
   syncRemBadge();
   toast("리마인더를 설정했어요");
+});
+
+/* ---------------- 스니펫 삽입 (D-5, R-06) ---------------- */
+//
+// 툴바 ❖ 버튼 → 스니펫 목록 팝오버 → 클릭 시 현재 캐럿 위치에 본문 삽입.
+// 치환자({date} 등)는 코어 insertSnippet이 삽입 시점 값으로 치환한다.
+// 버튼·팝오버 mousedown을 preventDefault해 에디터 selection이 유지되게 한다 —
+// 그래야 "캐럿 위치"가 클릭 시점의 것으로 보존된다.
+
+const snipPop = document.getElementById("snipPop");
+const btnSnippet = document.getElementById("btnSnippet");
+
+function renderSnipPop() {
+  snipPop.innerHTML = "";
+  const list = Array.isArray(state.snippets) ? state.snippets.filter((s) => s && typeof s === "object") : [];
+  if (!list.length) {
+    const empty = document.createElement("div");
+    empty.className = "snip-empty";
+    empty.textContent = "스니펫이 없어요 · 설정 템플릿 탭에서 추가";
+    snipPop.appendChild(empty);
+    return;
+  }
+  list.forEach((sn) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "snip-item";
+    const nm = document.createElement("span");
+    nm.className = "snip-name";
+    nm.textContent = sn.name || "스니펫";
+    const pv = document.createElement("span");
+    pv.className = "snip-prev";
+    pv.textContent = insertSnippet(sn.text).slice(0, 30);
+    b.append(nm, pv);
+    b.addEventListener("click", () => insertSnippetAtCaret(sn));
+    snipPop.appendChild(b);
+  });
+}
+
+function insertSnippetAtCaret(sn) {
+  // IME 조합 중 삽입은 조합을 강제 확정시켜 한글이 갈라진다 — 차단하고 알린다 (NFR-02).
+  if (composing) {
+    toast("글자 조합이 끝난 뒤 삽입해 주세요");
+    return;
+  }
+  const text = insertSnippet(sn && sn.text);
+  if (!text) {
+    toast("삽입할 내용이 없어요");
+    snipPop.classList.add("hidden");
+    return;
+  }
+  snipPop.classList.add("hidden");
+  // 캐럿이 에디터 밖(제목 입력 등)에 있으면 본문 끝으로 옮긴 뒤 삽입한다.
+  // focus는 항상 호출 — 안에 있던 selection은 유지되고 execCommand 대상이 확정된다.
+  const sel = window.getSelection();
+  const inEditor = !!sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode);
+  editor.focus();
+  if (!inEditor) placeCaretEnd(editor);
+  document.execCommand("insertText", false, text);
+  if (idx) idx.content = editor.innerHTML;
+  syncToolbar();
+  scheduleContentSave();
+  updateEmptyState();
+}
+
+btnSnippet.addEventListener("mousedown", (e) => e.preventDefault());
+snipPop.addEventListener("mousedown", (e) => e.preventDefault());
+btnSnippet.addEventListener("click", () => {
+  if (snipPop.classList.contains("hidden")) renderSnipPop();
+  snipPop.classList.toggle("hidden");
 });
 
 editorWrap.addEventListener(
@@ -908,6 +981,10 @@ document.addEventListener("keydown", async (e) => {
   if (e.key === "Escape") {
     e.preventDefault();
     // 팝오버가 열려 있으면 패널 닫기 대신 팝오버부터 닫는다.
+    if (!snipPop.classList.contains("hidden")) {
+      snipPop.classList.add("hidden");
+      return;
+    }
     if (!remPop.classList.contains("hidden")) {
       remPop.classList.add("hidden");
       return;

@@ -1053,6 +1053,49 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     }
     // 구버전 store는 common merge로 searchKey 기본값을 채운다 (마이그레이션 불필요 경로).
     check("migrate-searchkey-default", migrate({ version: 2, indexes: [{ id: "x1", title: "x" }] }).common.searchKey === "ctrl_shift_f");
+
+    // --- 템플릿 선택 창 · 스니펫 팝오버 (phase-05-task-04, R-06, D-5) ---
+    // pick 창은 setup에서 미리 생성되고 place_pick 커맨드로 show/hide된다 —
+    // 창 존재와 커맨드 바인딩을 단언한다 (search-window-exists와 같은 계약).
+    const pickWin = allWins.find((w) => w.label === "pick");
+    let pickCmd = false;
+    try {
+      await invoke("place_pick", { x: 0, y: 0, w: 1, h: 1, visible: false });
+      pickCmd = true;
+    } catch {}
+    check("pick-window-exists", !!pickWin && pickCmd, `win=${!!pickWin} cmd=${pickCmd}`);
+
+    // 스니펫 팝오버 — 툴바 ❖ → 목록 → 클릭 시 캐럿 위치에 치환된 본문이 들어간다.
+    // 목록 항목 수 == state.snippets 수, 첫 항목 삽입 결과는 코어 insertSnippet과 같다.
+    const btnSnipEl = document.getElementById("btnSnippet");
+    const snipPopEl = document.getElementById("snipPop");
+    const snipList = Array.isArray(state.snippets) ? state.snippets : [];
+    const wantSnipText = snipList[0] ? insertSnippet(snipList[0].text) : "";
+    editor.innerHTML = "<p>SNIP_MARK_</p>";
+    caretToEnd(editor.querySelector("p"));
+    btnSnipEl.click();
+    const snipItems = snipPopEl.querySelectorAll(".snip-item");
+    let snipOk = false;
+    if (!snipPopEl.classList.contains("hidden") && snipItems.length === snipList.length && snipItems[0]) {
+      snipItems[0].click();
+      snipOk =
+        !!wantSnipText &&
+        editor.textContent.includes("SNIP_MARK_") &&
+        editor.textContent.includes(wantSnipText) &&
+        !/[{}]/.test(wantSnipText);
+    }
+    check("snip-pop-insert", snipOk, `items=${snipItems.length} text=${editor.textContent.slice(0, 60)}`);
+    snipPopEl.classList.add("hidden");
+
+    // IME 조합 중에는 삽입이 차단된다 (NFR-02 — 조합 강제 확정 방지).
+    editor.innerHTML = "<p>IME_MARK</p>";
+    caretToEnd(editor.querySelector("p"));
+    editor.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
+    btnSnipEl.click();
+    snipPopEl.querySelector(".snip-item")?.click();
+    check("snip-pop-ime-block", editor.textContent === "IME_MARK", editor.textContent.slice(0, 40));
+    snipPopEl.classList.add("hidden");
+    editor.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true }));
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }

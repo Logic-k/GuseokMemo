@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "pick-events",
+  "description": "Pick(템플릿 선택) 창: event listen/emit only — 창 제어는 handles의 place_pick 커맨드가 담당 (toast 창과 같은 ACL 패턴)",
+  "windows": ["pick"],
+  "permissions": ["core:event:default"]
+}
