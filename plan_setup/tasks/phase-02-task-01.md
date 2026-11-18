@@ -1,6 +1,6 @@
 ---
 id: phase-02-task-01
-status: pending
+status: completed
 depends_on: []
 acceptance_criteria:
   - 인덱스의 content HTML에서 텍스트만 추출하는 순수 함수가 있다(태그·input·img 제외, ck-text/li/h1~3/p 포함)

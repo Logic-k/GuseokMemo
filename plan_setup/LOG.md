@@ -334,3 +334,4 @@
 - phase-01-task-01 completed (274c85d): 스키마 v2·migrate STEPS 연쇄·v1 fixture·selftest +3 → 29/29. 독립 검증 PASS. main.rs 기준선 fmt/clippy 정리 동행(동작 변경 없음). notifyMethod:"panel"은 OQ-02 임시값.
 - phase-01-task-02 completed (76e793b+4253cb3): rename_with_retry 백오프 50/100/150ms + 단위 6건(실 점유 재현). 독립 검증 PASS, e2e 29/29. 참고: 구현자 중단→재개 경로에서 동일 변경 커밋 2개 발생(제품 diff 동일, 후자는 attempt+증거만). run-e2e "early exit" 오판 사례 1회 — qa.log SUMMARY로 실제 PASS 확인, harness 판정 개선 후보.
 - phase-01-task-03 completed (2150f93): rust-version 1.90, 버전 세트 확인(tauri 2.12.5·updater 2.14.1·wry 0.57.2 등, 커밋 메시지). validator PASS — phase-01 완료.
+- phase-02-task-01 completed (e0b5c01): src/search.js — extractText+search 코어, hidden 제외, selftest +10 → 39/39. validator PASS.
