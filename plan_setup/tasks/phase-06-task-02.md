@@ -1,6 +1,6 @@
 ---
 id: phase-06-task-02
-status: pending
+status: completed
 depends_on: [phase-01-task-01]
 acceptance_criteria:
   - allowDowngrades 적용 여부가 근거와 함께 결정·기록된다
