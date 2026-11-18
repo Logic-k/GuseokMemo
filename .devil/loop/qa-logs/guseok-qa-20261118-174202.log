@@ -1,0 +1,300 @@
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 858 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] SUMMARY 26/26 passed
+[QA] PASS store-restore :: 1290 bytes
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 858 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] SUMMARY 26/26 passed
+[QA] PASS store-restore :: 1290 bytes
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-142640 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-143051 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 858 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] SUMMARY 26/26 passed
+==== e2e-run 20261118-170140 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,ipty2w6,iqut87f,old2,old3
+[QA] SUMMARY 29/29 passed
+[QA] PASS store-restore :: 2119 bytes
+==== e2e-run 20261118-170502 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,inf7zpw,i1yisma,old2,old3
+[QA] SUMMARY 29/29 passed
+==== e2e-run 20261118-171119 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,igjnv91,ikijchv,old2,old3
+[QA] SUMMARY 29/29 passed
+==== e2e-run 20261118-171932 ====
+==== e2e-run 20261118-171936 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-172118 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iphpsp6,i1gc130,old2,old3
+[QA] SUMMARY 29/29 passed
+==== verify-store-restore 20261118-172406 ====
+==== e2e-run 20261118-172416 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+==== e2e-run 20261118-172744 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,it846j9,ilaa40a,old2,old3
+[QA] SUMMARY 29/29 passed
+[QA] PASS store-restore :: 2119 bytes
+==== e2e-run 20261118-174108 ====
+[QA] PASS shortcuts :: ctrl_shift_m
+[QA] PASS markdown-h1 :: 회의 안건
+[QA] PASS markdown-checkbox :: 우유 사기
+[QA] PASS checkbox-toggle :: ck done checked=true
+[QA] PASS checkbox-persist :: <div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div><p>
+[QA] PASS ck-enter-new-row :: rows=2
+[QA] PASS ck-backspace-unwrap :: <p>첫째</p><div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text
+[QA] PASS markdown-bullet :: <ul><li>장바구니</li></ul><p><br></p>
+[QA] PASS export-markdown :: "## 제목\n본문 굵게\n- 하나"
+[QA] PASS checkbox-checked-parse :: ck done
+[QA] PASS ime-enter-no-row :: cks=1
+[QA] PASS ime-enter-after-commit :: cks=2
+[QA] PASS image-add :: images=1
+[QA] PASS image-ratio :: 16:9
+[QA] PASS image-scale :: 120
+[QA] PASS image-delete :: images=0
+[QA] PASS mode-ice :: ice
+[QA] PASS mode-peek :: peek
+[QA] PASS peek-autoclose
+[QA] PASS ice-stays-open
+[QA] PASS title-edit-panel :: 제목변경
+[QA] PASS opacity-panel :: op=55 bg=rgba(253, 243, 201, 0.55)
+[QA] PASS placeholder-attr :: 여기에 적어주세요
+[QA] PASS index-switch-rerender :: <p>__OTHER_INDEX__</p>
+[QA] PASS index-switch-back :: <div class="ck" data-ck="1"><input type="checkbox"><span cla
+[QA] PASS store-write :: 1687 bytes
+[QA] PASS self-echo-skip :: kept
+[QA] PASS migrate-v1-to-v2 :: src=fixture idx=2 tpl=3
+[QA] PASS migrate-keep-unknown
+[QA] PASS migrate-old-backup :: ids=old1,iruh8o7,icmi1eu,old2,old3
+[QA] PASS search-extract-ck :: "우유 사기 회의 준비"
+[QA] PASS search-extract-tags :: "주간 회의 본문 강조 텍스트 항목 하나"
+[QA] PASS search-title-match :: [{"indexId":"s1","title":"장바구니","snippet":"장바구니","matches":1,"titleMatch":true}]
+[QA] PASS search-body-match :: [{"indexId":"s2","title":"회의록","snippet":"검색 대상 문서 다음 주 안건 정리","matches":1,"titleMatch":false}]
+[QA] PASS search-case-insensitive :: ["s4"]
+[QA] PASS search-empty-query
+[QA] PASS search-no-match
+[QA] PASS search-hidden-excluded :: ["s1"]
+[QA] PASS search-snippet-context :: len=87 …가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가핵심키워드나나나나
+[QA] PASS search-match-count :: matches=3
+[QA] SUMMARY 39/39 passed

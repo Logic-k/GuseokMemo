@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { state, migrate } from "./store.js";
 import { getLayout, panelRect } from "./layout.js";
+import { extractText, search } from "./search.js";
 
 function caretToEnd(el) {
   const r = document.createRange();
@@ -343,6 +344,82 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
         restored.common.openKey === "ctrl_shift_m",
       `ids=${restored.indexes.map((i) => i.id).join(",")}`
     );
+
+    // --- 검색 코어 (phase-02-task-01, R-01/TD-06) ---
+    // 실사용자 state를 건드리지 않고 메모리 내 가짜 state로 검증한다.
+    const CK_SEARCH_HTML =
+      '<div class="ck done" data-ck="1"><input type="checkbox" checked=""><span class="ck-text">우유 사기</span></div>' +
+      '<div class="ck" data-ck="1"><input type="checkbox"><span class="ck-text">회의 준비</span></div><p><br></p>';
+    const extCk = extractText(CK_SEARCH_HTML);
+    check(
+      "search-extract-ck",
+      extCk.includes("우유 사기") && extCk.includes("회의 준비") && !/[<>]|input|checkbox/.test(extCk),
+      JSON.stringify(extCk)
+    );
+    const extTags = extractText('<h2>주간 회의</h2><p>본문 <strong>강조</strong> 텍스트</p><ul><li>항목 하나</li></ul>');
+    check(
+      "search-extract-tags",
+      extTags.includes("주간 회의") && extTags.includes("본문 강조 텍스트") && extTags.includes("항목 하나") && !/[<>]/.test(extTags),
+      JSON.stringify(extTags)
+    );
+    // 마크다운 자동변환으로 만든 실제 에디터 HTML을 본문으로 쓴다 — 저장 형식 그대로.
+    editor.innerHTML = "<p># 검색 대상 문서</p>";
+    const mp = editor.querySelector("p");
+    caretToEnd(mp);
+    pressEnter(mp);
+    const mdHtml = editor.innerHTML; // <h1>검색 대상 문서</h1><p><br></p> 형태
+    const longBody = "<p>" + "가".repeat(60) + "핵심키워드" + "나".repeat(60) + "</p>";
+    const fakeState = {
+      indexes: [
+        { id: "s1", title: "장바구니", content: CK_SEARCH_HTML, hidden: false },
+        { id: "s2", title: "회의록", content: mdHtml + "<p>다음 주 안건 정리</p>", hidden: false },
+        { id: "s3", title: "숨김 메모", content: "<p>우유 재고 확인</p>", hidden: true },
+        { id: "s4", title: "영어", content: "<p>Hello World</p>", hidden: false, images: [{ src: "data:image/png;base64,우유이미지속키워드" }] },
+        { id: "s5", title: "긴본문", content: longBody, hidden: false },
+        { id: "s6", title: "사과", content: "<p>사과 사과</p>", hidden: false },
+      ],
+    };
+
+    const rTitle = search(fakeState, "장바구니");
+    check(
+      "search-title-match",
+      rTitle.length === 1 && rTitle[0].indexId === "s1" && rTitle[0].title === "장바구니" && rTitle[0].titleMatch === true,
+      JSON.stringify(rTitle)
+    );
+
+    const rBody = search(fakeState, "검색 대상");
+    check(
+      "search-body-match",
+      rBody.length === 1 && rBody[0].indexId === "s2" && rBody[0].matches >= 1 && rBody[0].snippet.includes("검색 대상"),
+      JSON.stringify(rBody)
+    );
+
+    const rCase = search(fakeState, "hello");
+    check("search-case-insensitive", rCase.length === 1 && rCase[0].indexId === "s4", JSON.stringify(rCase.map((r) => r.indexId)));
+
+    check("search-empty-query", search(fakeState, "").length === 0 && search(fakeState, "   ").length === 0);
+
+    check("search-no-match", search(fakeState, "없는키워드zz").length === 0);
+
+    // 숨긴 인덱스(s3)는 제외, images[](s4)는 검색 대상이 아님 — "우유"는 s1에만 있다.
+    const rHidden = search(fakeState, "우유");
+    check(
+      "search-hidden-excluded",
+      rHidden.length === 1 && rHidden[0].indexId === "s1",
+      JSON.stringify(rHidden.map((r) => r.indexId))
+    );
+
+    const rSnip = search(fakeState, "핵심키워드");
+    const snip = rSnip[0]?.snippet || "";
+    check(
+      "search-snippet-context",
+      rSnip.length === 1 && snip.startsWith("…") && snip.endsWith("…") && snip.includes("핵심키워드") && snip.includes("가") && snip.includes("나"),
+      `len=${snip.length} ${snip.slice(0, 50)}`
+    );
+
+    // matches = 제목 1건 + 본문 2건
+    const rCount = search(fakeState, "사과");
+    check("search-match-count", rCount.length === 1 && rCount[0].matches === 3 && rCount[0].titleMatch === true, `matches=${rCount[0]?.matches}`);
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }
