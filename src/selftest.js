@@ -973,6 +973,24 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     idx = state.indexes.find((i) => i.id === idx.id) || state.indexes[0];
     await save();
 
+    // --- 저장 폴더 설정 UI (phase-04-task-04, R-04/D-3) ---
+    // 설정 "저장" 탭이 렌더하는 데이터 계약 — 실효 경로 조회 커맨드 get_data_dir의
+    // 반환 형태 {path, effectivePath, isDefault}와 settings 창 존재를 단언한다.
+    // 탭 DOM 렌더·버튼·오류 경로는 cdp-storage-ui.cjs가 settings 창에서 확인한다.
+    const ddUi = await invoke("get_data_dir");
+    const settingsWin = (await getAllWindows()).find((w) => w.label === "settings");
+    check(
+      "storage-datadir-contract",
+      !!settingsWin &&
+        !!ddUi &&
+        typeof ddUi === "object" &&
+        typeof ddUi.effectivePath === "string" &&
+        ddUi.effectivePath.length > 0 &&
+        typeof ddUi.isDefault === "boolean" &&
+        (ddUi.path === null || typeof ddUi.path === "string"),
+      `path=${ddUi && ddUi.path} eff=${ddUi && ddUi.effectivePath} default=${ddUi && ddUi.isDefault}`
+    );
+
     // --- 검색 창 (phase-02-task-02, R-01/D-1) ---
     // setup에서 미리 생성된 "search" 창이 있고, show_search/hide_search 커맨드로
     // 표시·숨김이 돌아가는지 단언 (런타임 생성 금지 = BUG-18 회귀 방지).

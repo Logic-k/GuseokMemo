@@ -28,6 +28,11 @@ let tab = "common";
 let monitors = [];
 let resetArmed = 0;
 let appVersion = "";
+// D-3 — 저장 탭: 마지막 외부 자동 불러오기 시각(이 창이 관찰한 것만), 실패 오류 문구,
+// 비동기 렌더 시퀀스(늦게 온 렌더가 새 렌더를 덮지 않게 하는 토큰).
+let lastExternalReload = null;
+let storageError = "";
+let storageSeq = 0;
 
 const OPEN_KEYS = [
   { id: "ctrl_shift_m", label: "Ctrl + Shift + M" },
@@ -171,6 +176,17 @@ function renderTabs() {
     };
     tabsEl.appendChild(add);
   }
+
+  // D-3 — 저장 폴더 탭은 탭열 맨 뒤(인덱스 + 버튼 다음)의 고정 탭.
+  const stTab = el("button", "tab" + (tab === "storage" ? " on" : ""), "");
+  stTab.innerHTML =
+    '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h16v15H4z"/><path d="M8 4.5v5h8v-5"/><path d="M8 19.5v-6h8v6"/></svg>' +
+    "<span>저장</span>";
+  stTab.onclick = () => {
+    tab = "storage";
+    render();
+  };
+  tabsEl.appendChild(stTab);
 }
 
 /* ---------------- common ---------------- */
@@ -578,6 +594,130 @@ function renderReminders() {
   bodyEl.appendChild(list);
 }
 
+/* ---------------- 저장 (D-3) ---------------- */
+
+// get_data_dir의 표시 계약은 {path, effectivePath, isDefault} — path는 config.json의
+// 설정값(무효·폴백 중이어도 그대로), effectivePath는 store.json이 실제 있는 폴더.
+// set_data_dir는 즉시 적용(포인터 재해석)이라 성공 시 "재시작 필요" 안내가 아니라
+// 즉시 적용 메시지를 띄운다.
+
+// 긴 경로의 중간 생략 — 앞 24자 + … + 뒤 28자 (D-3 "길면 중간 생략").
+function ellipsizePath(p) {
+  const s = String(p || "");
+  if (s.length <= 56) return s;
+  return s.slice(0, 24) + "…" + s.slice(-28);
+}
+
+// 설정값(path)과 실효 경로(effectivePath)의 철자 차이 흡수 — 폴백 감지용.
+function normDir(s) {
+  return String(s || "")
+    .replace(/[\\/]+/g, "\\")
+    .replace(/\\+$/, "")
+    .toLowerCase();
+}
+
+// 폴더 선택 결과(또는 null=기본값 복귀)를 코어에 적용한다. 다이얼로그와 분리된
+// 진입점이라 CDP가 오류 경로를 그대로 검증할 수 있다 (plan_setup/cdp-storage-ui.cjs).
+// 성공 시 표시를 최신 get_data_dir로 갱신, 실패 시 오류 문구만 남기고 기존 경로 유지.
+export async function applyDataDir(path) {
+  storageError = "";
+  try {
+    await invoke("set_data_dir", { path: path ?? null });
+    status(path ? "저장 폴더를 변경했어요 · 기존 메모를 새 폴더로 복사했어요" : "기본 저장 폴더로 되돌렸어요");
+  } catch (err) {
+    storageError = String(err && err.message ? err.message : err);
+    status("저장 폴더를 바꾸지 못했어요 · 기존 폴더를 계속 사용합니다");
+  }
+  if (tab === "storage") render();
+  return !storageError;
+}
+
+async function renderStorage() {
+  // 비동기 렌더 — 탭을 열 때마다 실효 경로를 다시 읽는다(다른 창·외부에서 바뀐 경우 포함).
+  // 응답이 늦게 와도 탭이 바뀌었거나 새 렌더가 시작됐으면 결과를 버린다.
+  const my = ++storageSeq;
+  bodyEl.innerHTML = "";
+  bodyEl.appendChild(el("p", "hint-top", "메모와 설정이 저장되는 폴더입니다. 바꾸면 기존 데이터를 새 폴더로 복사하고 원본은 그대로 둡니다."));
+  let info = null;
+  let infoErr = "";
+  try {
+    info = await invoke("get_data_dir");
+  } catch (err) {
+    infoErr = String(err && err.message ? err.message : err);
+  }
+  if (my !== storageSeq || tab !== "storage") return;
+  if (!info) {
+    bodyEl.appendChild(el("div", "store-err", "저장 폴더 정보를 읽지 못했어요 · " + infoErr));
+    return;
+  }
+
+  bodyEl.appendChild(el("div", "section-title", "저장 폴더"));
+
+  // 지정 폴더가 무효(삭제·권한)면 코어가 기본 폴더로 폴백한다 — 설정값과 실효값이
+  // 다르면 그 사실을 경고로 표시한다 (DataDirInfo.path의 의도된 용도).
+  const fallback = !!info.path && normDir(info.path) !== normDir(info.effectivePath);
+
+  const pathBtn = el("button", "btn store-path", ellipsizePath(info.effectivePath));
+  pathBtn.id = "storagePath";
+  pathBtn.title = info.effectivePath + " — 클릭하면 폴더를 엽니다";
+  pathBtn.dataset.path = info.effectivePath; // 검증·접근용 원시 경로(title은 안내 문구가 붙는다)
+  pathBtn.onclick = () => invoke("open_data_dir").catch(() => {});
+  const kind = el("span", "rem-badge", fallback ? "폴백" : info.isDefault ? "기본" : "지정");
+  kind.id = "storageKind";
+  const pathCtrl = el("div", "row-ctrl");
+  pathCtrl.append(kind, pathBtn);
+  bodyEl.appendChild(
+    row(
+      "현재 저장 폴더",
+      fallback ? "지정 폴더를 찾을 수 없어 기본 위치로 동작 중입니다." : info.isDefault ? "앱 기본 위치입니다." : "지정한 폴더입니다.",
+      pathCtrl
+    )
+  );
+  if (fallback) bodyEl.appendChild(el("div", "store-err", "지정된 폴더를 사용할 수 없습니다: " + info.path));
+
+  const changeBtn = el("button", "btn", "폴더 변경…");
+  changeBtn.id = "storageChange";
+  changeBtn.onclick = async () => {
+    const picked = await open({ directory: true, multiple: false, title: "메모 저장 폴더 선택" }).catch(() => null);
+    if (!picked) return; // 취소 — 아무것도 바꾸지 않는다
+    await applyDataDir(typeof picked === "string" ? picked : picked.path);
+  };
+  const resetBtn = el("button", "btn", "기본값으로 되돌리기");
+  resetBtn.id = "storageReset";
+  // 이미 기본이고 지정도 없으면 누를 필요가 없다 — 폴백(지정 남아있음)이면 포인터를
+  // 지우는 경로라 활성 유지.
+  resetBtn.disabled = !info.path && info.isDefault;
+  resetBtn.onclick = () => applyDataDir(null);
+  const chgCtrl = el("div", "row-ctrl");
+  chgCtrl.append(changeBtn, resetBtn);
+  bodyEl.appendChild(row("폴더 지정", "다른 폴더(동기화 폴더 포함)에 저장합니다.", chgCtrl));
+
+  // 쓰기 불가·미존재 경로 선택 시 — 코어가 Err를 반환하고 기존 경로를 유지한다.
+  const errLine = el("div", "store-err", storageError);
+  errLine.id = "storageError";
+  if (!storageError) errLine.style.display = "none";
+  bodyEl.appendChild(errLine);
+
+  bodyEl.appendChild(el("div", "section-title", "자동 불러오기"));
+  const watchBadge = el("span", "rem-badge", "감시 중");
+  watchBadge.id = "storageWatch";
+  bodyEl.appendChild(
+    row(
+      "외부 변경 감시",
+      "다른 프로그램이나 다른 컴퓨터가 저장 파일을 바꾸면 자동으로 다시 불러옵니다." +
+        (lastExternalReload
+          ? " 마지막 자동 불러오기: " +
+            lastExternalReload.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+          : " 이번 실행에서는 아직 외부 변경이 없었습니다."),
+      watchBadge
+    )
+  );
+  // OQ-03 확정 정책 1줄 안내 (D-3 — 같은 탭에 안내만 추가).
+  bodyEl.appendChild(
+    el("p", "store-note", "외부 변경과 내 미저장 편집이 충돌하면 외부본을 적용하고 내 편집은 충돌본 파일(store.conflict-*.json)로 보관합니다.")
+  );
+}
+
 /* ---------------- data ---------------- */
 
 async function backup() {
@@ -612,6 +752,7 @@ function render() {
   renderTabs();
   const idx = state.indexes.find((i) => i.id === tab);
   if (tab === "reminders") renderReminders();
+  else if (tab === "storage") renderStorage();
   else if (idx) renderIndex(idx);
   else renderCommon();
 }
@@ -638,7 +779,9 @@ document.addEventListener("pointerup", () => {
 });
 
 async function boot() {
-  await initStore(async () => {
+  await initStore(async (_s, meta) => {
+    // D-3 — 외부 저장본이 적용되면 저장 탭의 "마지막 자동 불러오기" 시각을 갱신한다.
+    if (meta && meta.src === "external") lastExternalReload = new Date();
     renderUnlessBusy();
   });
   await listen("guseok://open-tab", (e) => {
@@ -646,6 +789,7 @@ async function boot() {
     if (t === "index" && state.indexes[0]) tab = state.indexes[0].id;
     else if (t === "common") tab = "common";
     else if (t === "reminders") tab = "reminders";
+    else if (t === "storage") tab = "storage";
     renderUnlessBusy();
   });
   try {
@@ -655,6 +799,7 @@ async function boot() {
   }
   if (forcedTab === "index" && state.indexes[0]) tab = state.indexes[0].id;
   else if (forcedTab === "reminders") tab = "reminders";
+  else if (forcedTab === "storage") tab = "storage";
   render();
 
   document.getElementById("closeBtn").onclick = () => win.close();
