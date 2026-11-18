@@ -1,6 +1,6 @@
 ---
 id: phase-01-task-03
-status: pending
+status: completed
 depends_on: []
 acceptance_criteria:
   - src-tauri/Cargo.toml의 rust-version이 실제 요구(Rust ≥1.90)와 일치한다
