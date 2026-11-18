@@ -1,21 +1,25 @@
 ---
 topic: 구석메모 다음 개발 사이클 상태
 updated: 2026-11-18
-status: 계획·하네스·Loop 계약 준비 완료 — Loop 시작 승인 대기
+status: Loop 실행 중 — phase-01-task-03 in_progress
 ---
 
 # STATE — 다음 개발 사이클
 
 ## 현재 단계
-문서화 완료: PRD → TRD → ARCHITECTURE → PLAN → 하네스(harness_setup/) → Loop 계약
-(loop_setup/LOOP.md). 구현 Loop 미착수 — **시작은 사용자 승인 대기**.
-기존 `plan_setup/LOG.md`는 v0.2.4까지의 버그/개선 이력으로 보존(미검증 항목은 아래 연결).
+**Loop 실행 중** (dod-runner 규약, 사용자 시작 지시 2026-11-18).
+기준선 커밋 `loop(bootstrap)` — 문서·하네스 체계.
+환경: Windows 로컬 메인 체크아웃, 동시 구현 상한 1(순차). 역할별 모델 (미정) →
+프로필 기본값 사용(보수적 선택, LOG 근거).
+기존 `plan_setup/LOG.md`는 v0.2.4까지의 이력으로 보존, Loop 이력은 같은 파일에 append.
 
 ## 태스크 현황 (18)
 
 | 상태 | 개수 | 태스크 |
 |---|---|---|
-| pending | 12 | 01-01, 01-02, 01-03, 02-01, 03-01, 04-01, 04-02, 05-01, 05-02, 06-01, 06-02, 06-03 |
+| completed | 2 | 01-01 (274c85d), 01-02 (76e793b+4253cb3) — 모두 validator PASS, selftest 29/29 |
+| in_progress | 1 | 01-03 |
+| pending | 9 | 02-01, 03-01, 04-01, 04-02, 05-01, 05-02, 06-01, 06-02, 06-03 |
 | blocked | 6 | 02-02(DESIGN), 03-02(OQ-02+DESIGN), 04-03(OQ-03), 04-04(DESIGN), 05-03(DESIGN), 05-04(DESIGN) |
 
 ## 차단과 해소 조건

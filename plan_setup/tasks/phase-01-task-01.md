@@ -1,6 +1,6 @@
 ---
 id: phase-01-task-01
-status: pending
+status: completed
 depends_on: []
 acceptance_criteria:
   - store.json에 "version": 2가 기록되고, migrate()가 v1(필드 없는) 입력을 v2 스키마로 정규화한다

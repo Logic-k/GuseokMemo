@@ -1,6 +1,6 @@
 ---
 id: phase-01-task-02
-status: pending
+status: completed
 depends_on: []
 acceptance_criteria:
   - save_store의 fs::rename 실패(파일 점유) 시 짧은 백오프로 재시도하고, 최종 성공/실패가 구분된다

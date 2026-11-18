@@ -325,3 +325,11 @@
   - `cdp-sidebar-features.cjs` **9/9 PASS** — monitors 명령(2대 반환),
     `+` 클릭→인덱스 추가→패널 자동 오픈, 우클릭 무장→클릭 삭제,
     모니터0 좌/우·모니터1 좌 가장자리 스냅 각각 정확한 side/monitor 선택.
+
+## Loop 실행 (2026-11-18, dod-runner)
+
+- 시작: 사용자 지시로 Loop 승인·실행. 환경: 로컬 메인 체크아웃, 순차(동시 구현 상한 1). 역할별 모델 (미정) → 프로필 기본값 사용(보수적 선택, LOOP.md §2 규칙).
+- 기준선 커밋 `loop(bootstrap)` — research/docs/plan/harness/loop 체계.
+- blocked 6개 사유 확인: docs/DESIGN.md 부재(사용자 승인 전) + OQ-02/03 사용자 결정 미해소 → 계약상 blocked 유지. pending 12개부터 순차 실행.
+- phase-01-task-01 completed (274c85d): 스키마 v2·migrate STEPS 연쇄·v1 fixture·selftest +3 → 29/29. 독립 검증 PASS. main.rs 기준선 fmt/clippy 정리 동행(동작 변경 없음). notifyMethod:"panel"은 OQ-02 임시값.
+- phase-01-task-02 completed (76e793b+4253cb3): rename_with_retry 백오프 50/100/150ms + 단위 6건(실 점유 재현). 독립 검증 PASS, e2e 29/29. 참고: 구현자 중단→재개 경로에서 동일 변경 커밋 2개 발생(제품 diff 동일, 후자는 attempt+증거만). run-e2e "early exit" 오판 사례 1회 — qa.log SUMMARY로 실제 PASS 확인, harness 판정 개선 후보.
