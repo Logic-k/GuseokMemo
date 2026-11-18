@@ -9,6 +9,8 @@
 // 창은 focused(false)로 만들어져 클릭 직후처럼 포커스를 얻은 상태에서만 Esc가
 // 도달한다 — × 버튼이 포커스 무관하게 동작하는 주 닫기 경로다.
 import { emitTo, listen } from "@tauri-apps/api/event";
+import { state, initStore } from "./store.js";
+import { applyDarkMode, bindDarkMode } from "./darkmode.js";
 
 const host = document.getElementById("toastHost");
 
@@ -75,6 +77,10 @@ function render(items) {
 }
 
 async function boot() {
+  // R-08 — 다크모드 적용을 위해 store를 읽고 guseok://store 변경을 구독한다.
+  // 이 창은 저장하지 않으므로 브로드캐스트는 수신 전용이다.
+  await initStore(async () => applyDarkMode(state.common.darkMode));
+  bindDarkMode(() => state.common.darkMode); // 초기 적용 + system 모드 OS 추적
   await listen("guseok://toast-state", (e) => render(e.payload?.items || []));
   // 준비 통지 — 최초 상태 emit을 놓친 경우 handles가 큐를 다시 쏴준다.
   emitTo("handles", "guseok://toast-ready", {}).catch(() => {});

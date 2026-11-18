@@ -17,6 +17,7 @@ import {
   listReminders,
   toLocalIso,
 } from "./reminders.js";
+import { DARK_MODES, applyDarkMode, bindDarkMode } from "./darkmode.js";
 
 const win = getCurrentWindow();
 const tabsEl = document.getElementById("tabs");
@@ -221,6 +222,19 @@ function renderCommon() {
     ))
   );
 
+  // D-4 — 다크모드 선택 (common.darkMode). 메모 카드 색은 인덱스 테마가 유지하고,
+  // 설정 창·패널 크롬·스트립 +·토스트·검색 창만 바뀐다. 저장 즉시 이 창에도 적용하고
+  // 브로드캐스트로 나머지 창이 따라간다.
+  const dmSel = select(DARK_MODES, state.common.darkMode || "system", async (v) => {
+    state.common.darkMode = v;
+    applyDarkMode(v);
+    await commit();
+  });
+  dmSel.id = "darkModeSel";
+  bodyEl.appendChild(
+    row("다크 모드", "메모 색은 그대로 두고 앱 화면만 밝게·어둡게 합니다.", dmSel)
+  );
+
   bodyEl.appendChild(el("div", "section-title", "동작"));
   bodyEl.appendChild(
     row("동작 방식", "마우스로 열거나, 단축키로 엽니다.", select(
@@ -412,7 +426,7 @@ function renderIndex(idx) {
   THEMES.forEach((t, i) => {
     const sw = el("button", "swatch");
     sw.style.background = t.bg;
-    sw.style.borderColor = i === idx.theme ? "#23252f" : "transparent";
+    sw.classList.toggle("on", i === idx.theme); // 선택 테두리는 .swatch.on 토큰이 그린다 (다크 대응)
     sw.title = t.name;
     sw.onclick = async () => {
       applyTheme(idx, i);
@@ -780,10 +794,14 @@ document.addEventListener("pointerup", () => {
 
 async function boot() {
   await initStore(async (_s, meta) => {
+    // 외부/타 창 저장의 darkMode 변경을 즉시 반영 — html.dark 토글만이라
+    // 입력 중인 컨트롤의 DOM을 건드리지 않는다.
+    applyDarkMode(state.common.darkMode);
     // D-3 — 외부 저장본이 적용되면 저장 탭의 "마지막 자동 불러오기" 시각을 갱신한다.
     if (meta && meta.src === "external") lastExternalReload = new Date();
     renderUnlessBusy();
   });
+  bindDarkMode(() => state.common.darkMode); // 초기 적용 + system 모드 OS 추적
   await listen("guseok://open-tab", (e) => {
     const t = e.payload?.tab;
     if (t === "index" && state.indexes[0]) tab = state.indexes[0].id;

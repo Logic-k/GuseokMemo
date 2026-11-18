@@ -91,6 +91,7 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   50% { filter: brightness(1.18); }
 }
 
+/* 스트립 `+` — 유일한 비인덱스(크롬) 버튼이라 다크 토큰을 탄다 (D-4). */
 .handle-add {
   width: 26px;
   height: 22px;
@@ -101,17 +102,17 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   font-weight: 700;
   line-height: 1;
   padding-bottom: 2px;
-  color: rgba(20, 22, 34, 0.55);
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px dashed rgba(20, 20, 30, 0.28);
+  color: rgba(var(--chrome-ink), 0.55);
+  background: rgba(var(--chrome-surface), 0.55);
+  border: 1px dashed rgba(var(--chrome-ink), 0.28);
   box-shadow: -2px 2px 8px rgba(15, 18, 35, 0.10);
   cursor: pointer;
   transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
 .handle-add:hover {
-  color: rgba(20, 22, 34, 0.9);
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(20, 20, 30, 0.5);
+  color: rgba(var(--chrome-ink), 0.9);
+  background: rgba(var(--chrome-surface), 0.85);
+  border-color: rgba(var(--chrome-ink), 0.5);
 }
 
 .handle .dot {
@@ -334,11 +335,11 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   gap: 6px;
   padding: 7px 9px;
   border-radius: 12px;
-  background: rgba(255,255,255,.82);
+  background: rgba(var(--chrome-surface), .82);
   backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(10,14,28,.16);
+  box-shadow: var(--chrome-shadow);
   font-size: 11px;
-  color: #22222c;
+  color: var(--chrome-ink-solid);
   z-index: 6;
 }
 .img-bar button {
@@ -347,9 +348,9 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   font-size: 11px;
   font-weight: 600;
 }
-.img-bar button:hover { background: rgba(0,0,0,.07); }
-.img-bar button.on { background: #21243a; color: #fff; }
-.img-bar input[type="range"] { width: 74px; accent-color: #21243a; }
+.img-bar button:hover { background: rgba(var(--chrome-ink), .07); }
+.img-bar button.on { background: var(--chrome-btn); color: #fff; }
+.img-bar input[type="range"] { width: 74px; accent-color: var(--chrome-btn); }
 
 /* toolbar */
 
@@ -362,9 +363,9 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   gap: 1px;
   padding: 4px 6px;
   border-radius: 13px;
-  background: rgba(255,255,255,.62);
+  background: rgba(var(--chrome-surface), .62);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(20,20,30,.07);
+  border: 1px solid rgba(var(--chrome-ink), .07);
   box-shadow: 0 3px 10px rgba(12,16,32,.10);
   z-index: 5;
   max-width: calc(100% - 24px);
@@ -389,18 +390,18 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   border-radius: 7px;
   display: grid;
   place-items: center;
-  color: rgba(20,22,34,.72);
+  color: rgba(var(--chrome-ink), .72);
   position: relative;
 }
-.tb:hover { background: rgba(20,22,34,.08); }
-.tb.on { background: rgba(20,22,34,.14); color: rgba(14,16,26,.95); }
+.tb:hover { background: var(--chrome-ink-hover); }
+.tb.on { background: var(--chrome-ink-active); color: rgba(var(--chrome-ink), .95); }
 .tb svg { width: 15px; height: 15px; }
 .tb.letter { font-size: 13px; font-weight: 700; }
 .tb.letter.italic { font-style: italic; }
 .tb.letter.under { text-decoration: underline; }
 .tb.letter.strike { text-decoration: line-through; }
 
-.tb-sep { width: 1px; height: 16px; background: rgba(20,22,34,.13); margin: 0 3px; }
+.tb-sep { width: 1px; height: 16px; background: var(--chrome-ink-line); margin: 0 3px; }
 
 .saved {
   position: absolute;
@@ -408,8 +409,8 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   bottom: 17px;
   font-size: 10px;
   letter-spacing: .02em;
-  color: rgba(20,22,34,.45);
-  background: rgba(255,255,255,.5);
+  color: var(--chrome-ink-faint);
+  background: rgba(var(--chrome-surface), .5);
   padding: 3px 8px;
   border-radius: 8px;
   opacity: 0;
@@ -448,11 +449,11 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   gap: 4px;
   padding: 5px 7px;
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(var(--chrome-surface), 0.92);
   backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(10, 14, 28, 0.16);
+  box-shadow: var(--chrome-shadow);
   font-size: 12px;
-  color: #22222c;
+  color: var(--chrome-ink-solid);
   z-index: 7;
 }
 .font-pop button {
@@ -463,16 +464,16 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   font-size: 13px;
   font-weight: 700;
 }
-.font-pop button:hover { background: rgba(20, 22, 34, 0.08); }
+.font-pop button:hover { background: var(--chrome-ink-hover); }
 .font-pop span { min-width: 24px; text-align: center; font-weight: 700; }
-.font-pop .fp-sep { width: 1px; height: 16px; background: rgba(20, 22, 34, 0.14); margin: 0 5px; }
-.font-pop .fp-label { min-width: auto; font-size: 11px; font-weight: 700; color: rgba(20, 22, 34, 0.6); margin-right: 2px; }
+.font-pop .fp-sep { width: 1px; height: 16px; background: var(--chrome-ink-active); margin: 0 5px; }
+.font-pop .fp-label { min-width: auto; font-size: 11px; font-weight: 700; color: var(--chrome-ink-sub); margin-right: 2px; }
 .font-pop input[type="range"] {
   width: 74px;
-  accent-color: #4a6b8a;
+  accent-color: var(--chrome-accent);
   cursor: pointer;
 }
-.font-pop #opacityVal { min-width: 34px; font-size: 11px; font-weight: 700; color: rgba(20, 22, 34, 0.75); }
+.font-pop #opacityVal { min-width: 34px; font-size: 11px; font-weight: 700; color: rgba(var(--chrome-ink), 0.75); }
 
 /* reminder popover (D-2) — font-pop 계열 팝오버 */
 
@@ -484,11 +485,11 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   max-width: calc(100% - 24px);
   padding: 8px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(var(--chrome-surface), 0.94);
   backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(10, 14, 28, 0.16);
+  box-shadow: var(--chrome-shadow);
   font-size: 12px;
-  color: #22222c;
+  color: var(--chrome-ink-solid);
   z-index: 7;
 }
 .rem-pop .rem-list {
@@ -502,7 +503,7 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
 .rem-pop .rem-list:has(.rem-empty) { margin-bottom: 4px; }
 .rem-pop .rem-empty {
   font-size: 11px;
-  color: rgba(20, 22, 34, 0.45);
+  color: var(--chrome-ink-faint);
   padding: 2px 2px 4px;
 }
 .rem-pop .rem-row {
@@ -511,31 +512,31 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   gap: 6px;
   padding: 4px 5px;
   border-radius: 8px;
-  background: rgba(20, 22, 34, 0.045);
+  background: rgba(var(--chrome-ink), 0.045);
 }
 .rem-pop .rem-row.off { opacity: 0.55; }
 .rem-pop .rem-when { font-weight: 700; font-size: 11px; flex: 1 1 auto; min-width: 0; }
-.rem-pop .rem-when.overdue { color: #c0392b; }
-.rem-pop .rem-rep { font-size: 10px; font-weight: 600; color: rgba(20, 22, 34, 0.55); }
-.rem-pop .rem-flag { font-size: 10px; font-weight: 700; color: rgba(20, 22, 34, 0.45); }
-.rem-pop .rem-flag.overdue { color: #c0392b; }
+.rem-pop .rem-when.overdue { color: var(--chrome-danger); }
+.rem-pop .rem-rep { font-size: 10px; font-weight: 600; color: rgba(var(--chrome-ink), 0.55); }
+.rem-pop .rem-flag { font-size: 10px; font-weight: 700; color: var(--chrome-ink-faint); }
+.rem-pop .rem-flag.overdue { color: var(--chrome-danger); }
 .rem-pop .rem-btn {
   flex: 0 0 auto;
   padding: 3px 7px;
   border-radius: 6px;
   font-size: 10.5px;
   font-weight: 700;
-  color: rgba(20, 22, 34, 0.7);
+  color: rgba(var(--chrome-ink), 0.7);
 }
-.rem-pop .rem-btn:hover { background: rgba(20, 22, 34, 0.09); }
-.rem-pop .rem-btn.rem-del { padding: 3px 6px; color: rgba(20, 22, 34, 0.45); }
-.rem-pop .rem-btn.rem-del:hover { color: #c0392b; background: rgba(192, 57, 43, 0.09); }
+.rem-pop .rem-btn:hover { background: rgba(var(--chrome-ink), 0.09); }
+.rem-pop .rem-btn.rem-del { padding: 3px 6px; color: var(--chrome-ink-faint); }
+.rem-pop .rem-btn.rem-del:hover { color: var(--chrome-danger); background: rgba(192, 57, 43, 0.09); }
 .rem-pop .rem-form {
   display: flex;
   align-items: center;
   gap: 5px;
   padding-top: 6px;
-  border-top: 1px solid rgba(20, 22, 34, 0.09);
+  border-top: 1px solid rgba(var(--chrome-ink), 0.09);
 }
 .rem-pop .rem-form:only-child { padding-top: 0; border-top: 0; }
 .rem-pop input[type="datetime-local"],
@@ -544,9 +545,9 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   font-size: 11px;
   padding: 4px 6px;
   border-radius: 7px;
-  border: 1px solid rgba(20, 22, 34, 0.16);
-  background: #fff;
-  color: #22222c;
+  border: 1px solid rgba(var(--chrome-ink), 0.16);
+  background: var(--chrome-input);
+  color: var(--chrome-ink-solid);
   outline: none;
   min-width: 0;
 }
@@ -559,9 +560,9 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   font-size: 11px;
   font-weight: 800;
   color: #fff;
-  background: #21243a;
+  background: var(--chrome-btn);
 }
-.rem-pop #remSet:hover { background: #33364a; }
+.rem-pop #remSet:hover { background: var(--chrome-btn-hover); }
 
 /* btnReminder — 활성 리마인더 점 + 발화 펄스 */
 
@@ -574,11 +575,11 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   height: 6px;
   border-radius: 50%;
   background: var(--accent, #e9c866);
-  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 1.5px rgba(var(--chrome-surface), 0.7);
 }
 .tb.fired { animation: remPulse 0.5s ease-in-out 4; }
 @keyframes remPulse {
-  0%, 100% { background: rgba(20, 22, 34, 0.08); }
+  0%, 100% { background: rgba(var(--chrome-ink), 0.08); }
   50% { background: var(--accent, #e9c866); }
 }
 
@@ -599,10 +600,10 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   display: flex;
   align-items: stretch;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(var(--chrome-surface), 0.96);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(20, 20, 30, 0.09);
-  box-shadow: 0 8px 22px rgba(10, 14, 28, 0.24);
+  border: 1px solid var(--chrome-border);
+  box-shadow: var(--chrome-shadow-lg);
   overflow: hidden;
   animation: remToastIn 0.18s ease;
 }
@@ -618,12 +619,12 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   gap: 2px;
   text-align: left;
   padding: 9px 4px 9px 12px;
-  color: #22222c;
+  color: var(--chrome-ink-solid);
   border-radius: 12px 0 0 12px;
 }
-.rem-toast-body:hover { background: rgba(20, 22, 34, 0.05); }
+.rem-toast-body:hover { background: rgba(var(--chrome-ink), 0.05); }
 .rem-toast-title { font-size: 12px; font-weight: 700; line-height: 1.35; word-break: break-word; }
-.rem-toast.missed .rem-toast-title { color: #b3403f; }
+.rem-toast.missed .rem-toast-title { color: var(--chrome-missed); }
 .rem-badge-miss {
   display: inline-block;
   margin-left: 5px;
@@ -636,17 +637,17 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   vertical-align: 1px;
 }
 /* OQ-03 충돌본 보관 토스트 — 놓침의 경고색 대신 차분한 액센트 계열 */
-.rem-badge-miss.conflict { background: #4a6b8a; }
-.rem-toast.conflict .rem-toast-title { color: #35506b; }
-.rem-toast-note { font-size: 10.5px; color: rgba(20, 22, 34, 0.6); word-break: break-word; }
+.rem-badge-miss.conflict { background: var(--chrome-accent); }
+.rem-toast.conflict .rem-toast-title { color: var(--chrome-accent-text); }
+.rem-toast-note { font-size: 10.5px; color: var(--chrome-ink-sub); word-break: break-word; }
 .rem-toast-x {
   flex: 0 0 auto;
   width: 28px;
   font-size: 15px;
   line-height: 1;
-  color: rgba(20, 22, 34, 0.45);
+  color: var(--chrome-ink-faint);
 }
-.rem-toast-x:hover { color: #c0392b; background: rgba(217, 79, 79, 0.1); }
+.rem-toast-x:hover { color: var(--chrome-danger); background: rgba(217, 79, 79, 0.1); }
 
 
 

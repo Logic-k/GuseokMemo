@@ -7,6 +7,7 @@ import { listen } from "@tauri-apps/api/event";
 import { state, initStore, indexById } from "./store.js";
 import { search } from "./search.js";
 import { getLayout, panelRect } from "./layout.js";
+import { applyDarkMode, bindDarkMode } from "./darkmode.js";
 
 const input = document.getElementById("searchInput");
 const listEl = document.getElementById("searchResults");
@@ -187,9 +188,12 @@ window.addEventListener("blur", () => {
 
 async function boot() {
   // 외부 변경·다른 창 저장으로 state가 바뀌면 결과 재검색 (조합 중엔 runSearch가 유예).
+  // darkMode 변경도 같은 경로로 도착 — html.dark 토글만이라 입력 조합에 안전.
   await initStore(async () => {
+    applyDarkMode(state.common.darkMode);
     runSearch();
   });
+  bindDarkMode(() => state.common.darkMode); // 초기 적용 + system 모드 OS 추적
 
   await listen("guseok://search-open", () => {
     openedAt = Date.now();

@@ -6,6 +6,7 @@ import { setReminder, removeReminder, setReminderEnabled, reminderStatus, toastE
 import { getLayout, panelRect } from "./layout.js";
 import { extractText, search } from "./search.js";
 import { applyTemplate, insertSnippet, snippetValues } from "./templates.js";
+import { applyDarkMode, resolveDark } from "./darkmode.js";
 
 function caretToEnd(el) {
   const r = document.createRange();
@@ -990,6 +991,44 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
         (ddUi.path === null || typeof ddUi.path === "string"),
       `path=${ddUi && ddUi.path} eff=${ddUi && ddUi.effectivePath} default=${ddUi && ddUi.isDefault}`
     );
+
+    // --- 다크모드 (phase-05-task-03, R-08/D-4) ---
+    // common.darkMode 저장 round-trip + html.dark 토글 + 크롬 토큰 존재 단언.
+    // 인덱스 카드(--bg/--fg/--accent)와 핸들(--hbg/--hfg)은 인라인 인덱스 테마라
+    // 다크모드가 덮지 않는다 — 토글 전후 값이 같아야 한다.
+    const prevDark = state.common.darkMode;
+    const cardEl = document.getElementById("card");
+    const bgBefore = cardEl.style.getPropertyValue("--bg");
+    const fgBefore = cardEl.style.getPropertyValue("--fg");
+    state.common.darkMode = "dark";
+    await save();
+    const darkRaw = await invoke("load_store");
+    const applied = applyDarkMode("dark");
+    const chromeText = getComputedStyle(document.documentElement).getPropertyValue("--chrome-text").trim();
+    const chromeTextDark = chromeText;
+    check(
+      "darkmode-store-class",
+      applied === true &&
+        document.documentElement.classList.contains("dark") &&
+        darkRaw.includes('"darkMode":"dark"') &&
+        chromeTextDark === "#e8e6df" &&
+        cardEl.style.getPropertyValue("--bg") === bgBefore &&
+        cardEl.style.getPropertyValue("--fg") === fgBefore,
+      `dark=${document.documentElement.classList.contains("dark")} text=${chromeTextDark} bg=${cardEl.style.getPropertyValue("--bg")}`
+    );
+    applyDarkMode("light");
+    const chromeTextLight = getComputedStyle(document.documentElement).getPropertyValue("--chrome-text").trim();
+    check(
+      "darkmode-light-system",
+      !document.documentElement.classList.contains("dark") &&
+        chromeTextLight !== chromeTextDark &&
+        resolveDark("system") === window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        resolveDark("bogus") === false,
+      `light=${chromeTextLight} system=${resolveDark("system")}`
+    );
+    state.common.darkMode = prevDark;
+    applyDarkMode(prevDark);
+    await save();
 
     // --- 검색 창 (phase-02-task-02, R-01/D-1) ---
     // setup에서 미리 생성된 "search" 창이 있고, show_search/hide_search 커맨드로

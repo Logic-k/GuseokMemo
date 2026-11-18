@@ -1,8 +1,37 @@
 /* search.css — 검색 창(D-1). 기존 카드/font-pop 톤(반투명·blur·둥근 칩)을 계승.
-   다크모드 토큰은 phase-05-task-03이 일괄 처리 — 지금은 라이트 하드코드. */
+   다크모드(D-4) — 크롬 색은 토큰으로, 라이트는 기존 값 그대로.
+   .sr-chip의 --chip(인덱스 배경색)은 R-08 계약상 토큰 밖에서 유지한다. */
 
 :root {
   --font-ui: "Pretendard Variable", Pretendard, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  /* 검색 창 고유 톤 — 라이트는 기존 하드코드 그대로. */
+  --q-card: rgba(253, 251, 247, 0.97);
+  --q-line: rgba(20, 20, 30, 0.09);
+  --q-border: rgba(20, 20, 30, 0.1);
+  --q-ink: #2e2a1e;
+  --q-sub: rgba(30, 32, 44, 0.62);
+  --q-faint: rgba(30, 32, 44, 0.42);
+  --q-foot: rgba(30, 32, 44, 0.4);
+  --q-foot-line: rgba(20, 20, 30, 0.07);
+  --q-scroll: rgba(0, 0, 0, 0.14);
+  --q-sel: rgba(74, 107, 138, 0.14);
+  --q-b: #1d2333;
+  --q-mark: rgba(233, 200, 102, 0.45);
+}
+
+html.dark {
+  --q-card: rgba(31, 32, 41, 0.96);
+  --q-line: rgba(255, 255, 255, 0.09);
+  --q-border: rgba(255, 255, 255, 0.1);
+  --q-ink: #e8e6df;
+  --q-sub: rgba(232, 230, 223, 0.6);
+  --q-faint: rgba(232, 230, 223, 0.4);
+  --q-foot: rgba(232, 230, 223, 0.4);
+  --q-foot-line: rgba(255, 255, 255, 0.07);
+  --q-scroll: rgba(255, 255, 255, 0.2);
+  --q-sel: rgba(66, 107, 148, 0.3);
+  --q-b: #e8e6df;
+  --q-mark: rgba(233, 200, 102, 0.32);
 }
 
 * { box-sizing: border-box; }
@@ -27,10 +56,10 @@ body { padding: 6px; }
   display: flex;
   flex-direction: column;
   border-radius: 14px;
-  background: rgba(253, 251, 247, 0.97);
-  border: 1px solid rgba(20, 20, 30, 0.10);
+  background: var(--q-card);
+  border: 1px solid var(--q-border);
   box-shadow: 0 10px 34px rgba(12, 16, 32, 0.28), 0 2px 8px rgba(12, 16, 32, 0.14);
-  color: #2e2a1e;
+  color: var(--q-ink);
   overflow: hidden;
 }
 
@@ -39,7 +68,7 @@ body { padding: 6px; }
   align-items: center;
   gap: 9px;
   padding: 11px 13px 10px;
-  border-bottom: 1px solid rgba(20, 20, 30, 0.09);
+  border-bottom: 1px solid var(--q-line);
   flex: 0 0 auto;
 }
 .search-head svg { width: 15px; height: 15px; opacity: 0.5; flex: 0 0 auto; }
@@ -53,10 +82,10 @@ body { padding: 6px; }
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
-  color: #23252f;
+  color: var(--chrome-text);
   user-select: text;
 }
-#searchInput::placeholder { color: rgba(20, 22, 34, 0.38); font-weight: 500; }
+#searchInput::placeholder { color: rgba(var(--chrome-ink), 0.38); font-weight: 500; }
 
 .search-results {
   flex: 1 1 auto;
@@ -65,7 +94,7 @@ body { padding: 6px; }
   scrollbar-width: thin;
 }
 .search-results::-webkit-scrollbar { width: 6px; }
-.search-results::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.14); border-radius: 3px; }
+.search-results::-webkit-scrollbar-thumb { background: var(--q-scroll); border-radius: 3px; }
 
 .sr-item {
   display: flex;
@@ -75,16 +104,16 @@ body { padding: 6px; }
   border-radius: 10px;
   cursor: pointer;
 }
-.sr-item:hover { background: rgba(20, 22, 34, 0.05); }
-.sr-item.on { background: rgba(74, 107, 138, 0.14); }
+.sr-item:hover { background: rgba(var(--chrome-ink), 0.05); }
+.sr-item.on { background: var(--q-sel); }
 
-/* 인덱스 색 칩 — 2px 라운드 바 (메모 배경색) */
+/* 인덱스 색 칩 — 2px 라운드 바 (메모 배경색, 다크모드가 덮지 않는다) */
 .sr-chip {
   width: 4px;
   border-radius: 2px;
   flex: 0 0 auto;
   background: var(--chip, #e9c866);
-  border: 1px solid rgba(20, 20, 30, 0.08);
+  border: 1px solid rgba(var(--chrome-ink), 0.08);
 }
 
 .sr-body { flex: 1 1 auto; min-width: 0; }
@@ -92,7 +121,7 @@ body { padding: 6px; }
 .sr-title {
   font-size: 12.5px;
   font-weight: 750;
-  color: #23252f;
+  color: var(--chrome-text);
   letter-spacing: -0.01em;
   margin-bottom: 2px;
   white-space: nowrap;
@@ -104,15 +133,15 @@ body { padding: 6px; }
 .sr-snippet {
   font-size: 11.5px;
   line-height: 1.45;
-  color: rgba(30, 32, 44, 0.62);
+  color: var(--q-sub);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .sr-snippet b {
-  color: #1d2333;
-  background: rgba(233, 200, 102, 0.45);
+  color: var(--q-b);
+  background: var(--q-mark);
   border-radius: 3px;
   padding: 0 1px;
   font-weight: 800;
@@ -129,7 +158,7 @@ body { padding: 6px; }
   place-items: center;
   font-size: 12.5px;
   font-weight: 600;
-  color: rgba(30, 32, 44, 0.42);
+  color: var(--q-faint);
   pointer-events: none;
 }
 .hidden { display: none !important; }
@@ -139,7 +168,7 @@ body { padding: 6px; }
   display: flex;
   gap: 12px;
   padding: 6px 13px;
-  border-top: 1px solid rgba(20, 20, 30, 0.07);
+  border-top: 1px solid var(--q-foot-line);
   font-size: 10px;
-  color: rgba(30, 32, 44, 0.4);
+  color: var(--q-foot);
 }

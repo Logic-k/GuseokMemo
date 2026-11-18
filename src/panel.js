@@ -14,6 +14,7 @@ import {
   toLocalIso,
 } from "./reminders.js";
 import { hexToRgba, fontCss } from "./themes.js";
+import { applyDarkMode, bindDarkMode } from "./darkmode.js";
 import { runSelfTest } from "./selftest.js";
 import { getLayout, panelRect } from "./layout.js";
 
@@ -922,6 +923,10 @@ document.addEventListener("keydown", async (e) => {
 
 async function boot() {
   await initStore(async (next) => {
+    // R-08 — 다크모드는 html.dark 토글 하나로 끝낸다. applyStyle과 달리 에디터를
+    // 건드리지 않으므로 IME 조합 중에도 호출 가능 (NFR-02). 카드 --bg/--fg는 인라인
+    // 인덱스 테마라 다크모드가 덮지 않는다.
+    applyDarkMode(next.common.darkMode);
     panelEl.dataset.side = next.common.side || "right";
     const current = next.indexes.find((i) => i.id === idx?.id) || visibleIndexes(next)[0] || next.indexes[0];
     if (!current) return;
@@ -954,6 +959,7 @@ async function boot() {
     }
     lastGeomKey = nextGeomKey;
   });
+  bindDarkMode(() => state.common.darkMode); // 초기 적용 + system 모드 OS 추적
   panelEl.dataset.side = state.common.side || "right";
 
   await listen("guseok://panel-open", (e) => {

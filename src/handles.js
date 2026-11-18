@@ -4,6 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { state, initStore, saveStore, indexById, activeIndex, defaultIndex, applyTheme, MAX_INDEXES, visibleIndexes, ensureOneVisible, setIndexHidden as setIndexHiddenCore } from "./store.js";
 import { THEMES } from "./themes.js";
 import { getLayout, panelRect, STRIP_W } from "./layout.js";
+import { applyDarkMode, bindDarkMode } from "./darkmode.js";
 import {
   markReminderFired,
   toastEnqueue,
@@ -383,11 +384,14 @@ window.__handles = { snapToEdge, addIndex, removeIndex, armDelete, step, openNth
 
 async function boot() {
   await initStore(async (_next, meta) => {
+    // R-08 — 타 창/외부 저장의 darkMode를 즉시 반영 (html.dark 토글만 — 핸들 색은 인덱스 테마 유지).
+    applyDarkMode(state.common.darkMode);
     await refresh();
     // 이 창 자체가 미저장 편집을 들고 있을 때 외부 변경이 오면 충돌 — emit 경로와
     // 같은 토스트로 알리되 reminderId 중복 제거로 이중 표시는 없다.
     if (meta?.conflict) showConflictToast({ win: "handles", path: meta.conflictPath, indexes: meta.diffs });
   });
+  bindDarkMode(() => state.common.darkMode); // 초기 적용 + system 모드 OS 추적
   await refresh();
   bindDrag();
 
