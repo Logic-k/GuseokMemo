@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "deny": [
+      "Write(.env*)",
+      "Read(.env*)",
+      "Write(*.key)",
+      "Write(*.pem)",
+      "Write(.git/**)",
+      "Write(.devin/config.json)",
+      "Exec(rm -rf)",
+      "Exec(sudo)",
+      "Exec(git push)",
+      "Exec(curl * | sh)"
+    ]
+  }
+}

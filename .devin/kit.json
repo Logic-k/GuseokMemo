@@ -1,0 +1,14 @@
+{
+  "version": "0.4.0",
+  "installedAt": "2026-11-18T13:51:30",
+  "files": [
+    ".devin/config.json",
+    ".devin/skills/dod-bootstrap/SKILL.md",
+    ".devin/skills/dod-runner/SKILL.md",
+    ".devin/skills/dod-research/SKILL.md",
+    ".devin/agents/dod-architect.md",
+    ".devin/agents/dod-implementer.md",
+    ".devin/agents/dod-validator.md",
+    ".devin/agents/dod-researcher.md"
+  ]
+}
