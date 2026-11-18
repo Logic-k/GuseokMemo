@@ -338,3 +338,4 @@
 - phase-03-task-01 completed (7313cd6): Rust 스케줄러 스레드(2s)·save_store 스케줄 동기화·guseok://reminder emit·놓침 분류. cargo 18/18, selftest 42/42, validator PASS.
   - 주의: selftest waitQa가 append-only 로그 전체 스캔 → 이전 런 stale 라인 거짓양성 가능(기능은 별도 실증 PASS) — 후속 태스크에서 마커 이후 구간만 스캔하도록 개선 후보.
   - lastFiredAt 디스크 기록은 JS 리스너가 필요 — phase-03-task-02(blocked) 범위. 재시작 시 이전 발화분은 missed 재보고(정상).
+- phase-04-task-01 completed (18dceb4): config.json 포인터 + get/set_data_dir + 복사·보존 이전. cargo 25/25, selftest 42/42, CDP cdp-data-dir 15/15 — 검증자가 실 재기동·ACL 쓰기거부 추가 실측 PASS. 주의: config.json BOM 시 기본 폴백(무해).

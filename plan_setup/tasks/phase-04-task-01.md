@@ -1,6 +1,6 @@
 ---
 id: phase-04-task-01
-status: pending
+status: completed
 depends_on: [phase-01-task-02]
 acceptance_criteria:
   - %APPDATA%\com.guseok.memo\config.json에 지정 폴더 경로가 보관되고 store_path()가 그것을 해석한다
