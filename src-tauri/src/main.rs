@@ -4,6 +4,7 @@ use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::time::Duration;
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{
@@ -44,6 +45,35 @@ fn load_store(app: AppHandle) -> Result<String, String> {
     Ok(String::new())
 }
 
+/// fs::rename 실패(Windows 파일 점유: 백신·인덱서·동기 클라이언트) 시 재시도 전에
+/// 기다리는 백오프(ms) — 첫 시도는 즉시, 실패할 때마다 다음 간격만큼 대기 후 재시도.
+/// 총 대기 상한 300ms(최대 시도 4회)로 1초 미만 — 260ms 디바운스 저장 경로를 오래
+/// 붙잡지 않으면서 짧은 점유를 흡수한다 (TD-02, NFR-01).
+const RENAME_RETRY_DELAYS_MS: [u64; 3] = [50, 100, 150];
+
+/// `rename`을 성공할 때까지 시도한다 — 첫 시도는 즉시, 이후 실패마다 `delays_ms`의
+/// 다음 간격만큼 `sleep`으로 기다린 뒤 재시도한다. 반환값은 성공까지 걸린 시도 횟수
+/// (1 = 첫 시도에 성공). 모든 시도가 실패하면 마지막 오류를 Err로 반환한다.
+/// rename/sleep을 주입받아 실제 파일 점유 없이도 재시도 순서를 검증할 수 있다.
+fn rename_with_retry<E, R, S>(delays_ms: &[u64], mut rename: R, mut sleep: S) -> Result<u32, E>
+where
+    R: FnMut() -> Result<(), E>,
+    S: FnMut(Duration),
+{
+    let mut attempts = 0u32;
+    let mut delays = delays_ms.iter();
+    loop {
+        attempts += 1;
+        match rename() {
+            Ok(()) => return Ok(attempts),
+            Err(e) => match delays.next() {
+                Some(&ms) => sleep(Duration::from_millis(ms)),
+                None => return Err(e),
+            },
+        }
+    }
+}
+
 #[tauri::command]
 fn save_store(app: AppHandle, webview: WebviewWindow, json: String) -> Result<(), String> {
     let p = store_path(&app)?;
@@ -53,7 +83,30 @@ fn save_store(app: AppHandle, webview: WebviewWindow, json: String) -> Result<()
     }
     let tmp = p.with_file_name("store.tmp.json");
     fs::write(&tmp, json.as_bytes()).map_err(|e| e.to_string())?;
-    fs::rename(&tmp, &p).map_err(|e| e.to_string())?;
+    // Windows는 대상 파일이 백신·인덱서·동기 클라이언트에 열려 있는 동안 rename이
+    // 대기 없이 실패한다 — 짧은 백오프로 재시도해 점유 해제를 기다린다 (TD-02, NFR-01).
+    // 참고: rename은 디렉터리 항목의 디스크 내구성을 보장하지 않고, Windows에서는
+    // 디렉터리 자체를 fsync할 방법이 없다 — store.bak.json 사본이 이 한계의 완충이다.
+    match rename_with_retry(
+        &RENAME_RETRY_DELAYS_MS,
+        || fs::rename(&tmp, &p),
+        std::thread::sleep,
+    ) {
+        Ok(attempts) => {
+            if attempts > 1 {
+                qa_write(&format!(
+                    "save-store :: rename occupied, succeeded on attempt {attempts}"
+                ));
+            }
+        }
+        Err(e) => {
+            qa_write(&format!(
+                "save-store :: rename still occupied after {} attempts: {e}",
+                RENAME_RETRY_DELAYS_MS.len() + 1
+            ));
+            return Err(e.to_string());
+        }
+    }
     // 다른 창에는 저장본을 브로드캐스트(페이지 숨김 도중의 pagehide 플러시도 전파되도록 Rust 에서 직접 보냄).
     // src 에 저장한 창의 라벨을 넣어, 저장한 창 자신의 에코는 JS 쪽에서 무시한다 —
     // 자기 에코까지 처리하면 타이핑 도중 state 가 교체되며 IME 조합이 깨진다.
@@ -576,4 +629,132 @@ fn main() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rename_retry_succeeds_on_first_attempt() {
+        // 첫 시도 성공이면 재시도·sleep 없이 바로 Ok(1).
+        let mut calls = 0u32;
+        let mut slept: Vec<u64> = Vec::new();
+        let r = rename_with_retry(
+            &RENAME_RETRY_DELAYS_MS,
+            || {
+                calls += 1;
+                Ok::<(), &str>(())
+            },
+            |d| slept.push(d.as_millis() as u64),
+        );
+        assert_eq!(r, Ok(1));
+        assert_eq!(calls, 1);
+        assert!(slept.is_empty());
+    }
+
+    #[test]
+    fn rename_retry_succeeds_after_occupation_clears() {
+        // 점유가 풀리면(여기선 3번째 시도부터 성공) 백오프 순서대로 기다린 뒤 성공.
+        let mut calls = 0u32;
+        let mut slept: Vec<u64> = Vec::new();
+        let r = rename_with_retry(
+            &RENAME_RETRY_DELAYS_MS,
+            || {
+                calls += 1;
+                if calls <= 2 {
+                    Err("sharing violation")
+                } else {
+                    Ok(())
+                }
+            },
+            |d| slept.push(d.as_millis() as u64),
+        );
+        assert_eq!(r, Ok(3));
+        assert_eq!(calls, 3);
+        assert_eq!(slept, vec![50, 100]);
+    }
+
+    #[test]
+    fn rename_retry_exhausted_returns_last_error() {
+        // 모든 시도 실패 → 시도 횟수 = 1 + delays 수, Err는 마지막 시도의 오류.
+        let mut calls = 0u32;
+        let mut slept: Vec<u64> = Vec::new();
+        let r: Result<u32, u32> = rename_with_retry(
+            &RENAME_RETRY_DELAYS_MS,
+            || {
+                calls += 1;
+                Err(calls)
+            },
+            |d| slept.push(d.as_millis() as u64),
+        );
+        assert_eq!(r, Err(4));
+        assert_eq!(calls, 4);
+        assert_eq!(slept, vec![50, 100, 150]);
+    }
+
+    #[test]
+    fn rename_retry_delays_fit_budget() {
+        // 명세: 보수적 백오프 — 간격 50~150ms, 단조 비감소, 총 대기 1초 미만.
+        assert!(!RENAME_RETRY_DELAYS_MS.is_empty());
+        assert!(RENAME_RETRY_DELAYS_MS
+            .iter()
+            .all(|&d| (50..=150).contains(&d)));
+        assert!(RENAME_RETRY_DELAYS_MS.windows(2).all(|w| w[0] <= w[1]));
+        let total: u64 = RENAME_RETRY_DELAYS_MS.iter().sum();
+        assert!(total < 1000, "total backoff {total}ms exceeds 1s");
+    }
+
+    #[test]
+    fn rename_retry_real_fs_rename() {
+        // 실제 파일로 주입 경로 검증 — 잠금 없이 rename 한 번에 성공.
+        let dir =
+            std::env::temp_dir().join(format!("guseok-memo-rename-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let tmp = dir.join("store.tmp.json");
+        let dst = dir.join("store.json");
+        fs::write(&tmp, b"{}").unwrap();
+        let r = rename_with_retry(&RENAME_RETRY_DELAYS_MS, || fs::rename(&tmp, &dst), |_| {});
+        let ok = dst.exists() && !tmp.exists();
+        let _ = fs::remove_dir_all(&dir);
+        let attempts = r.expect("rename should succeed on clean fs");
+        assert_eq!(attempts, 1);
+        assert!(ok);
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn rename_retry_recovers_when_occupation_released() {
+        use std::os::windows::fs::OpenOptionsExt;
+        // dst를 공유 없이 열어 백신·인덱서 점유를 재현 — 60ms 뒤 스레드가 drop 해 해제.
+        let dir =
+            std::env::temp_dir().join(format!("guseok-memo-lock-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let tmp = dir.join("store.tmp.json");
+        let dst = dir.join("store.json");
+        fs::write(&tmp, b"new").unwrap();
+        fs::write(&dst, b"old").unwrap();
+        let lock = fs::OpenOptions::new()
+            .read(true)
+            .share_mode(0)
+            .open(&dst)
+            .unwrap();
+        let releaser = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(60));
+            drop(lock);
+        });
+        let r = rename_with_retry(
+            &RENAME_RETRY_DELAYS_MS,
+            || fs::rename(&tmp, &dst),
+            std::thread::sleep,
+        );
+        releaser.join().unwrap();
+        let content = fs::read_to_string(&dst).ok();
+        let _ = fs::remove_dir_all(&dir);
+        let attempts = r.expect("rename should succeed once occupation clears");
+        assert!(attempts >= 2, "expected at least one retry, got {attempts}");
+        assert_eq!(content.as_deref(), Some("new"));
+    }
 }
