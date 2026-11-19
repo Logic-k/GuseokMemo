@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Mutex, MutexGuard, OnceLock};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
@@ -1474,16 +1475,51 @@ fn save_conflict_copy(app: AppHandle, json: String) -> Result<String, String> {
     }
 }
 
+const READY_HANDLES: u8 = 1 << 0;
+const READY_PANEL: u8 = 1 << 1;
+const READY_BOTH: u8 = READY_HANDLES | READY_PANEL;
+static READY_MASK: AtomicU8 = AtomicU8::new(0);
+
+fn window_ready_bit(label: &str) -> u8 {
+    match label {
+        "handles" => READY_HANDLES,
+        "panel" => READY_PANEL,
+        _ => 0,
+    }
+}
+
+/// 프런트엔드(handles/panel)가 boot 리스너 등록을 마쳤을 때 호출한다.
+/// --selftest / --demo 시작 시 부팅 emit 유실 레이스를 없애기 위한 핸드셰이크.
+#[tauri::command]
+fn window_ready(window: tauri::Window) {
+    let bit = window_ready_bit(window.label());
+    if bit != 0 {
+        READY_MASK.fetch_or(bit, Ordering::Release);
+    }
+}
+
+fn qa_write_lock() -> &'static Mutex<()> {
+    static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    LOCK.get_or_init(|| Mutex::new(()))
+}
+
 fn qa_write(msg: &str) {
     use std::io::Write;
+    let _guard = qa_write_lock().lock().unwrap_or_else(|e| e.into_inner());
     let line = format!("[QA] {}\n", msg);
     let path = std::env::temp_dir().join("guseok-qa.log");
-    if let Ok(mut f) = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(path)
-    {
-        let _ = f.write_all(line.as_bytes());
+    for attempt in 0..4 {
+        if let Ok(mut f) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)
+        {
+            let _ = f.write_all(line.as_bytes());
+            return;
+        }
+        if attempt < 3 {
+            std::thread::sleep(Duration::from_millis(15));
+        }
     }
 }
 
@@ -1573,6 +1609,7 @@ fn main() {
             register_shortcuts,
             qa_log,
             qa_log_path,
+            window_ready,
             save_conflict_copy,
             quit_app
         ])
@@ -1767,7 +1804,15 @@ fn main() {
             if demo || selftest {
                 let app2 = app.handle().clone();
                 std::thread::spawn(move || {
-                    std::thread::sleep(std::time::Duration::from_millis(1400));
+                    // handles·panel 양쪽 리스너가 준비될 때까지 최대 10초 대기 후 toggle emit.
+                    // 느린 부팅에서도 시작 이벤트가 유실되지 않으며, 빠른 부팅에서는 즉시 진행한다.
+                    let start = std::time::Instant::now();
+                    while (READY_MASK.load(Ordering::Acquire) & READY_BOTH) != READY_BOTH
+                        && start.elapsed() < Duration::from_secs(10)
+                    {
+                        std::thread::sleep(Duration::from_millis(50));
+                    }
+                    std::thread::sleep(Duration::from_millis(150));
                     let _ = app2.emit("guseok://shortcut", json!({ "action": "toggle" }));
                 });
             }
@@ -2547,5 +2592,17 @@ mod tests {
             .any(|e| e.file_name().to_string_lossy().ends_with(".tmp"));
         assert!(!tmp_left);
         let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn window_ready_bit_mapping() {
+        assert_eq!(window_ready_bit("handles"), READY_HANDLES);
+        assert_eq!(window_ready_bit("panel"), READY_PANEL);
+        assert_eq!(
+            window_ready_bit("handles") | window_ready_bit("panel"),
+            READY_BOTH
+        );
+        assert_eq!(window_ready_bit("settings"), 0);
+        assert_eq!(window_ready_bit("search"), 0);
     }
 }

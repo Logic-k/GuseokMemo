@@ -81,12 +81,6 @@ try {
   $deadline = (Get-Date).AddSeconds($TimeoutSec)
   while ((Get-Date) -lt $deadline -and -not $summary) {
     Start-Sleep -Seconds 2
-    if ($appProc.HasExited) { throw "app exited early (code $($appProc.ExitCode)) before SUMMARY -- check app state" }
-    if (-not $nudged -and (New-TimeSpan -Start $appProc.StartTime -End (Get-Date)).TotalSeconds -gt $nudgeAfter) {
-      $nudged = $true
-      Write-Host "no SUMMARY after ${nudgeAfter}s -- nudging panel open via CDP"
-      try { & node (Join-Path $root "harness_setup\scripts\cdp-nudge.cjs") } catch { Write-Host "nudge failed: $_" }
-    }
     if (Test-Path $qa) {
       $raw = Get-Content $qa -Raw -ErrorAction SilentlyContinue
       if ($raw) {
@@ -94,8 +88,15 @@ try {
         $lastNew = if ($mk -ge 0) { $raw.Substring($mk + $marker.Length) } else { $raw }
         if ($lastNew -match "SUMMARY (\d+)/(\d+) passed") {
           $summary = @{ pass = [int]$Matches[1]; total = [int]$Matches[2]; text = $lastNew }
+          break
         }
       }
+    }
+    if ($appProc.HasExited) { throw "app exited early (code $($appProc.ExitCode)) before SUMMARY -- check app state" }
+    if (-not $nudged -and (New-TimeSpan -Start $appProc.StartTime -End (Get-Date)).TotalSeconds -gt $nudgeAfter) {
+      $nudged = $true
+      Write-Host "no SUMMARY after ${nudgeAfter}s -- nudging panel open via CDP"
+      try { & node (Join-Path $root "harness_setup\scripts\cdp-nudge.cjs") } catch { Write-Host "nudge failed: $_" }
     }
   }
   if (-not $summary) {

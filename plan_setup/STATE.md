@@ -1,7 +1,7 @@
 ---
 topic: 구석메모 다음 개발 사이클 상태
-updated: 2026-11-18
-status: Loop 2차 라운드 완료 — UI 6/6 전부 PASS, 잔여 06-03(실기 IME)만 사용자 확인 대기
+updated: 2026-11-19
+status: v0.3.1 안정화 완료 — build·fmt·clippy·cargo test 38/38·selftest 86/86·CDP 36/36 전량 PASS (로컬 커밋 완료, push/태그는 승인 대기)
 ---
 
 # STATE — 다음 개발 사이클
@@ -65,8 +65,7 @@ OQ-02=앱 내 토스트, OQ-03=충돌본 보관, OQ-01=UI 완료 후 결정.
 
 ## 미검증 잔존
 
-- 실 Windows IME 손 타이핑(OQ-05) — 사용자 확인 필요. validator 관찰: 실 입력 경로 조합 정상,
-  포커스 직후 첫 자모 소실 징후 3건(주입 아티팩트 가능성, 실기 확인 필요).
+- 실 Windows IME 손 타이핑(OQ-05) — v0.3.1에서 `panel.js`/`search-window.js`의 포커스 지연 타이머가 IME 조합 중 셀렉션을 덮어쓰지 않도록 보강 완료. 실기 손 타이핑 최종 확인 필요.
 - 멀티모니터 "자동"·외부 리로드 — **검증 완료로 전환**(validator 실측).
-- selftest 트리거 경쟁(부팅 emit 유실 → 침묵) — cdp-nudge 복구 중, 제품 측 근본 수정은 개선 후보.
-- run-e2e "early exit" 오판·qa_write 리더 점유 시 라인 유실·waitQa 스테일 라인 약한 단언 — 하네스 개선 후보.
+- ~~selftest 트리거 경쟁(부팅 emit 유실 → 침묵)~~ — **v0.3.1 해소**: `window_ready` 핸드셰이크 도입(handles·panel 준비 대기 후 emit).
+- ~~run-e2e "early exit" 오판·qa_write 리더 점유 시 라인 유실~~ — **v0.3.1 해소**: `qa_write` 뮤텍스+재시도(4×15ms), `run-e2e.ps1` SUMMARY 선확인.

@@ -514,6 +514,9 @@ async function boot() {
     else if (action === "search") await invoke("show_search");
   });
 
+  // 부팅 리스너 등록 완료 통지 (--selftest / --demo 시작 emit 레이스 방지)
+  invoke("window_ready").catch(() => {});
+
   invoke("register_shortcuts", { preset: state.common.openKey || "ctrl_shift_m", enabled: true, searchKey: state.common.searchKey || "ctrl_shift_f" })
     .then(() => invoke("qa_log", { msg: "PASS shortcuts :: " + (state.common.openKey || "ctrl_shift_m") }))
     .catch((e) => invoke("qa_log", { msg: "FAIL shortcuts :: " + String(e) }));

@@ -198,9 +198,19 @@ async function boot() {
   await listen("guseok://search-open", () => {
     openedAt = Date.now();
     runSearch(); // 마지막 쿼리 기준으로 최신 state 재검색
-    setTimeout(() => {
+    // 즉시 포커스·전체선택하고, 20ms 보강 타이머는 이미 입력·조합이 시작된 경우
+    // 선택을 덮어쓰지 않는다 (열자마자 타이핑 시 첫 글자 유실 방지, NFR-02).
+    const prevVal = input.value;
+    if (!composing) {
       input.focus();
       input.select(); // 기존 입력은 전체선택 — 바로 덮어쓰기 가능
+    }
+    setTimeout(() => {
+      if (composing || input.value !== prevVal) return;
+      if (document.activeElement !== input) {
+        input.focus();
+        input.select();
+      }
     }, 20);
   });
 

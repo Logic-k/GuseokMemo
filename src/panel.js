@@ -1053,9 +1053,18 @@ async function boot() {
     pointerInside = document.documentElement.matches(":hover");
     selImg = -1;
     render(target);
-    setTimeout(() => {
+    // 즉시 포커스하되, 30ms 보강 타이머는 IME 조합 중이거나 이미 포커스된 경우
+    // 셀렉션을 건드리지 않는다 (포커스 직후 한글 첫 자모 소실/조합 끊김 방지, NFR-02).
+    if (!composing) {
       editor.focus();
       placeCaretEnd(editor);
+    }
+    setTimeout(() => {
+      if (!opened || composing) return;
+      if (document.activeElement !== editor) {
+        editor.focus();
+        placeCaretEnd(editor);
+      }
     }, 30);
     if (!selfTested && new URLSearchParams(location.search).has("selftest")) {
       selfTested = true;
@@ -1096,6 +1105,9 @@ async function boot() {
   if (params.get("preview") === "1") {
     document.body.classList.add("preview");
   }
+
+  // 부팅 리스너 등록 완료 통지 (--selftest / --demo 시작 emit 레이스 방지)
+  invoke("window_ready").catch(() => {});
 }
 
 boot();

@@ -4,3 +4,4 @@ src-tauri/target/
 *.key
 *.key.pub
 plan_setup/cdp-*.cjs
+.devil/loop/qa-logs/
