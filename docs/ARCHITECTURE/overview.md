@@ -18,12 +18,12 @@ flowchart TB
         MON[모니터/작업 영역 Win32]
     end
 
-    subgraph RUST[Rust 코어 main.rs — 단일 프로세스]
-        CMD[IPC 커맨드 핸들러]
-        STOREIO[store I/O: load/save · 원자적 교체 · 재시도 · mtime 감시]
-        SCHED[리마인더 스케줄러 — 신규]
-        TRAYH[트레이 메뉴·클릭]
-        GSH[global-shortcut 콜백 → guseok://shortcut]
+    subgraph RUST[Rust 코어 src-tauri/src — 단일 프로세스]
+        CMD[windows.rs: 창 배치·전역 단축키]
+        STOREIO[store_io.rs: store I/O · 원자적 교체 · 재시도 · mtime 감시 · 충돌본]
+        SCHED[scheduler.rs: 리마인더 스케줄러]
+        WIN32[win32.rs: 모니터/작업영역 Win32 · 자동시작]
+        TRAYH[main.rs: 부팅·트레이·window_ready·qa_log]
     end
 
     subgraph WV[WebView2 창 — 모두 setup에서 생성, hide/show 재사용]
@@ -41,8 +41,11 @@ flowchart TB
     end
 
     TRAY --> TRAYH
-    GS --> GSH
+    GS --> CMD
+    MON --> WIN32
+    REG --> WIN32
     CMD <--> WV
+    WIN32 <--> WV
     STOREIO --> ST & BAK
     STOREIO --> CFG
     EXT -. mtime .-> STOREIO

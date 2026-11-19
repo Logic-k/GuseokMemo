@@ -18,6 +18,16 @@ import { insertSnippet } from "./templates.js";
 import { applyDarkMode, bindDarkMode } from "./darkmode.js";
 import { runSelfTest } from "./selftest.js";
 import { getLayout, panelRect } from "./layout.js";
+import {
+  escapeHtml,
+  placeCaretEnd,
+  newParagraph,
+  insertAfter,
+  replaceBlock,
+  caretInto,
+  compressImage,
+  htmlToMarkdown,
+} from "./editor-utils.js";
 
 const MAX_IMAGES = 5;
 const win = getCurrentWindow();
@@ -197,15 +207,6 @@ function render(target) {
   lastGeomKey = geomKey();
 }
 
-function placeCaretEnd(el) {
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  range.collapse(false);
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
-}
-
 /* ---------------- rich text ---------------- */
 
 function exec(cmd, value = null) {
@@ -283,27 +284,6 @@ function caretAtBlockStart(block) {
     return false;
   }
   return head.toString().length === 0;
-}
-
-function newParagraph() {
-  const p = document.createElement("p");
-  p.innerHTML = "<br>";
-  return p;
-}
-
-function insertAfter(node, block) {
-  block.parentNode.insertBefore(node, block.nextSibling);
-}
-
-function replaceBlock(block, node) {
-  block.parentNode.replaceChild(node, block);
-  return node;
-}
-
-function caretInto(el) {
-  const target = el.querySelector(".ck-text") || el;
-  target.focus?.();
-  placeCaretEnd(target);
 }
 
 function autoFormat(block) {
@@ -390,10 +370,6 @@ function autoFormat(block) {
   }
 
   return false;
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
 
 editor.addEventListener("keydown", (e) => {
@@ -787,21 +763,6 @@ fileInput.addEventListener("change", async () => {
   flashSaved();
 });
 
-async function compressImage(file) {
-  const bitmap = await createImageBitmap(file);
-  const max = 1400;
-  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close?.();
-  return canvas.toDataURL("image/jpeg", 0.82);
-}
-
 imgBar.querySelectorAll("[data-ratio]").forEach((b) => {
   b.addEventListener("click", () => {
     const im = idx?.images?.[selImg];
@@ -878,27 +839,6 @@ document.getElementById("btnExport").addEventListener("click", async () => {
     busy = false;
   }
 });
-
-function htmlToMarkdown(root) {
-  const lines = [];
-  root.querySelectorAll("h1,h2,h3,p,li,.ck,div").forEach((el) => {
-    if (el.closest(".ck") && !el.classList.contains("ck")) return;
-    if (el.closest("li") && el.tagName !== "LI") return;
-    if (el.classList.contains("ck")) {
-      const box = el.querySelector('input[type="checkbox"]');
-      const txt = (el.textContent || "").trim();
-      lines.push(`- [${box?.checked ? "x" : " "}] ${txt}`);
-    } else if (el.tagName === "LI") {
-      lines.push(`- ${el.textContent}`);
-    } else if (/^H[123]$/.test(el.tagName)) {
-      lines.push("#".repeat(Number(el.tagName[1])) + " " + el.textContent);
-    } else {
-      const t = el.textContent;
-      if (t.trim()) lines.push(t);
-    }
-  });
-  return lines.join("\n");
-}
 
 /* ---------------- window behaviour ---------------- */
 

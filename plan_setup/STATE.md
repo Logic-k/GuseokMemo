@@ -1,7 +1,7 @@
 ---
 topic: 구석메모 다음 개발 사이클 상태
 updated: 2026-11-19
-status: v0.3.1 안정화 완료 — build·fmt·clippy·cargo test 38/38·selftest 86/86·CDP 36/36 전량 PASS (로컬 커밋 완료, push/태그는 승인 대기)
+status: v0.3.1 태그 발행 완료 + Phase B(Rust 5모듈 분리·editor-utils.js 분리·CI 워크플로우) 전량 PASS 완료 — 다음은 Phase C(v0.4.0 기능 고도화)
 ---
 
 # STATE — 다음 개발 사이클

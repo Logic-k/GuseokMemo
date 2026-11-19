@@ -1,0 +1,38 @@
+# main 푸시 및 PR 시 프런트엔드 빌드 + Rust 포맷/린트/단위 테스트를 자동 검증한다.
+name: ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      # tauri::generate_context!가 컴파일 타임에 dist/를 평가하므로 Rust 게이트 전에 선행 필수
+      - run: npm run build
+
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
+
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
