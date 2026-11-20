@@ -224,6 +224,7 @@ button { font-family: inherit; border: 0; background: none; padding: 0; cursor: 
   overflow-y: auto;
   overflow-x: hidden;
   padding: 4px 16px 62px 18px;
+  scroll-padding-bottom: 72px;
   scrollbar-width: thin;
 }
 

@@ -379,3 +379,15 @@
 
 ## Loop 2차 라운드 종료 — UI 6/6 전부 완료, 잔여 06-03(실기 IME)만 사용자 확인 대기
 
+
+## BUG-11 — 긴 메모 입력 시 캐럿이 툴바 아래로 가려져 안 보임 (2026-11-20, 사용자 신고)
+
+- 재현·관찰: 카드를 넘는 내용 입력 시 Chromium이 캐럿을 스크롤포트 **맨 아래 가장자리**로 최소 스크롤. `.editor-wrap` 뷰포트 하단 ~50px는 `position:absolute; bottom:12px`의 플로팅 `.toolbar`가 덮음 → 캐럿이 툴바 아래서 계속 입력돼 "포커스가 안 따라가며 안 보이게" 느껴짐. CDP 실측: caret rel=513/514 (뷰포트 맨끝, 툴바 존 [462,502]과 겹침)
+- 기대: 입력하는 위치가 항상 보여야 함(툴바 위 여백 확보)
+- 원인: Chromium 최소 스크롤이 툴바 오버레이를 고려 못함 — 스크롤 여백 정의 부재
+- 수정: `.editor-wrap`에 `scroll-padding-bottom: 72px` 추가(툴바 존 ~50px + 여유). scrollIntoView·캐럿 추적이 공통으로 존중하는 표준 속성이라 JS 추가 없이 해결
+- 회귀 검사: selftest `scroll-padding-caret`(값 유지)+`scroll-follow-margin`(scrollIntoView 여백 존중) 추가
+- 부수 발견·수정: selftest `reminder-missed` 연속 FAIL — 제품 경로는 정상(수동 주입 시 missed emit 확인). 원인은 **테스트 아티팩트**: 발화 래치 markReminderFired→외부 저장→패널 state 교체로 captured `idx`가 stale → 테스트의 reminders 쓰기가 디스크에 안 닿음. liveIdx()로 라이브 인덱스 재획득하도록 수정
+- 검증: CDP 실측 캐럿 rel 513→449(툴바 위 확보, 일반 insertText·IME 조합 모두), selftest 88/88
+- 사용자 store 오염 정리: CDP 재현 중 테스트 텍스트가 실제 메모에 저장된 것 복원(마지막 실관찰 내용 "할일"/"㌐테스"), conflict·bak 잔재 삭제
+

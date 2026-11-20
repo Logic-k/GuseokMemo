@@ -669,8 +669,12 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
       }
       return null;
     };
-    const prevReminders = idx.reminders;
-    idx.reminders = [
+    // 발화 래치(markReminderFired)가 handles→save→패널 외부 리로드를 유발해
+    // state.indexes 객체가 통째 교체된다 — captured idx가 stale이 되면
+    // reminders 쓰기가 디스크에 닿지 않는다. 매번 라이브 인덱스를 재획득한다.
+    const liveIdx = () => state.indexes.find((i) => i.id === (idx && idx.id)) || state.indexes[0] || idx;
+    const prevReminders = liveIdx().reminders;
+    liveIdx().reminders = [
       { id: "rqafire1", at: localIso(Date.now() + 6000), repeat: "none", note: "qa", enabled: true, lastFiredAt: null },
     ];
     await save();
@@ -682,7 +686,7 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     );
 
     // 재시작 놓침과 동일한 분류 경로 — 과거 미발화분은 missed=true로 보고(자동 발화 아님).
-    idx.reminders = [
+    liveIdx().reminders = [
       { id: "rqamiss1", at: localIso(Date.now() - 300000), repeat: "none", note: "", enabled: true, lastFiredAt: null },
     ];
     await save();
@@ -694,7 +698,7 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     );
 
     // 스케줄 정리 — 테스트용 리마인더가 이후 저장에 남지 않도록 원복 후 저장.
-    idx.reminders = prevReminders;
+    liveIdx().reminders = prevReminders;
     await save();
 
     // --- 리마인더 UI 코어 (phase-03-task-02, R-02/03, D-2) ---
@@ -1096,15 +1100,33 @@ export async function runSelfTest({ editor, idx, htmlToMarkdown, save }) {
     check("snip-pop-ime-block", editor.textContent === "IME_MARK", editor.textContent.slice(0, 40));
     snipPopEl.classList.add("hidden");
     editor.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true }));
+
+    // BUG-25: 긴 메모 입력 시 캐럿이 플로팅 툴바 아래로 가려지지 않아야 한다 —
+    // Chromium이 캐럿을 스크롤포트 맨 아래 가장자리로 최소 스크롤하는데,
+    // 그 영역을 .toolbar(absolute bottom:12)가 덮는다. scroll-padding-bottom이 유지되는지 +
+    // scrollIntoView(캐럿 추적과 동일 경로)가 그 여백을 존중하는지를 본다.
+    const editorWrap = document.getElementById("editorWrap");
+    const pad = parseFloat(getComputedStyle(editorWrap).scrollPaddingBottom) || 0;
+    check("scroll-padding-caret", pad >= 48, `pad=${pad}`);
+    editor.innerHTML = "<p>" + Array.from({ length: 60 }, (_, i) => `줄 ${i + 1}`).join("</p><p>") + "</p>";
+    const markEl = document.createElement("span");
+    markEl.textContent = "M";
+    editor.appendChild(markEl);
+    markEl.scrollIntoView({ block: "end" });
+    const markRect = markEl.getBoundingClientRect();
+    const wrapRect = editorWrap.getBoundingClientRect();
+    check("scroll-follow-margin", markRect.bottom <= wrapRect.bottom - 40, `mark=${Math.round(markRect.bottom - wrapRect.top)} wrapH=${Math.round(wrapRect.height)}`);
+    markEl.remove();
   } catch (err) {
     results.push("FAIL exception :: " + (err && err.message ? err.message : String(err)));
   }
 
-  idx.content = originalContent;
-  idx.images = JSON.parse(originalImages);
+  const restoreIdx = state.indexes.find((i) => i.id === (idx && idx.id)) || state.indexes[0] || idx;
+  restoreIdx.content = originalContent;
+  restoreIdx.images = JSON.parse(originalImages);
   // 편집기 쪽 디바운스 저장 타이머가 복원 내용을 덮어쓰지 않도록 잠시 기다립니다.
   await new Promise((r) => setTimeout(r, 650));
-  idx.content = originalContent;
+  restoreIdx.content = originalContent;
   await save();
 
   for (const r of results) {
